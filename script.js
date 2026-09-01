@@ -19,6 +19,7 @@ function go(id) {
   }));
 
   if (id === 'birthday') animateCards();
+  if (id === 'final') setTimeout(animateFinalHandwriting, 700);
 
   setTimeout(() => {
     prev.classList.remove('leaving');
@@ -145,6 +146,34 @@ function restartQuest() {
   go('vibe');
 }
 
+// --- рукописная прорисовка текста поздравления (по букве) ---
+function animateFinalHandwriting() {
+  const els = document.querySelectorAll('#final .final__hbd, #final .final__sign, #final .final__text p');
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const PER = 25; // мс на букву (общий сквозной счётчик)
+  let gi = 0;
+
+  els.forEach(el => {
+    if (!el.dataset.raw) el.dataset.raw = el.innerHTML;      // сохраняем исходник (в заголовке есть <br>)
+    let html = '';
+    el.dataset.raw.split(/(<br\s*\/?>)/i).forEach(chunk => {
+      if (/<br/i.test(chunk)) { html += '<br>'; return; }
+      chunk.split(/(\s+)/).forEach(token => {
+        if (token === '') return;
+        if (/^\s+$/.test(token)) { html += ' '; return; } // обычный пробел — точка переноса
+        html += '<span class="w">' + [...token]
+          .map(ch => `<span class="ch" style="--i:${gi++}">${esc(ch)}</span>`)
+          .join('') + '</span>';
+      });
+    });
+    el.innerHTML = html;
+  });
+
+  // общая длительность как CSS-переменную (не обязательно, но пригодится)
+  const total = gi * PER;
+  document.getElementById('final').style.setProperty('--hw-total', total + 'ms');
+}
+
 // --- отвлекалочка: разложи фото по полочкам ---
 let pickedPhoto = null;
 
@@ -180,12 +209,12 @@ const heroEl = document.getElementById('hero');
 const scene = document.querySelector('.scene');
 
 const PERSPECTIVE = 1400;
-const MAX_TILT = 5;
+const MAX_TILT = 11;
 
 const LAYERS = [
-  { el: document.querySelector('.far'), z: 0, shift: 0.004 },
-  { el: document.querySelector('.clouds'), z: 70, shift: 0.012 },
-  { el: document.querySelector('.near'), z: 165, shift: 0.026 },
+  { el: document.querySelector('.far'), z: 0, shift: 0.007 },
+  { el: document.querySelector('.clouds'), z: 140, shift: 0.022 },
+  { el: document.querySelector('.near'), z: 250, shift: 0.04 },
 ];
 
 let tiltX = 0, tiltY = 0;
@@ -230,8 +259,9 @@ document.addEventListener('mouseleave', () => { tiltX = 0; tiltY = 0; kick(); })
 
 function onOrient(e) {
   if (e.gamma == null || e.beta == null) return;
-  tiltX = Math.max(-1, Math.min(1, e.gamma / 30));
-  tiltY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+  // выше чувствительность: полный наклон уже при ~16° поворота телефона
+  tiltX = Math.max(-1, Math.min(1, e.gamma / 16));
+  tiltY = Math.max(-1, Math.min(1, (e.beta - 45) / 16));
   kick();
 }
 

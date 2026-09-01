@@ -23,9 +23,18 @@
     <section class="screen active" id="hero">
       <div class="parallax-stage">
         <div class="scene">
-          <img src="img/photoshop-img/one-fon.png" class="layer far" alt="">
-          <img src="img/photoshop-img/glou-blur.png" class="layer clouds" alt="">
-          <img src="img/photoshop-img/grass-photoshop.png" class="layer near" alt="">
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/mobile-img/one-fon-version.png">
+            <img src="img/photoshop-img/one-fon.png" class="layer far" alt="">
+          </picture>
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/mobile-img/glou-blur-mobile.png">
+            <img src="img/photoshop-img/glou-blur.png" class="layer clouds" alt="">
+          </picture>
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/mobile-img/grass-photoshop-mobile.png">
+            <img src="img/photoshop-img/grass-photoshop.png" class="layer near" alt="">
+          </picture>
         </div>
       </div>
 
@@ -290,9 +299,9 @@
   <div class="hint-overlay" id="hintOverlay">
     <div class="hint-card">
       <img src="img/photo-anime/card-decor/book-card.png" class="hint-books" alt="">
-      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
       <img src="img/photo-anime/card-decor/card-form-drams.png" class="hint-soot" alt="">
       <div class="hint-frame">
+        <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
         <p class="hint-text">Это красивый город у самого моря, с башней с часами.</p>
       </div>
       <button class="hint-retry" onclick="closeHint(1)">попробовать ещё</button>
@@ -303,9 +312,9 @@
   <div class="hint-overlay" id="hintOverlay2">
     <div class="hint-card">
       <img src="img/photo-anime/card-decor/card-form-drams.png" class="hint-soot2" alt="">
-      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
       <img src="img/photo-anime/card-decor/fair-smile.png" class="hint-fire" alt="">
       <div class="hint-frame">
+        <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
         <p class="hint-text">Название аниме — это подсказка..</p>
       </div>
       <button class="hint-retry" onclick="closeHint(2)">попробовать ещё</button>
@@ -316,9 +325,9 @@
   <div class="hint-overlay" id="hintOverlay3">
     <div class="hint-card">
       <img src="img/photo-anime/card-decor/kiki.png" class="hint-witch" alt="">
-      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
       <img src="img/photo-anime/card-decor/osono-bakery.png" class="hint-bakery" alt="">
       <div class="hint-frame">
+        <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
         <p class="hint-text">Это про веру в себя, когда сомнения мешают взлететь...</p>
       </div>
       <button class="hint-retry" onclick="closeHint(3)">попробовать ещё</button>
@@ -329,9 +338,9 @@
   <div class="hint-overlay" id="hintOverlay4">
     <div class="hint-card">
       <img src="img/photo-anime/card-decor/fair-smile.png" class="hint-fire-tl" alt="">
-      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
       <img src="img/photo-anime/card-decor/book-card.png" class="hint-books-br" alt="">
       <div class="hint-frame">
+        <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
         <p class="hint-text">Он мечтает о полётах и строит летающий велосипед..</p>
       </div>
       <button class="hint-retry" onclick="closeHint(4)">попробовать ещё</button>
@@ -342,9 +351,9 @@
   <div class="hint-overlay" id="hintOverlay5">
     <div class="hint-card">
       <img src="img/photo-anime/card-decor/kiki.png" class="hint-witch-tl" alt="">
-      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
       <img src="img/photo-anime/card-decor/osono-bakery.png" class="hint-bakery-br" alt="">
       <div class="hint-frame">
+        <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
         <p class="hint-text">Она живёт в лесу и рисует, они говорят по душам...</p>
       </div>
       <button class="hint-retry" onclick="closeHint(5)">попробовать ещё</button>

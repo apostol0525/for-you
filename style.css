@@ -87,10 +87,10 @@ html, body {
 
 .layer {
   position: absolute;
-  top: -6%;
-  left: -6%;
-  width: 112%;
-  height: 112%;
+  top: -15%;
+  left: -15%;
+  width: 130%;
+  height: 130%;
   object-fit: cover;
   will-change: transform;
   backface-visibility: hidden;
@@ -613,6 +613,40 @@ html, body {
   margin-top: 4px;
 }
 
+/* --- рукописная прорисовка (по букве) --- */
+.final__text .w,
+.final__hbd .w,
+.final__sign .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.final__text .ch,
+.final__hbd .ch,
+.final__sign .ch {
+  display: inline-block;
+  opacity: 0;
+  clip-path: inset(0 100% -15% 0);
+  animation: handwrite .2s ease forwards;
+  animation-delay: calc(var(--i) * 25ms);
+}
+
+@keyframes handwrite {
+  from { opacity: 0; clip-path: inset(0 100% -15% 0); }
+  40%  { opacity: 1; }
+  to   { opacity: 1; clip-path: inset(0 0 -15% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .final__text .ch,
+  .final__hbd .ch,
+  .final__sign .ch {
+    animation: none;
+    opacity: 1;
+    clip-path: none;
+  }
+}
+
 .final__text p {
   font-family: 'Marck Script', cursive;
   font-size: 18px;
@@ -945,12 +979,10 @@ html, body {
 }
 
 .hint-flame {
-  position: absolute;
-  top: 68px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 20px;
   height: auto;
+  flex-shrink: 0;
+  margin-bottom: 12px;
   z-index: 2;
 }
 
@@ -1069,6 +1101,7 @@ html, body {
   height: 190px;
   margin-top: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-image: url("img/photo-anime/card-decor/card-ram 1.png");
