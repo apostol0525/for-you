@@ -541,7 +541,7 @@ html, body {
   padding: 16px;
   box-shadow: 0 12px 32px rgba(60, 40, 20, .2);
   flex-shrink: 0;
-  zoom: 0.9;
+  zoom: 0.8;
 }
 
 .final__card::before {
