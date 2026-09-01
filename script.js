@@ -209,12 +209,12 @@ const heroEl = document.getElementById('hero');
 const scene = document.querySelector('.scene');
 
 const PERSPECTIVE = 1400;
-const MAX_TILT = 11;
+const MAX_TILT = 5;
 
 const LAYERS = [
-  { el: document.querySelector('.far'), z: 0, shift: 0.007 },
-  { el: document.querySelector('.clouds'), z: 140, shift: 0.022 },
-  { el: document.querySelector('.near'), z: 250, shift: 0.04 },
+  { el: document.querySelector('.far'), z: 0, shift: 0.005 },
+  { el: document.querySelector('.clouds'), z: 75, shift: 0.011 },
+  { el: document.querySelector('.near'), z: 105, shift: 0.016 },
 ];
 
 let tiltX = 0, tiltY = 0;
