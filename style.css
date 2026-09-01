@@ -531,17 +531,17 @@ html, body {
   object-fit: contain;
 }
 
-/* подложка 350×540, двойной border с эффектом неровности */
+/* подложка 350×540, уменьшена на 30% через zoom */
 .final__card {
   position: relative;
   width: 350px;
-  max-width: 92vw;
   height: 540px;
   background: #F3E9D7;
   border-radius: 25px;
   padding: 16px;
   box-shadow: 0 12px 32px rgba(60, 40, 20, .2);
   flex-shrink: 0;
+  zoom: 0.7;
 }
 
 .final__card::before {
