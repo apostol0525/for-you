@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Nozanin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Marck+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="stage">
+
+    <section class="screen active" id="hero">
+      <div class="parallax-stage">
+        <div class="scene">
+          <img src="img/photoshop-img/one-fon.png" class="layer far" alt="">
+          <img src="img/photoshop-img/glou-blur.png" class="layer clouds" alt="">
+          <img src="img/photoshop-img/grass-photoshop.png" class="layer near" alt="">
+        </div>
+      </div>
+
+      <div class="hero__content">
+        <p class="hero__caption">Специальная доставка · особый получатель</p>
+        <h1 class="hero__name">Nozanin</h1>
+        <button class="open-btn" onclick="go('birthday')">open<span class="open-btn__arrow">→</span></button>
+      </div>
+    </section>
+
+    <section class="screen" id="birthday">
+      <h2 class="birthday__title">С днём рождения <span class="birthday__sparkle">✦</span></h2>
+      <p class="birthday__subtitle">это особенный день для тебя и я сделал особенный подарок</p>
+      <div class="birthday__photos">
+        <img src="img/photo-anime/retro-style-photo-1.jpg" class="birthday__photo birthday__photo--left" alt="">
+        <img src="img/photo-anime/retro-style-photo-2.jpg" class="birthday__photo birthday__photo--right" alt="">
+      </div>
+      <button class="birthday__btn" onclick="go('vibe')">Начать квест</button>
+    </section>
+
+    <section class="screen" id="vibe">
+      <p class="vibe__step">Квест — шаг 1 из 3</p>
+      <h2 class="vibe__title">Твой Vibe</h2>
+      <p class="vibe__subtitle">Если бы сегодняшний день был кадром из Гибли, то какой?</p>
+      <div class="vibe__grid">
+        <div class="vibe__card" onclick="pickVibe(this)">
+          <div class="vibe__card-frame">
+            <div class="vibe__card-inner">
+              <img src="img/photo-anime/sky-vibe.jpg" class="vibe__card-img" alt="">
+            </div>
+            <div class="vibe__card-label">
+              <img src="img/photo-anime/icon-kiki.png" class="vibe__card-icon" alt="">
+              <span>Полёт</span>
+            </div>
+          </div>
+        </div>
+        <div class="vibe__card" onclick="pickVibe(this)">
+          <div class="vibe__card-frame">
+            <div class="vibe__card-inner">
+              <img src="img/photo-anime/house-sea-vibe.jpg" class="vibe__card-img" alt="">
+            </div>
+            <div class="vibe__card-label">
+              <img src="img/photo-anime/icon-kiki.png" class="vibe__card-icon" alt="">
+              <span>Дом у моря</span>
+            </div>
+          </div>
+        </div>
+        <div class="vibe__card" onclick="pickVibe(this)">
+          <div class="vibe__card-frame">
+            <div class="vibe__card-inner">
+              <img src="img/photo-anime/grass-vibe.jpg" class="vibe__card-img" alt="">
+            </div>
+            <div class="vibe__card-label">
+              <img src="img/photo-anime/icon-kiki.png" class="vibe__card-icon" alt="">
+              <span>Тишина в траве</span>
+            </div>
+          </div>
+        </div>
+        <div class="vibe__card" onclick="pickVibe(this)">
+          <div class="vibe__card-frame">
+            <div class="vibe__card-inner">
+              <img src="img/photo-anime/dark-city-vibe.jpg" class="vibe__card-img" alt="">
+            </div>
+            <div class="vibe__card-label">
+              <img src="img/photo-anime/icon-kiki.png" class="vibe__card-icon" alt="">
+              <span>Вечерний город</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="quiz">
+      <div class="quiz__card">
+        <p class="quiz__question">В каком городе Кики начинает свою службу доставки?</p>
+      </div>
+      <div class="quiz__options">
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Корико</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Токио</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Йокогама</button>
+      </div>
+      <button class="quiz__next" disabled onclick="checkQuiz1()">Продолжить</button>
+    </section>
+
+    <section class="screen" id="quiz2">
+      <div class="quiz__card">
+        <p class="quiz__question">Чем занимается Кики в новом городе?</p>
+      </div>
+      <div class="quiz__options">
+        <button class="quiz__option" onclick="pickQuiz(this)">Печёт хлеб</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Доставкой на метле</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Рисует картины</button>
+      </div>
+      <button class="quiz__next" disabled onclick="checkQuiz2()">Продолжить</button>
+    </section>
+
+    <section class="screen" id="quiz3">
+      <div class="quiz__card">
+        <p class="quiz__question">Что теряет Кики в середине истории и учится возвращать?</p>
+      </div>
+      <div class="quiz__options">
+        <button class="quiz__option" onclick="pickQuiz(this)">Дом</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Свою метлу</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Способность летать</button>
+      </div>
+      <button class="quiz__next" disabled onclick="checkQuiz3()">Продолжить</button>
+    </section>
+
+    <section class="screen" id="quiz4">
+      <div class="quiz__card">
+        <p class="quiz__question">Как зовут мальчика, который мечтает летать и дружит с Кики?</p>
+      </div>
+      <div class="quiz__options">
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Томбо</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Коппори</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Борис</button>
+      </div>
+      <button class="quiz__next" disabled onclick="checkQuiz4()">Продолжить</button>
+    </section>
+
+    <section class="screen" id="quiz5">
+      <div class="quiz__card">
+        <p class="quiz__question">Кто помогает Кики поверить в себя, когда у неё опускаются руки?</p>
+      </div>
+      <div class="quiz__options">
+        <button class="quiz__option" onclick="pickQuiz(this)">Мальчик Томбо</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Художница Урсула</button>
+        <button class="quiz__option" onclick="pickQuiz(this)">Пекарша Осоно</button>
+      </div>
+      <button class="quiz__next" disabled onclick="checkQuiz5()">Продолжить</button>
+    </section>
+
+    <section class="screen" id="shelf">
+      <p class="shelf__label">отвлекалочка</p>
+      <h2 class="shelf__title">Разложи моменты<br>по полочкам</h2>
+      <div class="shelf__slots">
+        <div class="shelf__slot" onclick="placePhoto(this)"></div>
+        <div class="shelf__slot shelf__slot--mid" onclick="placePhoto(this)"></div>
+        <div class="shelf__slot" onclick="placePhoto(this)"></div>
+      </div>
+      <div class="shelf__tray">
+        <img src="img/photo-anime/beauti-sunset-sm.jpg" class="shelf__photo" onclick="pickPhoto(this)" alt="">
+        <img src="img/photo-anime/retro-style-photo-1-sm.jpg" class="shelf__photo" onclick="pickPhoto(this)" alt="">
+        <img src="img/photo-anime/retro-style-photo-2-sm.jpg" class="shelf__photo" onclick="pickPhoto(this)" alt="">
+      </div>
+      <button class="shelf__next" onclick="go('quiz4')">Продолжить</button>
+    </section>
+
+    <section class="screen" id="result">
+      <h2 class="wish__title">Ты Молодчина! ты дошла до конца, делай так всегда за что бы не бралась</h2>
+      <p class="wish__subtitle">Теперь осталось самое важное загадай желание— <em>его никто не увидит. Текст остаётся только в твоём телефоне и никуда не отправляется. Честно.</em></p>
+      <textarea class="wish__input" placeholder="Здесь только ты и Кики.."></textarea>
+      <button class="wish__send" onclick="sendWish()">Отправить с Кики</button>
+      <button class="wish__skip" onclick="skipWish()">Пропустить</button>
+    </section>
+
+    <section class="screen" id="final">
+      <p class="final__caption">Посылка доставлена <img src="img/photo-anime/icon-kiki-dark.png" class="final__caption-icon" alt=""></p>
+      <div class="final__card">
+        <div class="final__card-frame">
+          <div class="final__head">
+            <img src="img/photo-anime/beauti-sunset-sm.jpg" class="final__photo" alt="">
+            <div class="final__head-text">
+              <p class="final__hbd">С днём<br>рождения</p>
+              <p class="final__sign">— от друга, который очень рад, что ты есть.</p>
+            </div>
+          </div>
+          <div class="final__text">
+            <p>Это не тест — здесь не было неправильных ответов, только ты.</p>
+            <p>Ты из тех, с кем спокойно: рядом с тобой вещи встают на места, а разговоры длятся дольше, чем собирались. С тобой не скучно молчать и не страшно быть настоящим.</p>
+            <p>Пусть в этом году дорога домой всегда будет короткой, книги — те самые, а поводов на ерунду — больше, чем срочных дел.</p>
+          </div>
+        </div>
+      </div>
+      <button class="final__finish" onclick="finishQuest()">Завершить Квест</button>
+      <button class="final__restart" onclick="restartQuest()">Пройти снова</button>
+    </section>
+
+  </div>
+
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="torn">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <div class="polaroid-overlay" id="polaroidOverlay" onclick="closePolaroid1(event)">
+    <div class="polaroid" onclick="event.stopPropagation()">
+      <div class="polaroid__frame">
+        <div class="polaroid__photo-wrap">
+          <img src="img/photo-anime/beauti-sunset.jpg" class="polaroid__photo" alt="">
+        </div>
+        <div class="polaroid__bottom">
+          <p class="polaroid__caption">Ты, как Кики, не боишься начинать новое в незнакомом месте. Это смелость.</p>
+          <img src="img/photo-anime/icon-kiki-dark.png" class="polaroid__kiki" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="polaroid-overlay" id="polaroidOverlay2" onclick="closePolaroid2(event)">
+    <div class="polaroid" onclick="event.stopPropagation()">
+      <div class="polaroid__frame">
+        <div class="polaroid__photo-wrap">
+          <img src="img/photo-anime/beauti-sunset.jpg" class="polaroid__photo" alt="">
+        </div>
+        <div class="polaroid__bottom">
+          <p class="polaroid__caption">Ты умеешь находить своё уютное место и своё дело</p>
+          <img src="img/photo-anime/icon-kiki-dark.png" class="polaroid__kiki" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="polaroid-overlay" id="polaroidOverlay3" onclick="closePolaroid3(event)">
+    <div class="polaroid" onclick="event.stopPropagation()">
+      <div class="polaroid__frame">
+        <div class="polaroid__photo-wrap">
+          <img src="img/photo-anime/beauti-sunset.jpg" class="polaroid__photo" alt="">
+        </div>
+        <div class="polaroid__bottom">
+          <p class="polaroid__caption">Даже когда трудно, ты находишь силы подняться. Я в тебя верю. Как ты в меня</p>
+          <img src="img/photo-anime/icon-kiki-dark.png" class="polaroid__kiki" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="polaroid-overlay" id="polaroidOverlay4" onclick="closePolaroid4(event)">
+    <div class="polaroid" onclick="event.stopPropagation()">
+      <div class="polaroid__frame">
+        <div class="polaroid__photo-wrap">
+          <img src="img/photo-anime/beauti-sunset.jpg" class="polaroid__photo" alt="">
+        </div>
+        <div class="polaroid__bottom">
+          <p class="polaroid__caption">Рядом с тобой у людей вырастают крылья — ты вдохновляешь.</p>
+          <img src="img/photo-anime/icon-kiki-dark.png" class="polaroid__kiki" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="polaroid-overlay" id="polaroidOverlay5" onclick="closePolaroid5(event)">
+    <div class="polaroid" onclick="event.stopPropagation()">
+      <div class="polaroid__frame">
+        <div class="polaroid__photo-wrap">
+          <img src="img/photo-anime/beauti-sunset.jpg" class="polaroid__photo" alt="">
+        </div>
+        <div class="polaroid__bottom">
+          <p class="polaroid__caption">Ты из тех, рядом с кем другие тоже становятся сильнее. Это редкий дар</p>
+          <img src="img/photo-anime/icon-kiki-dark.png" class="polaroid__kiki" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="hintOverlay">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/book-card.png" class="hint-books" alt="">
+      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
+      <img src="img/photo-anime/card-decor/card-form-drams.png" class="hint-soot" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">Это красивый город у самого моря, с башней с часами.</p>
+      </div>
+      <button class="hint-retry" onclick="closeHint(1)">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(1)">сдаюсь</button>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="hintOverlay2">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/card-form-drams.png" class="hint-soot2" alt="">
+      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
+      <img src="img/photo-anime/card-decor/fair-smile.png" class="hint-fire" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">Название аниме — это подсказка..</p>
+      </div>
+      <button class="hint-retry" onclick="closeHint(2)">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(2)">сдаюсь</button>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="hintOverlay3">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/kiki.png" class="hint-witch" alt="">
+      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
+      <img src="img/photo-anime/card-decor/osono-bakery.png" class="hint-bakery" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">Это про веру в себя, когда сомнения мешают взлететь...</p>
+      </div>
+      <button class="hint-retry" onclick="closeHint(3)">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(3)">сдаюсь</button>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="hintOverlay4">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/fair-smile.png" class="hint-fire-tl" alt="">
+      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
+      <img src="img/photo-anime/card-decor/book-card.png" class="hint-books-br" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">Он мечтает о полётах и строит летающий велосипед..</p>
+      </div>
+      <button class="hint-retry" onclick="closeHint(4)">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(4)">сдаюсь</button>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="hintOverlay5">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/kiki.png" class="hint-witch-tl" alt="">
+      <img src="img/photo-anime/card-decor/lighthub.png" class="hint-flame" alt="">
+      <img src="img/photo-anime/card-decor/osono-bakery.png" class="hint-bakery-br" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">Она живёт в лесу и рисует, они говорят по душам...</p>
+      </div>
+      <button class="hint-retry" onclick="closeHint(5)">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(5)">сдаюсь</button>
+    </div>
+  </div>
+
+  <div class="hint-overlay" id="wishDoneOverlay">
+    <div class="hint-card">
+      <img src="img/photo-anime/card-decor/kiki.png" class="wish-witch" alt="">
+      <img src="img/photo-anime/card-decor/doror.png" class="wish-totoro" alt="">
+      <div class="hint-frame">
+        <p class="hint-text">«Загадано ✨<br>оно только твоё</p>
+      </div>
+      <button class="hint-retry wish-tyk" onclick="goFinal()">тык</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
