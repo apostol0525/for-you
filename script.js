@@ -208,13 +208,12 @@ function placePhoto(slot) {
 const heroEl = document.getElementById('hero');
 const scene = document.querySelector('.scene');
 
-const PERSPECTIVE = 1400;
-const MAX_TILT = 9;
+const MAX_TILT = 5;
 
 const LAYERS = [
-  { el: document.querySelector('.far'), z: 0, shift: 0.005 },
-  { el: document.querySelector('.clouds'), z: 130, shift: 0.026 },
-  { el: document.querySelector('.near'), z: 220, shift: 0.042 },
+  { el: document.querySelector('.far'), shift: 0.008 },
+  { el: document.querySelector('.clouds'), shift: 0.026 },
+  { el: document.querySelector('.near'), shift: 0.042 },
 ];
 
 let tiltX = 0, tiltY = 0;
@@ -231,11 +230,10 @@ function render() {
   const w = heroEl.clientWidth, h = heroEl.clientHeight;
 
   for (const l of LAYERS) {
-    const k = (PERSPECTIVE - l.z) / PERSPECTIVE;
     const dx = -curX * w * l.shift;
     const dy = -curY * h * l.shift;
     l.el.style.transform =
-      `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, ${l.z}px) scale(${k})`;
+      `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
   }
 
   if (Math.abs(tiltX - curX) > 0.0005 || Math.abs(tiltY - curY) > 0.0005) {
