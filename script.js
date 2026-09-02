@@ -35,7 +35,7 @@ function go(id) {
     next.classList.add('go');
   }));
 
-  if (id === 'birthday') animateCards();
+  if (id === 'birthday') { animateCards(); drawBirthdayBg(); }
   if (id === 'final') setTimeout(animateFinalHandwriting, 700);
 
   setTimeout(() => {
@@ -44,6 +44,19 @@ function go(id) {
     next.scrollTop = 0;
     busy = false;
   }, 1200);
+}
+
+// --- фон-прорисовка секции «С днём рождения» ---
+function drawBirthdayBg() {
+  const bg = document.querySelector('.birthday__bg');
+  if (!bg) return;
+  const run = () => {
+    bg.classList.remove('draw');
+    void bg.offsetWidth; // рефлоу — перезапуск анимации
+    bg.classList.add('draw');
+  };
+  if (bg.complete && bg.naturalWidth) run();
+  else bg.addEventListener('load', run, { once: true });
 }
 
 // --- GSAP: анимация карточек ---
