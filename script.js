@@ -46,17 +46,34 @@ function go(id) {
   }, 1200);
 }
 
-// --- фон-прорисовка секции «С днём рождения» ---
-function drawBirthdayBg() {
-  const bg = document.querySelector('.birthday__bg');
-  if (!bg) return;
-  const run = () => {
-    bg.classList.remove('draw');
-    void bg.offsetWidth; // рефлоу — перезапуск анимации
-    bg.classList.add('draw');
-  };
-  if (bg.complete && bg.naturalWidth) run();
-  else bg.addEventListener('load', run, { once: true });
+// --- фон-прорисовка секции «С днём рождения» (инлайн SVG + вычерчивание) ---
+let birthdayBgLoaded = false;
+async function drawBirthdayBg() {
+  const box = document.querySelector('.birthday__bg');
+  if (!box) return;
+  if (!birthdayBgLoaded) {
+    try {
+      const txt = await fetch(box.dataset.svg).then(r => r.text());
+      box.innerHTML = txt;
+      // каждому пути — пунктир длиной в сам путь + лёгкий сдвиг старта (эффект руки)
+      const paths = box.querySelectorAll('path');
+      const n = paths.length;
+      paths.forEach((p, i) => {
+        const L = p.getTotalLength() || 1;
+        p.style.strokeDasharray = L;
+        p.style.strokeDashoffset = L;
+        p.style.animationDelay = (i / n * 1.6).toFixed(3) + 's';
+      });
+      birthdayBgLoaded = true;
+    } catch (e) { return; }
+  }
+  // перезапуск: вернуть штрихи в скрытое состояние
+  box.classList.remove('draw');
+  box.querySelectorAll('path').forEach(p => {
+    p.style.strokeDashoffset = p.style.strokeDasharray;
+  });
+  void box.offsetWidth; // рефлоу
+  box.classList.add('draw');
 }
 
 // --- GSAP: анимация карточек ---

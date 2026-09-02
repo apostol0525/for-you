@@ -182,31 +182,28 @@ html, body {
   overflow: hidden;
 }
 
-/* фон-прорисовка (линии кадра из аниме) */
+/* фон-прорисовка (линии кадра из аниме) — вычерчивание stroke */
 .birthday__bg {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   z-index: 0;
-  opacity: .5;
+  opacity: .6;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, #000 0 30%, transparent 52%);
-  mask-image: linear-gradient(90deg, #000 0 30%, transparent 52%);
-  -webkit-mask-size: 320% 100%;
-  mask-size: 320% 100%;
-  -webkit-mask-position: 100% 0;
-  mask-position: 100% 0;
 }
 
-.birthday__bg.draw {
-  animation: birthday-draw 2.8s cubic-bezier(.4, 0, .2, 1) forwards;
+.birthday__bg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* dash задаётся в JS по реальной длине каждого пути; при запуске линии вычерчиваются */
+.birthday__bg.draw svg path {
+  animation: birthday-draw 2.6s ease forwards;
 }
 
 @keyframes birthday-draw {
-  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-  to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+  to { stroke-dashoffset: 0; }
 }
 
 /* контент поверх фона */
