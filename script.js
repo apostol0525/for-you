@@ -35,7 +35,7 @@ function go(id) {
     next.classList.add('go');
   }));
 
-  if (id === 'birthday') { animateCards(); drawBirthdayBg(); }
+  if (id === 'birthday') playBirthday();
   if (id === 'final') setTimeout(animateFinalHandwriting, 700);
 
   setTimeout(() => {
@@ -62,7 +62,7 @@ async function drawBirthdayBg() {
         const L = p.getTotalLength() || 1;
         p.style.strokeDasharray = L;
         p.style.strokeDashoffset = L;
-        p.style.animationDelay = (i / n * 1.6).toFixed(3) + 's';
+        p.style.animationDelay = (i / n * 2.4).toFixed(3) + 's';
       });
       birthdayBgLoaded = true;
     } catch (e) { return; }
@@ -74,6 +74,36 @@ async function drawBirthdayBg() {
   });
   void box.offsetWidth; // рефлоу
   box.classList.add('draw');
+}
+
+// разбить подзаголовок на буквы (для побуквенной прорисовки)
+let subtitleSplit = false;
+function splitSubtitle() {
+  const el = document.querySelector('.birthday__subtitle');
+  if (!el || subtitleSplit) return;
+  let i = 0, html = '';
+  el.textContent.split(/(\s+)/).forEach(token => {
+    if (token === '') return;
+    if (/^\s+$/.test(token)) { html += ' '; return; }
+    html += '<span class="w">' +
+      [...token].map(ch => `<span class="ch" style="--i:${i++}">${ch}</span>`).join('') +
+      '</span>';
+  });
+  el.innerHTML = html;
+  subtitleSplit = true;
+}
+
+// оркестратор появления секции «С днём рождения»
+function playBirthday() {
+  const sec = document.getElementById('birthday');
+  splitSubtitle();
+  drawBirthdayBg();                 // фон рисуется
+  gsap.set([cardLeft, cardRight], { yPercent: 60, opacity: 0, scale: 0.85 }); // фото скрыты
+  sec.classList.remove('play');
+  void sec.offsetWidth;
+  sec.classList.add('play');        // заголовок → подзаголовок(буквы) → кнопка (через CSS-задержки)
+  clearTimeout(playBirthday._t);
+  playBirthday._t = setTimeout(animateCards, 4300); // фото всплывают после текста
 }
 
 // --- GSAP: анимация карточек ---

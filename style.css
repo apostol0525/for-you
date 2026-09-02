@@ -187,7 +187,7 @@ html, body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: .6;
+  opacity: .68;
   pointer-events: none;
 }
 
@@ -197,9 +197,9 @@ html, body {
   display: block;
 }
 
-/* dash задаётся в JS по реальной длине каждого пути; при запуске линии вычерчиваются */
+/* dash задаётся в JS по реальной длине пути; линии медленно вычерчиваются */
 .birthday__bg.draw svg path {
-  animation: birthday-draw 2.6s ease forwards;
+  animation: birthday-draw 4.5s cubic-bezier(.45, 0, .25, 1) forwards;
 }
 
 @keyframes birthday-draw {
@@ -233,15 +233,59 @@ html, body {
 }
 
 .birthday__subtitle {
-  font-family: 'Cormorant', serif;
-  font-weight: 600;
-  font-size: clamp(13px, 4vw, 35px);
+  font-family: 'Marck Script', cursive;
+  font-weight: 400;
+  font-size: clamp(20px, 5.5vw, 40px);
   color: #3A342C;
   text-align: center;
-  max-width: 700px;
-  line-height: 1.3;
+  max-width: 640px;
+  line-height: 1.45;
   margin-bottom: 80px;
   padding: 0 24px;
+}
+
+/* --- хореография появления секции (класс .play) --- */
+#birthday .birthday__title,
+#birthday .birthday__btn {
+  opacity: 0;
+}
+
+#birthday.play .birthday__title {
+  animation: bd-rise 1.1s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: 1.2s;
+}
+
+#birthday.play .birthday__btn {
+  animation: bd-rise .9s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: 5.2s;
+}
+
+@keyframes bd-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* подзаголовок — прорисовка по буквам «от руки» */
+.birthday__subtitle .ch {
+  display: inline-block;
+  opacity: 0;
+  clip-path: inset(0 100% -15% 0);
+}
+
+.birthday__subtitle .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#birthday.play .birthday__subtitle .ch {
+  animation: bd-write .26s ease forwards;
+  animation-delay: calc(2.6s + var(--i) * .05s);
+}
+
+@keyframes bd-write {
+  from { opacity: 0; clip-path: inset(0 100% -15% 0); }
+  45%  { opacity: 1; }
+  to   { opacity: 1; clip-path: inset(0 0 -15% 0); }
 }
 
 .birthday__photos {
