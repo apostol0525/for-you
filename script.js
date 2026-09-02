@@ -310,6 +310,7 @@ function initHeroLive() {
   const lines = box.querySelector('.hero-live__lines');
   const canvas = box.querySelector('.hero-live__cover');
   const hint = box.querySelector('.hero-live__hint');
+  const openBtn = box.querySelector('.hero-live__open');
   const ctx = canvas.getContext('2d');
   const PAPER = '#DDCEC7';
   let cssW = 0, cssH = 0;
@@ -378,7 +379,12 @@ function initHeroLive() {
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
       if (p < 1) requestAnimationFrame(frame);
-      else { ctx.clearRect(0, 0, cssW, cssH); done = true; busy = false; } // полный цвет
+      else {
+        ctx.clearRect(0, 0, cssW, cssH);          // полный цвет
+        done = true; busy = false;
+        canvas.style.pointerEvents = 'none';
+        if (openBtn) setTimeout(() => openBtn.classList.add('show'), 350);
+      }
     }
     requestAnimationFrame(frame);
   }

@@ -135,6 +135,27 @@ html, body {
   opacity: .85;
 }
 
+.hero-live__open {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%) translateY(14px);
+  z-index: 4;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .6s ease, transform .6s cubic-bezier(.22, 1, .36, 1), visibility .6s;
+}
+
+.hero-live__open.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hero-live__open.show:hover {
+  transform: translateX(-50%) translateY(-3px);
+}
+
 .parallax-stage {
   position: absolute;
   inset: 0;
@@ -453,8 +474,8 @@ html, body {
 }
 
 .quiz__question {
-  font-family: 'Inter', 'Manrope', sans-serif;
-  font-weight: 400;
+  font-family: 'Rubik', 'Inter', sans-serif;
+  font-weight: 500;
   font-size: 22px;
   color: #3A342C;
   text-align: center;
@@ -477,7 +498,7 @@ html, body {
   border-radius: 31px;
   background: #F7F0E6;
    border: 1.5px solid #5C4A38;
-  font-family: 'Inter', 'Manrope', sans-serif;
+  font-family: 'Rubik', 'Inter', sans-serif;
   font-weight: 400;
   font-size: 25px;
   color: #3E332A;
