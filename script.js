@@ -287,80 +287,106 @@ function placePhoto(slot) {
   }
 }
 
-// --- 3D-параллакс hero ---
-const heroEl = document.getElementById('hero');
-const scene = document.querySelector('.scene');
+// --- HERO прототип: прорисовка линий → раскраска пальцем (scratch) ---
+async function drawLinesInto(box, dur, stagger) {
+  const txt = await fetch(box.dataset.svg).then(r => r.text());
+  box.innerHTML = txt;
+  const paths = box.querySelectorAll('path');
+  const n = paths.length;
+  paths.forEach((p, i) => {
+    const L = p.getTotalLength() || 1;
+    p.style.strokeDasharray = L;
+    p.style.strokeDashoffset = L;
+    p.style.animationDelay = (i / n * stagger).toFixed(3) + 's';
+  });
+  void box.offsetWidth;
+  box.classList.add('draw');
+  await new Promise(r => setTimeout(r, (dur + stagger) * 1000));
+}
 
-const MAX_TILT = 5;
+function initHeroLive() {
+  const box = document.querySelector('.hero-live');
+  if (!box) return;
+  const lines = box.querySelector('.hero-live__lines');
+  const canvas = box.querySelector('.hero-live__cover');
+  const hint = box.querySelector('.hero-live__hint');
+  const ctx = canvas.getContext('2d');
+  const PAPER = '#DDCEC7';
+  let cssW = 0, cssH = 0;
+  let sketch = null;                 // офскрин: бумага + впитанные линии
+  let ready = false, busy = false, done = false;
 
-const LAYERS = [
-  { el: document.querySelector('.far'), shift: 0.008 },
-  { el: document.querySelector('.clouds'), shift: 0.026 },
-  { el: document.querySelector('.near'), shift: 0.042 },
-];
+  const r = box.getBoundingClientRect();
+  cssW = r.width; cssH = r.height;
+  canvas.width = cssW; canvas.height = cssH;
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(0, 0, cssW, cssH);    // бумага поверх цвета
 
-let tiltX = 0, tiltY = 0;
-let curX = 0, curY = 0;
-let running = false;
+  // фаза 1: линии рисуются (SVG) → фаза 2: «впитываем» их в скетч-канвас
+  drawLinesInto(lines, 4, 2).then(() => rasterizeSketch()).then(() => {
+    ready = true;
+    hint.classList.add('show');
+  });
 
-function render() {
-  curX += (tiltX - curX) * 0.09;
-  curY += (tiltY - curY) * 0.09;
-
-  scene.style.transform =
-    `rotateX(${(-curY * MAX_TILT).toFixed(3)}deg) rotateY(${(curX * MAX_TILT).toFixed(3)}deg)`;
-
-  const w = heroEl.clientWidth, h = heroEl.clientHeight;
-
-  for (const l of LAYERS) {
-    const dx = -curX * w * l.shift;
-    const dy = -curY * h * l.shift;
-    l.el.style.transform =
-      `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
+  function rasterizeSketch() {
+    return new Promise(res => {
+      const svg = lines.querySelector('svg');
+      if (!svg) { res(); return; }
+      // гарантируем финальное состояние линий (для корректного снимка)
+      svg.querySelectorAll('path').forEach(p => { p.style.animation = 'none'; p.style.strokeDashoffset = '0'; });
+      const vb = (svg.getAttribute('viewBox') || '0 0 1920 1079').split(/\s+/).map(Number);
+      const vbW = vb[2], vbH = vb[3];
+      const xml = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      img.onload = () => {
+        sketch = document.createElement('canvas');
+        sketch.width = cssW; sketch.height = cssH;
+        const sx = sketch.getContext('2d');
+        sx.fillStyle = PAPER; sx.fillRect(0, 0, cssW, cssH);
+        const scale = Math.max(cssW / vbW, cssH / vbH);   // cover
+        const dw = vbW * scale, dh = vbH * scale;
+        sx.drawImage(img, (cssW - dw) / 2, (cssH - dh) / 2, dw, dh);
+        lines.style.display = 'none';
+        ctx.clearRect(0, 0, cssW, cssH);
+        ctx.drawImage(sketch, 0, 0);
+        res();
+      };
+      img.onerror = () => res();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+    });
   }
 
-  if (Math.abs(tiltX - curX) > 0.0005 || Math.abs(tiltY - curY) > 0.0005) {
-    requestAnimationFrame(render);
-  } else {
-    running = false;
+  // одно касание → мягкая волна закрашивания от точки, линии впитываются
+  function bloom(x, y) {
+    if (!ready || busy || done) return;
+    busy = true;
+    hint.classList.remove('show');
+    const maxR = Math.hypot(Math.max(x, cssW - x), Math.max(y, cssH - y)) + 40;
+    const soft = Math.min(cssW, cssH) * 0.42;   // мягкая растекающаяся кромка
+    const dur = 2400, t0 = performance.now();
+    function frame(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; // easeInOut
+      const R = e * maxR;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, cssW, cssH);
+      ctx.drawImage(sketch, 0, 0);              // заново скетч
+      ctx.globalCompositeOperation = 'destination-out';
+      const g = ctx.createRadialGradient(x, y, Math.max(0, R - soft), x, y, R);
+      g.addColorStop(0, 'rgba(0,0,0,1)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
+      if (p < 1) requestAnimationFrame(frame);
+      else { ctx.clearRect(0, 0, cssW, cssH); done = true; busy = false; } // полный цвет
+    }
+    requestAnimationFrame(frame);
   }
+
+  canvas.addEventListener('pointerdown', e => {
+    const b = canvas.getBoundingClientRect();
+    bloom(e.clientX - b.left, e.clientY - b.top);
+  });
 }
 
-function kick() {
-  if (!running) { running = true; requestAnimationFrame(render); }
-}
-
-window.addEventListener('mousemove', (e) => {
-  tiltX = (e.clientX / window.innerWidth) * 2 - 1;
-  tiltY = (e.clientY / window.innerHeight) * 2 - 1;
-  kick();
-});
-
-document.addEventListener('mouseleave', () => { tiltX = 0; tiltY = 0; kick(); });
-
-function onOrient(e) {
-  if (e.gamma == null || e.beta == null) return;
-  // выше чувствительность: полный наклон уже при ~16° поворота телефона
-  tiltX = Math.max(-1, Math.min(1, e.gamma / 16));
-  tiltY = Math.max(-1, Math.min(1, (e.beta - 45) / 16));
-  kick();
-}
-
-if (typeof DeviceOrientationEvent !== 'undefined' &&
-  typeof DeviceOrientationEvent.requestPermission === 'function') {
-  const ask = () => {
-    DeviceOrientationEvent.requestPermission()
-      .then(state => { if (state === 'granted') window.addEventListener('deviceorientation', onOrient); })
-      .catch(() => { });
-    window.removeEventListener('touchend', ask);
-    window.removeEventListener('click', ask);
-  };
-  window.addEventListener('touchend', ask);
-  window.addEventListener('click', ask);
-} else {
-  window.addEventListener('deviceorientation', onOrient);
-}
-
-window.addEventListener('resize', kick);
-
-render();
+window.addEventListener('load', () => initHeroLive());

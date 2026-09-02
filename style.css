@@ -64,10 +64,75 @@ html, body {
     opacity .7s ease .2s;
 }
 
-/* --- hero --- */
+/* --- hero (прототип: линии → раскраска пальцем) --- */
 #hero {
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
+  background: #DDCEC7;
+}
+
+.hero-live {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-live__color,
+.hero-live__cover,
+.hero-live__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-live__color {
+  z-index: 0;
+  object-fit: cover;
+}
+
+.hero-live__cover {
+  z-index: 1;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.hero-live__lines {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-live__lines svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.hero-live__lines.draw svg path {
+  animation: hero-draw 4s cubic-bezier(.45, 0, .25, 1) forwards;
+}
+
+@keyframes hero-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.hero-live__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8%;
+  z-index: 3;
+  text-align: center;
+  font-family: 'Marck Script', cursive;
+  font-size: clamp(18px, 5vw, 30px);
+  color: #5C4A38;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+
+.hero-live__hint.show {
+  opacity: .85;
 }
 
 .parallax-stage {
@@ -298,11 +363,17 @@ html, body {
 .birthday__photo {
   position: absolute;
   width: clamp(160px, 42vw, 240px);
-  border-radius: 16px;
-  border: 2px solid #5C4A38;
+  border-radius: 6px;
+  /* полароид-рамка: кремовое паспарту + тонкий контур */
+  border: 7px solid #F7F0E6;
+  border-bottom-width: 20px;
   object-fit: cover;
   aspect-ratio: 3 / 4;
-  box-shadow: 0 8px 24px rgba(60, 40, 20, .18);
+  box-shadow:
+    0 0 0 1px rgba(92, 74, 56, .55),
+    0 12px 26px rgba(60, 40, 20, .28);
+  /* тёплый винтажный тон — подружить с линиями */
+  filter: sepia(.2) saturate(.9) brightness(1.03) contrast(.98);
 }
 
 .birthday__photo--left {
