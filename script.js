@@ -1,3 +1,18 @@
+// --- отложенная загрузка картинок (data-src) ---
+function revealImgs(root) {
+  if (!root) return;
+  root.querySelectorAll('img[data-src]').forEach(img => {
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+  });
+}
+
+// после загрузки hero — подгружаем всё остальное в фоне
+window.addEventListener('load', () => {
+  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 200));
+  idle(() => revealImgs(document));
+});
+
 // --- мини-роутер экранов ---
 let current = document.getElementById('hero');
 let busy = false;
@@ -6,6 +21,8 @@ function go(id) {
   const next = document.getElementById(id);
   if (busy || !next || next === current) return;
   busy = true;
+
+  revealImgs(next); // гарантированно грузим картинки секции при переходе
 
   const prev = current;
   current = next;
@@ -86,7 +103,9 @@ function checkQuiz5() { checkQuiz(5); }
 
 // --- карточка-подсказка ---
 function showHint(step) {
-  document.getElementById(QUIZ[step].hint).classList.add('visible');
+  const el = document.getElementById(QUIZ[step].hint);
+  revealImgs(el);
+  el.classList.add('visible');
 }
 
 function closeHint(step) {
@@ -100,7 +119,9 @@ function giveUp(step) {
 
 // --- polaroid modal (комплименты) ---
 function showPolaroid(step) {
-  document.getElementById(QUIZ[step].polaroid).classList.add('visible');
+  const el = document.getElementById(QUIZ[step].polaroid);
+  revealImgs(el);
+  el.classList.add('visible');
 }
 
 function closePolaroid(step, e) {
@@ -127,7 +148,9 @@ function sendWish() {
 function skipWish() { finishWish(); }
 
 function finishWish() {
-  document.getElementById('wishDoneOverlay').classList.add('visible');
+  const el = document.getElementById('wishDoneOverlay');
+  revealImgs(el);
+  el.classList.add('visible');
 }
 
 function goFinal() {
