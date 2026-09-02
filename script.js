@@ -7,10 +7,10 @@ function revealImgs(root) {
   });
 }
 
-// после загрузки hero — подгружаем всё остальное в фоне
+// после загрузки hero — тихо подгружаем только след. секцию (для плавного первого перехода)
 window.addEventListener('load', () => {
-  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 200));
-  idle(() => revealImgs(document));
+  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 800));
+  idle(() => revealImgs(document.getElementById('birthday')));
 });
 
 // --- мини-роутер экранов ---
