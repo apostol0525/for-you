@@ -27,6 +27,8 @@ function go(id) {
   const prev = current;
   current = next;
 
+  if (prev.id === 'birthday' && bdPaint) bdPaint.stop(); // остановить фон-цикл при уходе
+
   prev.classList.remove('active');
   prev.classList.add('leaving');
 
@@ -70,7 +72,7 @@ function drawBirthdayBg() {
   bdPaint.run();
 }
 
-// живые цветные пятна: обесцвеченная акварель оживает кляксами в разных местах
+// зацикленный «разрез»: Ч/Б фон, по нему непрерывно вспыхивают и гаснут цветные пятна
 function createBirthdayPaint(canvas) {
   const box = canvas.parentElement;
   const rect = box.getBoundingClientRect();
@@ -86,11 +88,9 @@ function createBirthdayPaint(canvas) {
   const tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H;
   const xctx = tmp.getContext('2d');
 
-  const COLS = 5, ROWS = 4;
-  const SPAWN = 4200;     // за сколько появляются все пятна
-  const GROW = 1600;      // рост одного пятна
-  const FADE = 700;       // финальная дозакраска остатка
-  let raf = 0, stopped = false, seeds = null, t0 = 0, doneAt = 0;
+  const MAX = 9;            // одновременно активных пятен
+  const SPAWN_MS = 340;     // интервал появления новых
+  let raf = 0, stopped = false, cells = [], lastSpawn = 0;
 
   const easeOut = g => 1 - (1 - g) * (1 - g);
 
@@ -100,80 +100,81 @@ function createBirthdayPaint(canvas) {
     return [(W - dw) / 2, (H - dh) / 2, dw, dh];
   }
 
-  // сетка позиций + случайный порядок появления → пятна возникают в разных местах
-  function buildSeeds() {
-    const list = [];
-    const cellW = W / COLS, cellH = H / ROWS;
-    const rMax = Math.max(cellW, cellH) * 1.15;
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const cx = (c + 0.5) * cellW + (Math.random() * 2 - 1) * cellW * 0.35;
-      const cy = (r + 0.5) * cellH + (Math.random() * 2 - 1) * cellH * 0.35;
-      const blobs = [];
-      const nb = 3 + (Math.random() * 2 | 0);
-      for (let k = 0; k < nb; k++) {
-        blobs.push({ ang: Math.random() * Math.PI * 2, dist: 0.35 + Math.random() * 0.6, rr: 0.34 + Math.random() * 0.28 });
-      }
-      list.push({ cx, cy, rMax: rMax * (0.85 + Math.random() * 0.4), blobs });
-    }
-    // перемешать порядок появления
-    for (let i = list.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[list[i], list[j]] = [list[j], list[i]]; }
-    list.forEach((s, i) => { s.start = (i / list.length) * SPAWN + Math.random() * 120; });
-    return list;
+  // новое пятно в свободном месте
+  function spawnCell(now) {
+    const m = 0.05;
+    let cx = 0, cy = 0, ok = false, tries = 0;
+    do {
+      cx = W * (m + Math.random() * (1 - 2 * m));
+      cy = H * (m + Math.random() * (1 - 2 * m));
+      ok = cells.every(c => Math.hypot(c.cx - cx, c.cy - cy) > c.rMax * 0.7);
+      tries++;
+    } while (!ok && tries < 8);
+    const blobs = [];
+    const nb = 3 + (Math.random() * 3 | 0);
+    for (let k = 0; k < nb; k++) blobs.push({ ang: Math.random() * Math.PI * 2, dist: 0.35 + Math.random() * 0.6, rr: 0.32 + Math.random() * 0.3 });
+    cells.push({
+      cx, cy, blobs,
+      rMax: H * (0.12 + Math.random() * 0.11),
+      born: now,
+      life: 2600 + Math.random() * 1500,
+    });
+  }
+
+  // фаза жизни пятна → альфа (появление/удержание/угасание) и радиус
+  function cellState(c, now) {
+    const t = (now - c.born) / c.life;
+    if (t >= 1) return null;
+    let a;
+    if (t < 0.30) a = t / 0.30;           // проявление
+    else if (t < 0.58) a = 1;             // держится цвет
+    else a = 1 - (t - 0.58) / 0.42;       // гаснет обратно в Ч/Б
+    const rg = easeOut(Math.min(1, t / 0.42));
+    return { a: a * a, r: rg * c.rMax };
   }
 
   function blot(x, y, r, a) {
     const g = tctx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0, 'rgba(0,0,0,' + a + ')');
-    g.addColorStop(0.62, 'rgba(0,0,0,' + (a * 0.55).toFixed(3) + ')');
+    g.addColorStop(0, 'rgba(0,0,0,' + a.toFixed(3) + ')');
+    g.addColorStop(0.55, 'rgba(0,0,0,' + (a * 0.7).toFixed(3) + ')');
+    g.addColorStop(0.82, 'rgba(0,0,0,' + (a * 0.22).toFixed(3) + ')');   // покрепче кромка → «разрез»
     g.addColorStop(1, 'rgba(0,0,0,0)');
     tctx.fillStyle = g;
     tctx.beginPath(); tctx.arc(x, y, r, 0, Math.PI * 2); tctx.fill();
   }
 
-  // маска перерисовывается заново каждый кадр по текущим радиусам (мягкие края без наслоений)
-  function stampSeed(s, r) {
-    blot(s.cx, s.cy, r, 1);
-    for (const b of s.blobs) blot(s.cx + Math.cos(b.ang) * b.dist * r, s.cy + Math.sin(b.ang) * b.dist * r, b.rr * r, 0.9);
+  function stampCell(c, st) {
+    blot(c.cx, c.cy, st.r, st.a);
+    for (const b of c.blobs) blot(c.cx + Math.cos(b.ang) * b.dist * st.r, c.cy + Math.sin(b.ang) * b.dist * st.r, b.rr * st.r, st.a * 0.85);
   }
 
-  function compose(extraFill) {
+  function compose() {
     ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(bw, 0, 0);                        // обесцвеченная основа
+    ctx.drawImage(bw, 0, 0);                         // Ч/Б основа
     xctx.globalCompositeOperation = 'source-over';
     xctx.clearRect(0, 0, W, H);
     xctx.drawImage(col, 0, 0);
     xctx.globalCompositeOperation = 'destination-in';
-    xctx.drawImage(trail, 0, 0);                    // цвет только внутри пятен
+    xctx.drawImage(trail, 0, 0);                     // цвет только внутри пятен
     xctx.globalCompositeOperation = 'source-over';
     ctx.drawImage(tmp, 0, 0);
-    if (extraFill > 0) { ctx.globalAlpha = extraFill; ctx.drawImage(col, 0, 0); ctx.globalAlpha = 1; }
   }
 
   function frame(now) {
     if (stopped) return;
-    if (!t0) t0 = now;
-    const el = now - t0;
+    if (!lastSpawn) lastSpawn = now;
+    if (now - lastSpawn >= SPAWN_MS && cells.length < MAX) { spawnCell(now); lastSpawn = now; }
 
     tctx.clearRect(0, 0, W, H);
-    let allMature = true;
-    for (const s of seeds) {
-      const e = el - s.start;
-      if (e <= 0) { allMature = false; continue; }
-      const g = Math.min(1, e / GROW);
-      if (g < 1) allMature = false;
-      stampSeed(s, easeOut(g) * s.rMax);
-    }
-
-    if (!allMature) {
-      compose(0);
-      raf = requestAnimationFrame(frame);
-    } else {
-      if (!doneAt) doneAt = now;
-      const q = Math.min(1, (now - doneAt) / FADE);   // дозакрасить остаток
-      compose(q);
-      if (q < 1) raf = requestAnimationFrame(frame);
-    }
+    cells = cells.filter(c => {
+      const st = cellState(c, now);
+      if (!st) return false;
+      stampCell(c, st);
+      return true;
+    });
+    compose();
+    raf = requestAnimationFrame(frame);
   }
 
   return {
@@ -185,11 +186,12 @@ function createBirthdayPaint(canvas) {
       const [dx, dy, dw, dh] = cover(img.naturalWidth, img.naturalHeight);
       col.getContext('2d').drawImage(img, dx, dy, dw, dh);
       const bx = bw.getContext('2d');
-      bx.filter = 'grayscale(1) contrast(1.03)';     // обесцвеченная акварель (без выбеливания)
+      bx.filter = 'grayscale(1) contrast(1.03)';      // полностью Ч/Б фон
       bx.drawImage(img, dx, dy, dw, dh);
       bx.filter = 'none';
-      seeds = buildSeeds();
-      compose(0);                                    // старт — обесцвеченный кадр
+      // стартуем уже населённым: несколько пятен на разных фазах
+      const t0 = performance.now();
+      for (let i = 0; i < MAX; i++) spawnCell(t0 - Math.random() * 2200);
       raf = requestAnimationFrame(frame);
     },
     stop() { stopped = true; if (raf) cancelAnimationFrame(raf); },
