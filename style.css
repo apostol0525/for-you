@@ -453,7 +453,13 @@ html, body {
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
 
-#quiz { background: #DDCEC7; }
+#quiz {
+  background-color: #E8D2B7;
+  background-image: url("img/photo-anime/bg-questions-1.jpg");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% auto;   /* по ширине, арт прижат к низу; верх продолжается фоном */
+}
 #quiz2 { background: #EDE3DB; }
 #quiz3 { background: #DDCEC7; }
 #quiz4 { background: #DDCEC7; }
