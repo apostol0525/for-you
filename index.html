@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=55">
+  <link rel="stylesheet" href="style.css?v=58">
 </head>
 
 <body>
@@ -89,32 +89,7 @@
 
     <section class="screen" id="birthday">
       <div class="birthday__bg">
-        <svg class="birthday__bg-color" viewBox="0 0 1410 752" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <filter id="wc-bd" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.011 0.017" numOctaves="4" seed="9" result="n"/>
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="150" xChannelSelector="R" yChannelSelector="G" result="d"/>
-              <feGaussianBlur in="d" stdDeviation="7"/>
-            </filter>
-            <linearGradient id="wc-band-bd" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#000"/>
-              <stop offset="0.30" stop-color="#fff"/>
-              <stop offset="1" stop-color="#fff"/>
-            </linearGradient>
-            <mask id="bd-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="1410" height="752">
-              <g filter="url(#wc-bd)">
-                <rect x="-260" y="752" width="1930" height="1300" fill="url(#wc-band-bd)">
-                  <animate id="a-bd" attributeName="y" begin="indefinite" dur="2.8s"
-                           from="752" to="-460" fill="freeze"
-                           calcMode="spline" keySplines="0.33 0 0.15 1"/>
-                </rect>
-              </g>
-            </mask>
-          </defs>
-          <image href="img/photo-anime/birhday-bd.jpg" x="0" y="0" width="1410" height="752"
-                 preserveAspectRatio="xMidYMid slice" mask="url(#bd-reveal)"/>
-        </svg>
-        <div class="birthday__bg-lines" data-svg="img/photo-anime/svg-animation-2.svg"></div>
+        <canvas class="birthday__bg-canvas"></canvas>
       </div>
       <h2 class="birthday__title">С днём рождения <span class="birthday__sparkle">✦</span></h2>
       <p class="birthday__subtitle">это особенный день для тебя и я сделал особенный подарок</p>
@@ -443,7 +418,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="script.js?v=55"></script>
+  <script src="script.js?v=58"></script>
 
 </body>
 

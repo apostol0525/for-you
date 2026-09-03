@@ -274,19 +274,9 @@ html, body {
   pointer-events: none;
 }
 
-.birthday__bg-color,
-.birthday__bg-lines {
+.birthday__bg-canvas {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.birthday__bg-color { display: block; }
-
-.birthday__bg-lines { opacity: .8; }
-
-.birthday__bg-lines svg {
   width: 100%;
   height: 100%;
   display: block;
@@ -302,17 +292,6 @@ html, body {
     rgba(238, 232, 225, .30) 34%,
     rgba(238, 232, 225, .34) 66%,
     rgba(238, 232, 225, .62));
-}
-
-/* dash задаётся в JS по реальной длине пути; линии медленно вычерчиваются */
-.birthday__bg-lines.draw svg path {
-  animation-name: birthday-draw;
-  animation-timing-function: cubic-bezier(.45, 0, .25, 1);
-  animation-fill-mode: forwards;
-}
-
-@keyframes birthday-draw {
-  to { stroke-dashoffset: 0; }
 }
 
 /* контент поверх фона */
