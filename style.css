@@ -76,8 +76,7 @@ html, body {
   inset: 0;
 }
 
-.hero-live__color,
-.hero-live__cover,
+.hero-live__reveal,
 .hero-live__lines {
   position: absolute;
   inset: 0;
@@ -85,15 +84,14 @@ html, body {
   height: 100%;
 }
 
-.hero-live__color {
-  z-index: 0;
-  object-fit: cover;
+.hero-live {
+  touch-action: none;
+  cursor: pointer;
 }
 
-.hero-live__cover {
-  z-index: 1;
-  touch-action: none;
-  cursor: crosshair;
+.hero-live__reveal {
+  z-index: 0;
+  display: block;
 }
 
 .hero-live__lines {

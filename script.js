@@ -287,16 +287,21 @@ function placePhoto(slot) {
   }
 }
 
-// --- HERO прототип: прорисовка линий → раскраска пальцем (scratch) ---
+// --- HERO: 3 этапа — линии → ч/б проявление → цвет (акварельное растекание) ---
+
+// вычерчивание SVG-линий (этап 1)
 async function drawLinesInto(box, dur, stagger) {
   const txt = await fetch(box.dataset.svg).then(r => r.text());
   box.innerHTML = txt;
+  const svg = box.querySelector('svg');
+  if (svg) svg.setAttribute('preserveAspectRatio', 'xMidYMid slice'); // как object-fit: cover
   const paths = box.querySelectorAll('path');
   const n = paths.length;
   paths.forEach((p, i) => {
     const L = p.getTotalLength() || 1;
     p.style.strokeDasharray = L;
     p.style.strokeDashoffset = L;
+    p.style.animationDuration = dur + 's';
     p.style.animationDelay = (i / n * stagger).toFixed(3) + 's';
   });
   void box.offsetWidth;
@@ -304,95 +309,121 @@ async function drawLinesInto(box, dur, stagger) {
   await new Promise(r => setTimeout(r, (dur + stagger) * 1000));
 }
 
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+// золотые блёстки-частицы + финальная вспышка (SVG SMIL), синхр. с фронтом краски
+function buildHeroFX() {
+  const fx = document.getElementById('hb-fx');
+  if (!fx) return;
+  fx.textContent = '';
+  const N = 74;
+  for (let i = 0; i < N; i++) {
+    const big = i % 6 === 0;                             // каждая 6-я — крупная искра
+    const sx = 30 + Math.random() * 1350;
+    const sy = 752 - Math.random() * 90;                // старт у нижней кромки
+    const rise = 190 + Math.random() * 460;
+    const sway = (Math.random() * 2 - 1) * 90;
+    const dur = (1.1 + Math.random() * 1.3).toFixed(2);
+    const delay = (Math.random() * 2.0).toFixed(2);     // позже начатые — «едут» на фронте выше
+    const rad = (big ? 5 + Math.random() * 4 : 2 + Math.random() * 3.4).toFixed(1);
+    const begin = 'a-color.begin+' + delay + 's';
+
+    const c = document.createElementNS(SVGNS, 'circle');
+    c.setAttribute('r', rad);
+    c.setAttribute('cx', '0'); c.setAttribute('cy', '0');
+    c.setAttribute('fill', 'url(#wc-spark)');
+    c.setAttribute('opacity', '0');
+
+    const m = document.createElementNS(SVGNS, 'animateMotion');
+    m.setAttribute('dur', dur + 's');
+    m.setAttribute('begin', begin);
+    m.setAttribute('fill', 'remove');
+    m.setAttribute('calcMode', 'spline');
+    m.setAttribute('keyPoints', '0;1');
+    m.setAttribute('keyTimes', '0;1');
+    m.setAttribute('keySplines', '0.2 0.6 0.3 1');
+    m.setAttribute('path', `M ${sx.toFixed(0)} ${sy.toFixed(0)} q ${sway.toFixed(0)} ${(-rise * 0.5).toFixed(0)} ${(sway * 0.4).toFixed(0)} ${(-rise).toFixed(0)}`);
+
+    const o = document.createElementNS(SVGNS, 'animate');
+    o.setAttribute('attributeName', 'opacity');
+    o.setAttribute('begin', begin);
+    o.setAttribute('dur', dur + 's');
+    o.setAttribute('fill', 'remove');
+    o.setAttribute('values', '0;1;1;0');
+    o.setAttribute('keyTimes', '0;0.18;0.5;1');
+
+    c.appendChild(m); c.appendChild(o);
+    fx.appendChild(c);
+  }
+
+  // тёплая вспышка-bloom у восхода (верх-право)
+  const bloom = document.createElementNS(SVGNS, 'circle');
+  bloom.setAttribute('cx', '1235'); bloom.setAttribute('cy', '250');
+  bloom.setAttribute('r', '60'); bloom.setAttribute('fill', 'url(#wc-bloom)');
+  bloom.setAttribute('opacity', '0');
+  const br = document.createElementNS(SVGNS, 'animate');
+  br.setAttribute('attributeName', 'r'); br.setAttribute('begin', 'a-color.begin+1.35s');
+  br.setAttribute('dur', '1.8s'); br.setAttribute('values', '50;300;440');
+  br.setAttribute('keyTimes', '0;0.55;1'); br.setAttribute('fill', 'remove');
+  br.setAttribute('calcMode', 'spline'); br.setAttribute('keySplines', '0.2 0.7 0.3 1;0.4 0 0.6 1');
+  const bo = document.createElementNS(SVGNS, 'animate');
+  bo.setAttribute('attributeName', 'opacity'); bo.setAttribute('begin', 'a-color.begin+1.35s');
+  bo.setAttribute('dur', '1.8s'); bo.setAttribute('values', '0;0.95;0'); bo.setAttribute('keyTimes', '0;0.3;1');
+  bo.setAttribute('fill', 'remove');
+  bloom.appendChild(br); bloom.appendChild(bo);
+  fx.appendChild(bloom);
+}
+
 function initHeroLive() {
   const box = document.querySelector('.hero-live');
   if (!box) return;
   const lines = box.querySelector('.hero-live__lines');
-  const canvas = box.querySelector('.hero-live__cover');
   const hint = box.querySelector('.hero-live__hint');
   const openBtn = box.querySelector('.hero-live__open');
-  const ctx = canvas.getContext('2d');
-  const PAPER = '#DDCEC7';
-  let cssW = 0, cssH = 0;
-  let sketch = null;                 // офскрин: бумага + впитанные линии
-  let ready = false, busy = false, done = false;
+  const aBW = document.getElementById('a-bw');
+  const aColor = document.getElementById('a-color');
+  if (!aBW || !aColor) return;
 
-  const r = box.getBoundingClientRect();
-  cssW = r.width; cssH = r.height;
-  canvas.width = cssW; canvas.height = cssH;
-  ctx.fillStyle = PAPER;
-  ctx.fillRect(0, 0, cssW, cssH);    // бумага поверх цвета
+  let ready = false, busy = false, done = false, pendingTap = false;
 
-  // фаза 1: линии рисуются (SVG) → фаза 2: «впитываем» их в скетч-канвас
-  drawLinesInto(lines, 4, 2).then(() => rasterizeSketch()).then(() => {
-    ready = true;
-    hint.classList.add('show');
-  });
+  buildHeroFX(); // частицы должны существовать до старта, чтобы begin="a-color.begin" связался
 
-  function rasterizeSketch() {
-    return new Promise(res => {
-      const svg = lines.querySelector('svg');
-      if (!svg) { res(); return; }
-      // гарантируем финальное состояние линий (для корректного снимка)
-      svg.querySelectorAll('path').forEach(p => { p.style.animation = 'none'; p.style.strokeDashoffset = '0'; });
-      const vb = (svg.getAttribute('viewBox') || '0 0 1920 1079').split(/\s+/).map(Number);
-      const vbW = vb[2], vbH = vb[3];
-      const xml = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-      img.onload = () => {
-        sketch = document.createElement('canvas');
-        sketch.width = cssW; sketch.height = cssH;
-        const sx = sketch.getContext('2d');
-        sx.fillStyle = PAPER; sx.fillRect(0, 0, cssW, cssH);
-        const scale = Math.max(cssW / vbW, cssH / vbH);   // cover
-        const dw = vbW * scale, dh = vbH * scale;
-        sx.drawImage(img, (cssW - dw) / 2, (cssH - dh) / 2, dw, dh);
-        lines.style.display = 'none';
-        ctx.clearRect(0, 0, cssW, cssH);
-        ctx.drawImage(sketch, 0, 0);
-        res();
-      };
-      img.onerror = () => res();
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
-    });
+  function finishColor() {
+    if (done) return;
+    done = true;
+    lines.style.transition = 'opacity .8s ease';
+    lines.style.opacity = '0';
+    setTimeout(() => { lines.style.display = 'none'; }, 820);
+    if (openBtn) setTimeout(() => openBtn.classList.add('show'), 300);
   }
 
-  // одно касание → мягкая волна закрашивания от точки, линии впитываются
-  function bloom(x, y) {
+  // этап 3: цвет снизу вверх + блёстки + вспышка
+  function startColor() {
     if (!ready || busy || done) return;
     busy = true;
     hint.classList.remove('show');
-    const maxR = Math.hypot(Math.max(x, cssW - x), Math.max(y, cssH - y)) + 40;
-    const soft = Math.min(cssW, cssH) * 0.42;   // мягкая растекающаяся кромка
-    const dur = 2400, t0 = performance.now();
-    function frame(now) {
-      const p = Math.min(1, (now - t0) / dur);
-      const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; // easeInOut
-      const R = e * maxR;
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.clearRect(0, 0, cssW, cssH);
-      ctx.drawImage(sketch, 0, 0);              // заново скетч
-      ctx.globalCompositeOperation = 'destination-out';
-      const g = ctx.createRadialGradient(x, y, Math.max(0, R - soft), x, y, R);
-      g.addColorStop(0, 'rgba(0,0,0,1)');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
-      if (p < 1) requestAnimationFrame(frame);
-      else {
-        ctx.clearRect(0, 0, cssW, cssH);          // полный цвет
-        done = true; busy = false;
-        canvas.style.pointerEvents = 'none';
-        if (openBtn) setTimeout(() => openBtn.classList.add('show'), 350);
-      }
-    }
-    requestAnimationFrame(frame);
+    try { aColor.beginElement(); } catch (e) {}
+    aColor.addEventListener('endEvent', finishColor, { once: true });
+    setTimeout(finishColor, 4200); // страховка, если endEvent не придёт
   }
 
-  canvas.addEventListener('pointerdown', e => {
-    const b = canvas.getBoundingClientRect();
-    bloom(e.clientX - b.left, e.clientY - b.top);
+  box.addEventListener('pointerdown', () => {
+    if (done || busy) return;
+    if (ready) startColor();
+    else { pendingTap = true; hint.classList.remove('show'); } // тапнул раньше — запустим после ч/б
   });
+
+  // надпись — почти сразу
+  setTimeout(() => { if (!busy && !done) hint.classList.add('show'); }, 500);
+
+  // этап 1 (линии) → этап 2 (ч/б проявляется пятнами) → готово к тапу
+  (async () => {
+    await drawLinesInto(lines, 2.0, 1.0);
+    try { aBW.beginElement(); } catch (e) {}
+    await new Promise(r => setTimeout(r, 1500));
+    ready = true;
+    if (pendingTap) startColor();
+  })();
 }
 
 window.addEventListener('load', () => initHeroLive());
