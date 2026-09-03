@@ -431,7 +431,11 @@ html, body {
 
 /* --- vibe квест --- */
 #vibe {
-  background: #EDE3DB;
+  background-color: #DECBAA;
+  background-image: url("img/photo-anime/vibe-bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% auto;   /* по ширине, арт прижат к низу; верх продолжается фоном */
   gap: 0;
   overflow-y: auto;
   padding-top: 24px;
