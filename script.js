@@ -46,34 +46,29 @@ function go(id) {
   }, 1200);
 }
 
-// --- фон-прорисовка секции «С днём рождения» (инлайн SVG + вычерчивание) ---
-let birthdayBgLoaded = false;
+// --- фон секции «С днём рождения»: этап 1 линии → этап 2 заливка цветом (акварель) ---
 async function drawBirthdayBg() {
   const box = document.querySelector('.birthday__bg');
   if (!box) return;
-  if (!birthdayBgLoaded) {
-    try {
-      const txt = await fetch(box.dataset.svg).then(r => r.text());
-      box.innerHTML = txt;
-      // каждому пути — пунктир длиной в сам путь + лёгкий сдвиг старта (эффект руки)
-      const paths = box.querySelectorAll('path');
-      const n = paths.length;
-      paths.forEach((p, i) => {
-        const L = p.getTotalLength() || 1;
-        p.style.strokeDasharray = L;
-        p.style.strokeDashoffset = L;
-        p.style.animationDelay = (i / n * 2.4).toFixed(3) + 's';
-      });
-      birthdayBgLoaded = true;
-    } catch (e) { return; }
-  }
-  // перезапуск: вернуть штрихи в скрытое состояние
-  box.classList.remove('draw');
-  box.querySelectorAll('path').forEach(p => {
-    p.style.strokeDashoffset = p.style.strokeDasharray;
-  });
-  void box.offsetWidth; // рефлоу
-  box.classList.add('draw');
+  const linesBox = box.querySelector('.birthday__bg-lines');
+  const bgColor = box.querySelector('.birthday__bg-color');
+  const aBd = document.getElementById('a-bd');
+  if (!linesBox) return;
+
+  // спрятать цвет и показать линии заново (для повторного входа)
+  if (bgColor) bgColor.style.opacity = '0';
+  linesBox.style.display = '';
+  linesBox.style.transition = 'none';
+  linesBox.style.opacity = '.8';
+
+  await drawLinesInto(linesBox, 2.4, 1.4);          // этап 1: вычерчивание линий
+
+  if (bgColor) bgColor.style.opacity = '1';
+  try { if (aBd) aBd.beginElement(); } catch (e) {} // этап 2: заливка цветом снизу вверх
+
+  // линии растворяются в акварели
+  linesBox.style.transition = 'opacity .9s ease';
+  linesBox.style.opacity = '0';
 }
 
 // разбить подзаголовок на буквы (для побуквенной прорисовки)
