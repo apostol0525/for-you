@@ -282,16 +282,10 @@ html, body {
   display: block;
 }
 
-/* лёгкая вуаль поверх акварели — чтобы текст читался */
-.birthday__bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg,
-    rgba(238, 232, 225, .58),
-    rgba(238, 232, 225, .30) 34%,
-    rgba(238, 232, 225, .34) 66%,
-    rgba(238, 232, 225, .62));
+/* без вуали — вместо неё лёгкое свечение под текстом для читаемости */
+.birthday__title,
+.birthday__subtitle {
+  text-shadow: 0 1px 10px rgba(250, 246, 238, .85), 0 0 2px rgba(250, 246, 238, .9);
 }
 
 /* контент поверх фона */

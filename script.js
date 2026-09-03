@@ -59,38 +59,6 @@ function loadImageOnce(src) {
   return _imgCache[src];
 }
 
-// сглаженная траектория-«змейка» по всему кадру (Catmull-Rom)
-function buildWanderPath(W, H, samples) {
-  const rows = 5, cols = 4, jx = W * 0.07, jy = H * 0.05;
-  const wp = [];
-  wp.push([W * 0.5, H * 1.02]);                 // влетает снизу
-  for (let r = 0; r < rows; r++) {
-    const y = H * ((r + 0.5) / rows);
-    for (let c = 0; c < cols; c++) {
-      const tx = (r % 2 === 0) ? c / (cols - 1) : 1 - c / (cols - 1);
-      wp.push([
-        W * (0.12 + 0.76 * tx) + (Math.random() * 2 - 1) * jx,
-        y + (Math.random() * 2 - 1) * jy,
-      ]);
-    }
-  }
-  wp.push([W * 0.5, -H * 0.05]);                // мягко уходит вверх
-  const cr = (p0, p1, p2, p3, t) => {
-    const t2 = t * t, t3 = t2 * t;
-    return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
-  };
-  const pts = [];
-  for (let i = 0; i < wp.length - 1; i++) {
-    const p0 = wp[i - 1] || wp[i], p1 = wp[i], p2 = wp[i + 1], p3 = wp[i + 2] || wp[i + 1];
-    const seg = Math.ceil(samples / (wp.length - 1));
-    for (let s = 0; s < seg; s++) {
-      const t = s / seg;
-      pts.push([cr(p0[0], p1[0], p2[0], p3[0], t), cr(p0[1], p1[1], p2[1], p3[1], t)]);
-    }
-  }
-  return pts;
-}
-
 let bdPaint = null;
 function drawBirthdayBg() {
   const box = document.querySelector('.birthday__bg');
@@ -102,6 +70,7 @@ function drawBirthdayBg() {
   bdPaint.run();
 }
 
+// живые цветные пятна: обесцвеченная акварель оживает кляксами в разных местах
 function createBirthdayPaint(canvas) {
   const box = canvas.parentElement;
   const rect = box.getBoundingClientRect();
@@ -112,14 +81,18 @@ function createBirthdayPaint(canvas) {
 
   const bw = document.createElement('canvas'); bw.width = W; bw.height = H;
   const col = document.createElement('canvas'); col.width = W; col.height = H;
-  const trail = document.createElement('canvas'); trail.width = W; trail.height = H;   // накопительная маска (альфа)
+  const trail = document.createElement('canvas'); trail.width = W; trail.height = H;   // маска цвета (альфа)
   const tctx = trail.getContext('2d');
   const tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H;
   const xctx = tmp.getContext('2d');
 
-  const DUR = 8600;            // длительность закраски
-  const R = Math.max(52, H * 0.10); // радиус кисти (узкий видимый след)
-  let raf = 0, stopped = false, pts = null, t0 = 0, lastIdx = 0, doneAt = 0;
+  const COLS = 5, ROWS = 4;
+  const SPAWN = 4200;     // за сколько появляются все пятна
+  const GROW = 1600;      // рост одного пятна
+  const FADE = 700;       // финальная дозакраска остатка
+  let raf = 0, stopped = false, seeds = null, t0 = 0, doneAt = 0;
+
+  const easeOut = g => 1 - (1 - g) * (1 - g);
 
   function cover(iw, ih) {
     const s = Math.max(W / iw, H / ih);
@@ -127,95 +100,78 @@ function createBirthdayPaint(canvas) {
     return [(W - dw) / 2, (H - dh) / 2, dw, dh];
   }
 
-  // мягкая акварельная «клякса» кисти в позиции (x,y)
-  function stamp(x, y, k) {
-    const rr = R * (0.82 + Math.random() * 0.4);
-    const g = tctx.createRadialGradient(x, y, 0, x, y, rr);
-    g.addColorStop(0, 'rgba(0,0,0,' + (0.9 * k).toFixed(3) + ')');
-    g.addColorStop(0.6, 'rgba(0,0,0,' + (0.5 * k).toFixed(3) + ')');
+  // сетка позиций + случайный порядок появления → пятна возникают в разных местах
+  function buildSeeds() {
+    const list = [];
+    const cellW = W / COLS, cellH = H / ROWS;
+    const rMax = Math.max(cellW, cellH) * 1.15;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const cx = (c + 0.5) * cellW + (Math.random() * 2 - 1) * cellW * 0.35;
+      const cy = (r + 0.5) * cellH + (Math.random() * 2 - 1) * cellH * 0.35;
+      const blobs = [];
+      const nb = 3 + (Math.random() * 2 | 0);
+      for (let k = 0; k < nb; k++) {
+        blobs.push({ ang: Math.random() * Math.PI * 2, dist: 0.35 + Math.random() * 0.6, rr: 0.34 + Math.random() * 0.28 });
+      }
+      list.push({ cx, cy, rMax: rMax * (0.85 + Math.random() * 0.4), blobs });
+    }
+    // перемешать порядок появления
+    for (let i = list.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[list[i], list[j]] = [list[j], list[i]]; }
+    list.forEach((s, i) => { s.start = (i / list.length) * SPAWN + Math.random() * 120; });
+    return list;
+  }
+
+  function blot(x, y, r, a) {
+    const g = tctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, 'rgba(0,0,0,' + a + ')');
+    g.addColorStop(0.62, 'rgba(0,0,0,' + (a * 0.55).toFixed(3) + ')');
     g.addColorStop(1, 'rgba(0,0,0,0)');
     tctx.fillStyle = g;
-    tctx.beginPath(); tctx.arc(x, y, rr, 0, Math.PI * 2); tctx.fill();
-    // пара мелких брызг для «растекания»
-    for (let i = 0; i < 2; i++) {
-      const a = Math.random() * Math.PI * 2, d = rr * (0.5 + Math.random() * 0.7), br = rr * (0.15 + Math.random() * 0.2);
-      const bx = x + Math.cos(a) * d, by = y + Math.sin(a) * d;
-      const g2 = tctx.createRadialGradient(bx, by, 0, bx, by, br);
-      g2.addColorStop(0, 'rgba(0,0,0,' + (0.5 * k).toFixed(3) + ')');
-      g2.addColorStop(1, 'rgba(0,0,0,0)');
-      tctx.fillStyle = g2;
-      tctx.beginPath(); tctx.arc(bx, by, br, 0, Math.PI * 2); tctx.fill();
-    }
+    tctx.beginPath(); tctx.arc(x, y, r, 0, Math.PI * 2); tctx.fill();
   }
 
-  // светящаяся звезда-искра
-  function drawStar(x, y, tms) {
-    const tw = 0.82 + 0.18 * Math.sin(tms / 150);
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    // мягкий ореол (небольшой)
-    const gr = ctx.createRadialGradient(x, y, 0, x, y, 20 * tw);
-    gr.addColorStop(0, 'rgba(255,251,232,0.9)');
-    gr.addColorStop(0.4, 'rgba(255,206,96,0.5)');
-    gr.addColorStop(1, 'rgba(255,159,52,0)');
-    ctx.fillStyle = gr;
-    ctx.beginPath(); ctx.arc(x, y, 20 * tw, 0, Math.PI * 2); ctx.fill();
-    // лучи-звезда (4 длинных + 4 коротких)
-    ctx.translate(x, y); ctx.rotate(tms / 1600);
-    const drawRays = (len, wdt, alpha) => {
-      ctx.fillStyle = 'rgba(255,247,224,' + alpha + ')';
-      for (let i = 0; i < 4; i++) {
-        ctx.rotate(Math.PI / 2);
-        ctx.beginPath();
-        ctx.moveTo(0, -len); ctx.lineTo(wdt, 0); ctx.lineTo(0, len); ctx.lineTo(-wdt, 0);
-        ctx.closePath(); ctx.fill();
-      }
-    };
-    drawRays(30 * tw, 1.8, 0.95);
-    ctx.rotate(Math.PI / 4);
-    drawRays(14 * tw, 1.3, 0.7);
-    ctx.rotate(-Math.PI / 4);
-    // яркое ядро
-    ctx.fillStyle = 'rgba(255,255,250,0.95)';
-    ctx.beginPath(); ctx.arc(0, 0, 3.2 * tw, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+  // маска перерисовывается заново каждый кадр по текущим радиусам (мягкие края без наслоений)
+  function stampSeed(s, r) {
+    blot(s.cx, s.cy, r, 1);
+    for (const b of s.blobs) blot(s.cx + Math.cos(b.ang) * b.dist * r, s.cy + Math.sin(b.ang) * b.dist * r, b.rr * r, 0.9);
   }
 
-  function compose(headX, headY, tms, extraFill) {
+  function compose(extraFill) {
     ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(bw, 0, 0);                       // Ч/Б основа
-    // цвет по накопленной маске
+    ctx.drawImage(bw, 0, 0);                        // обесцвеченная основа
     xctx.globalCompositeOperation = 'source-over';
     xctx.clearRect(0, 0, W, H);
     xctx.drawImage(col, 0, 0);
     xctx.globalCompositeOperation = 'destination-in';
-    xctx.drawImage(trail, 0, 0);
+    xctx.drawImage(trail, 0, 0);                    // цвет только внутри пятен
     xctx.globalCompositeOperation = 'source-over';
     ctx.drawImage(tmp, 0, 0);
     if (extraFill > 0) { ctx.globalAlpha = extraFill; ctx.drawImage(col, 0, 0); ctx.globalAlpha = 1; }
-    if (headX != null) drawStar(headX, headY, tms);
   }
 
   function frame(now) {
     if (stopped) return;
     if (!t0) t0 = now;
     const el = now - t0;
-    const p = Math.min(1, el / DUR);
-    const idx = Math.floor(p * (pts.length - 1));
-    for (let i = lastIdx + 1; i <= idx; i++) stamp(pts[i][0], pts[i][1], 1);
-    lastIdx = idx;
-    const head = pts[Math.min(idx, pts.length - 1)];
 
-    if (p < 1) {
-      compose(head[0], head[1], el, 0);
+    tctx.clearRect(0, 0, W, H);
+    let allMature = true;
+    for (const s of seeds) {
+      const e = el - s.start;
+      if (e <= 0) { allMature = false; continue; }
+      const g = Math.min(1, e / GROW);
+      if (g < 1) allMature = false;
+      stampSeed(s, easeOut(g) * s.rMax);
+    }
+
+    if (!allMature) {
+      compose(0);
       raf = requestAnimationFrame(frame);
     } else {
-      // дозакрасить остаток до полного цвета + звезда мягко улетает вверх и гаснет
       if (!doneAt) doneAt = now;
-      const q = Math.min(1, (now - doneAt) / 900);
-      const hx = head[0], hy = head[1] - q * 60;
-      compose(q < 1 ? hx : null, hy, el, q);
+      const q = Math.min(1, (now - doneAt) / FADE);   // дозакрасить остаток
+      compose(q);
       if (q < 1) raf = requestAnimationFrame(frame);
     }
   }
@@ -227,14 +183,13 @@ function createBirthdayPaint(canvas) {
       catch (e) { return; }
       if (stopped) return;
       const [dx, dy, dw, dh] = cover(img.naturalWidth, img.naturalHeight);
-      const cx = col.getContext('2d');
-      cx.drawImage(img, dx, dy, dw, dh);
+      col.getContext('2d').drawImage(img, dx, dy, dw, dh);
       const bx = bw.getContext('2d');
-      bx.filter = 'grayscale(1) brightness(1.04) contrast(1.02)';
+      bx.filter = 'grayscale(1) contrast(1.03)';     // обесцвеченная акварель (без выбеливания)
       bx.drawImage(img, dx, dy, dw, dh);
       bx.filter = 'none';
-      pts = buildWanderPath(W, H, 1100);
-      compose(pts[0][0], pts[0][1], 0, 0);         // сразу показать Ч/Б + звезду у старта
+      seeds = buildSeeds();
+      compose(0);                                    // старт — обесцвеченный кадр
       raf = requestAnimationFrame(frame);
     },
     stop() { stopped = true; if (raf) cancelAnimationFrame(raf); },
