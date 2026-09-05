@@ -1554,16 +1554,16 @@ html, body {
     background-position: center bottom;
     background-size: 100% auto;
   }
-  #vibe  { background-image: url("img/photo-anime/vibe-bg.png"); }
-  #quiz  { background-image: url("img/photo-anime/bg-questions-1.png"); }
-  #quiz2 { background-image: url("img/photo-anime/bg-questions-2.png"); }
-  #quiz3 { background-image: url("img/photo-anime/bg-questions-3.png"); }
-  #quiz4 { background-image: url("img/photo-anime/bg-questions-4.png"); }
-  #quiz5 { background-image: url("img/photo-anime/bg-questions-5.png"); }
+  #vibe  { background-image: url("img/photo-anime/vibe-bg.png?v=2"); }
+  #quiz  { background-image: url("img/photo-anime/bg-questions-1.png?v=2"); }
+  #quiz2 { background-image: url("img/photo-anime/bg-questions-2.png?v=2"); }
+  #quiz3 { background-image: url("img/photo-anime/bg-questions-3.png?v=2"); }
+  #quiz4 { background-image: url("img/photo-anime/bg-questions-4.png?v=2"); }
+  #quiz5 { background-image: url("img/photo-anime/bg-questions-5.png?v=2"); }
 
   /* отвлекалочка — чистое изображение на весь фон, без заливки */
   #shelf {
-    background-image: url("img/photo-anime/bg-distraction.png");
+    background-image: url("img/photo-anime/bg-distraction.png?v=2");
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: cover;
