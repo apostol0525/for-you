@@ -623,8 +623,8 @@ html, body {
 .wish__send {
   margin-top: auto;
   width: 100%;
-  max-width: 326px;
-  height: 56px;
+  max-width: 300px;
+  height: 45px;
   border-radius: 28px;
   background: #A0713C;
   color: #F7F0E6;
@@ -644,8 +644,8 @@ html, body {
 .wish__skip {
   margin-top: 16px;
   width: 100%;
-  max-width: 240px;
-  height: 50px;
+  max-width: 300px;
+  height: 45px;
   border-radius: 26px;
   background: transparent;
   border: 1.5px solid #5C4A38;
