@@ -526,7 +526,9 @@ html, body {
 }
 
 .quiz__next:disabled {
-  opacity: .5;
+  background: #BCA98C;   /* приглушённый, но непрозрачный — читается поверх арта */
+  color: #F5EEE2;
+  box-shadow: 0 4px 12px rgba(90, 74, 56, .2);
   cursor: default;
   pointer-events: none;
 }
@@ -1554,7 +1556,11 @@ html, body {
     background-position: center bottom;
     background-size: 100% auto;
   }
-  #vibe  { background-image: url("img/photo-anime/vibe-bg.png?v=2"); }
+  #vibe  {
+    background-image: url("img/photo-anime/vibe-bg.png?v=2");
+    justify-content: flex-start;   /* контент к верху → снизу видно больше фона */
+    padding-top: 40px;
+  }
   #quiz  { background-image: url("img/photo-anime/bg-questions-1.png?v=2"); }
   #quiz2 { background-image: url("img/photo-anime/bg-questions-2.png?v=2"); }
   #quiz3 { background-image: url("img/photo-anime/bg-questions-3.png?v=2"); }
