@@ -431,11 +431,7 @@ html, body {
 
 /* --- vibe квест --- */
 #vibe {
-  background-color: #DECBAA;
-  background-image: url("img/photo-anime/vibe-bg.jpg");
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% auto;   /* по ширине, арт прижат к низу; верх продолжается фоном */
+  background: #EDE3DB;
   gap: 0;
   overflow-y: auto;
   padding-top: 24px;
@@ -453,13 +449,7 @@ html, body {
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
 
-#quiz {
-  background-color: #E8D2B7;
-  background-image: url("img/photo-anime/bg-questions-1.jpg");
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% auto;   /* по ширине, арт прижат к низу; верх продолжается фоном */
-}
+#quiz { background: #DDCEC7; }
 #quiz2 { background: #EDE3DB; }
 #quiz3 { background: #DDCEC7; }
 #quiz4 { background: #DDCEC7; }
@@ -1555,4 +1545,20 @@ html, body {
   .shelf__next {
     margin-top: 32px;
   }
+}
+
+/* фоновые изображения секций — только на мобильных; на десктопе остаётся сплошной тон */
+@media (max-width: 600px) {
+  #vibe, #quiz, #quiz2, #quiz3, #quiz4, #quiz5, #shelf {
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 100% auto;
+  }
+  #vibe  { background-image: url("img/photo-anime/vibe-bg.png"); }
+  #quiz  { background-image: url("img/photo-anime/bg-questions-1.png"); }
+  #quiz2 { background-image: url("img/photo-anime/bg-questions-2.png"); }
+  #quiz3 { background-image: url("img/photo-anime/bg-questions-3.png"); }
+  #quiz4 { background-image: url("img/photo-anime/bg-questions-4.png"); }
+  #quiz5 { background-image: url("img/photo-anime/bg-questions-5.png"); }
+  #shelf { background-image: url("img/photo-anime/bg-distraction.png"); }
 }
