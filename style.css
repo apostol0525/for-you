@@ -1549,7 +1549,7 @@ html, body {
 
 /* фоновые изображения секций — только на мобильных; на десктопе остаётся сплошной тон */
 @media (max-width: 600px) {
-  #vibe, #quiz, #quiz2, #quiz3, #quiz4, #quiz5, #shelf {
+  #vibe, #quiz, #quiz2, #quiz3, #quiz4, #quiz5 {
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: 100% auto;
@@ -1560,5 +1560,12 @@ html, body {
   #quiz3 { background-image: url("img/photo-anime/bg-questions-3.png"); }
   #quiz4 { background-image: url("img/photo-anime/bg-questions-4.png"); }
   #quiz5 { background-image: url("img/photo-anime/bg-questions-5.png"); }
-  #shelf { background-image: url("img/photo-anime/bg-distraction.png"); }
+
+  /* отвлекалочка — чистое изображение на весь фон, без заливки */
+  #shelf {
+    background-image: url("img/photo-anime/bg-distraction.png");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+  }
 }
