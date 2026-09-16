@@ -604,7 +604,7 @@ function placePhoto(slot) {
   updateShelf();
 }
 
-// --- HERO: 3 этапа — линии → ч/б проявление → цвет (акварельное растекание) ---
+// --- HERO: линии → тап → цветная акварель снизу вверх (линии тают во время покраски) ---
 
 // вычерчивание SVG-линий (этап 1)
 async function drawLinesInto(box, dur, stagger) {
@@ -697,9 +697,8 @@ function initHeroLive() {
   const lines = box.querySelector('.hero-live__lines');
   const hint = box.querySelector('.hero-live__hint');
   const openBtn = box.querySelector('.hero-live__open');
-  const aBW = document.getElementById('a-bw');
   const aColor = document.getElementById('a-color');
-  if (!aBW || !aColor) return;
+  if (!aColor) return;
 
   let ready = false, busy = false, done = false, pendingTap = false;
 
@@ -708,17 +707,16 @@ function initHeroLive() {
   function finishColor() {
     if (done) return;
     done = true;
-    lines.style.transition = 'opacity .8s ease';
-    lines.style.opacity = '0';
-    setTimeout(() => { lines.style.display = 'none'; }, 820);
+    lines.style.display = 'none';
     if (openBtn) setTimeout(() => openBtn.classList.add('show'), 300);
   }
 
-  // этап 3: цвет снизу вверх + блёстки + вспышка
+  // этап 2: цвет снизу вверх + блёстки + вспышка, линии растворяются вместе с покраской
   function startColor() {
     if (!ready || busy || done) return;
     busy = true;
     hint.classList.remove('show');
+    lines.classList.add('fade');
     try { aColor.beginElement(); } catch (e) {}
     aColor.addEventListener('endEvent', finishColor, { once: true });
     setTimeout(finishColor, 4200); // страховка, если endEvent не придёт
@@ -732,16 +730,12 @@ function initHeroLive() {
   box.addEventListener('pointerdown', trigger);
   box._trigger = trigger;   // клавиатурный вызов (Enter/Space) из initA11y
 
-  // надпись — почти сразу
-  setTimeout(() => { if (!busy && !done) hint.classList.add('show'); }, 500);
-
-  // этап 1 (линии) → этап 2 (ч/б проявляется пятнами) → готово к тапу
+  // этап 1 (линии) → надпись → готово к тапу
   (async () => {
     await drawLinesInto(lines, 2.0, 1.0);
-    try { aBW.beginElement(); } catch (e) {}
-    await new Promise(r => setTimeout(r, 1500));
     ready = true;
-    if (pendingTap) startColor();
+    if (pendingTap) { startColor(); return; }
+    hint.classList.add('show');
   })();
 }
 

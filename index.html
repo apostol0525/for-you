@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=75">
+  <link rel="stylesheet" href="style.css?v=76">
 </head>
 
 <body>
@@ -27,12 +27,6 @@
               <feDisplacementMap in="SourceGraphic" in2="n" scale="150" xChannelSelector="R" yChannelSelector="G" result="d"/>
               <feGaussianBlur in="d" stdDeviation="7"/>
             </filter>
-            <filter id="wc-bw" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-              <feTurbulence type="fractalNoise" baseFrequency="0.013 0.02" numOctaves="4" seed="4" result="n"/>
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="120" xChannelSelector="R" yChannelSelector="G" result="d"/>
-              <feGaussianBlur in="d" stdDeviation="8"/>
-            </filter>
-            <filter id="wc-gray"><feColorMatrix type="saturate" values="0"/></filter>
 
             <!-- поднимающийся фронт: сверху мягкая кромка, ниже — сплошная заливка -->
             <linearGradient id="wc-band" x1="0" y1="0" x2="0" y2="1">
@@ -51,16 +45,6 @@
               </g>
             </mask>
 
-            <mask id="wc-reveal-bw" maskUnits="userSpaceOnUse" x="0" y="0" width="1410" height="752">
-              <g filter="url(#wc-bw)">
-                <rect x="-260" y="752" width="1930" height="1300" fill="url(#wc-band)">
-                  <animate id="a-bw" attributeName="y" begin="indefinite" dur="1.5s"
-                           from="752" to="-460" fill="freeze"
-                           calcMode="spline" keySplines="0.4 0 0.2 1"/>
-                </rect>
-              </g>
-            </mask>
-
             <radialGradient id="wc-spark" cx="0.5" cy="0.5" r="0.5">
               <stop offset="0" stop-color="#fffdf3"/>
               <stop offset="0.35" stop-color="#ffd671"/>
@@ -75,14 +59,12 @@
           </defs>
 
           <rect width="1410" height="752" fill="#DDCEC7"/>
-          <image id="hb-bw" href="img/photo-anime/akvarel-mg-hero.jpg" x="0" y="0" width="1410" height="752"
-                 preserveAspectRatio="xMidYMid slice" filter="url(#wc-gray)" mask="url(#wc-reveal-bw)"/>
           <image id="hb-color" href="img/photo-anime/akvarel-mg-hero.jpg" x="0" y="0" width="1410" height="752"
                  preserveAspectRatio="xMidYMid slice" mask="url(#wc-reveal-color)"/>
           <g id="hb-fx"></g>
         </svg>
         <div class="hero-live__lines" data-svg="img/photo-anime/svg-animation-draw.svg"></div>
-        <p class="hero-live__hint">нажми, чтобы оживить</p>
+        <p class="hero-live__hint">нажми, чтобы начать</p>
         <button class="open-btn hero-live__open" onclick="go('birthday')">open<span class="open-btn__arrow">→</span></button>
       </div>
     </section>
@@ -416,7 +398,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="script.js?v=75"></script>
+  <script src="script.js?v=76"></script>
 
 </body>
 
