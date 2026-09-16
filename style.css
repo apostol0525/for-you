@@ -177,7 +177,7 @@ html, body {
 
 .hero-title__line {
   margin: 0;
-  font-family: 'Caveat', 'Marck Script', cursive;
+  font-family: 'Marck Script', cursive;
   color: #2F2A25;
   text-shadow:
     0 1px 0 rgba(255, 250, 240, .8),
@@ -187,16 +187,16 @@ html, body {
 }
 
 .hero-title__hb {
-  font-weight: 600;
-  font-size: clamp(30px, 8.5vw, 50px);
+  font-weight: 400;
+  font-size: clamp(28px, 8vw, 46px);
   letter-spacing: .02em;
 }
 
 .hero-title__name {
-  font-weight: 700;
-  font-size: clamp(62px, 19vw, 120px);
-  letter-spacing: .02em;
-  margin-top: -.12em;
+  font-weight: 400;
+  font-size: clamp(60px, 18vw, 112px);
+  letter-spacing: .03em;
+  margin-top: -.1em;
 }
 
 .hero-title .ch {
