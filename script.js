@@ -39,6 +39,7 @@ function go(id) {
 
   if (id === 'birthday') playBirthday();
   if (id === 'final') setTimeout(animateFinalHandwriting, 700);
+  if (/^quiz[2-5]?$/.test(id)) initQuizSection(id);
 
   setTimeout(() => {
     prev.classList.remove('leaving');
@@ -219,7 +220,6 @@ function splitSubtitle() {
 function playBirthday() {
   const sec = document.getElementById('birthday');
   splitSubtitle();
-  drawBirthdayBg();                 // фон рисуется
   gsap.set([cardLeft, cardRight], { yPercent: 60, opacity: 0, scale: 0.85 }); // фото скрыты
   sec.classList.remove('play');
   void sec.offsetWidth;
@@ -259,7 +259,139 @@ function pickQuiz(btn) {
   section.querySelectorAll('.quiz__option').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   section.querySelector('.quiz__next').disabled = false;
+  drawOptCircle(section, btn);
 }
+
+// рисованный кружок вокруг выбранного варианта (SVG stroke-draw)
+function makeOptCircle() {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'opt-circle');
+  svg.setAttribute('viewBox', '0 0 300 70');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', 'M14,37 C9,15 92,7 150,7 C214,6 295,12 289,33 C294,58 206,66 150,63 C76,67 17,61 14,37');
+  p.setAttribute('vector-effect', 'non-scaling-stroke');
+  svg.appendChild(p);
+  return svg;
+}
+function drawOptCircle(section, btn) {
+  const opts = section.querySelector('.quiz__options');
+  if (!opts) return;
+  let svg = opts.querySelector('.opt-circle');
+  if (!svg) { svg = makeOptCircle(); opts.appendChild(svg); }
+  const oR = opts.getBoundingClientRect(), bR = btn.getBoundingClientRect();
+  const pad = 9;
+  svg.style.left = (bR.left - oR.left - pad) + 'px';
+  svg.style.top = (bR.top - oR.top - pad) + 'px';
+  svg.style.width = (bR.width + pad * 2) + 'px';
+  svg.style.height = (bR.height + pad * 2) + 'px';
+  const path = svg.querySelector('path');
+  const L = path.getTotalLength();
+  path.style.strokeDasharray = L;
+  path.style.strokeDashoffset = L;
+  svg.classList.remove('draw'); void svg.offsetWidth; svg.classList.add('draw');
+}
+
+// индикатор прогресса (5 точек)
+function buildProgress(id) {
+  const sec = document.getElementById(id);
+  if (!sec) return;
+  const step = id === 'quiz' ? 1 : parseInt(id.replace('quiz', ''), 10);
+  let bar = sec.querySelector('.quiz__progress');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'quiz__progress';
+    for (let i = 0; i < 5; i++) { const d = document.createElement('span'); d.className = 'pd'; bar.appendChild(d); }
+    sec.insertBefore(bar, sec.firstChild);
+  }
+  [...bar.children].forEach((d, i) => {
+    d.classList.toggle('done', i < step - 1);
+    d.classList.toggle('current', i === step - 1);
+  });
+}
+
+// --- оживление блока вопроса: вырезанные персонажи в углах + проявление по словам ---
+const QUIZ_DECOR = {
+  quiz: [
+    ['kiki', 'left:6px;top:6px;width:clamp(48px,13vw,66px);--rot:-6deg;--d:5.6s'],
+    ['book-card', 'right:6px;bottom:4px;width:clamp(54px,15vw,74px);--rot:3deg;--d:6.2s;--delay:.6s;opacity:.42'],
+    ['card-form-drams', 'right:14px;top:8px;width:clamp(38px,10vw,52px);--rot:4deg;--d:4.6s;--delay:.3s'],
+  ],
+  quiz2: [
+    ['kiki', 'right:6px;top:6px;width:clamp(48px,13vw,66px);--rot:6deg;--d:5.9s'],
+    ['card-form-drams', 'left:10px;bottom:6px;width:clamp(38px,10vw,52px);--rot:-4deg;--d:4.4s;--delay:.5s'],
+    ['lighthub', 'left:14px;top:12px;width:clamp(14px,4vw,22px);--rot:0deg;--d:3.6s;--delay:.2s;opacity:.7'],
+  ],
+  quiz3: [
+    ['kiki', 'left:6px;bottom:6px;width:clamp(48px,13vw,66px);--rot:4deg;--d:5.4s'],
+    ['card-form-drams', 'right:10px;top:8px;width:clamp(40px,11vw,54px);--rot:5deg;--d:4.8s;--delay:.4s'],
+  ],
+  quiz4: [
+    ['book-card', 'left:6px;top:6px;width:clamp(54px,15vw,74px);--rot:-3deg;--d:6.1s;opacity:.42'],
+    ['kiki', 'right:6px;bottom:6px;width:clamp(48px,13vw,66px);--rot:-5deg;--d:5.7s;--delay:.5s'],
+    ['lighthub', 'right:16px;top:12px;width:clamp(14px,4vw,22px);--d:3.4s;--delay:.2s;opacity:.7'],
+  ],
+  quiz5: [
+    ['doror', 'left:6px;bottom:5px;width:clamp(58px,16vw,80px);--rot:2deg;--d:6.4s;opacity:.4'],
+    ['card-form-drams', 'right:10px;top:8px;width:clamp(38px,10vw,52px);--rot:-4deg;--d:4.5s;--delay:.4s'],
+  ],
+};
+
+function buildQuizDecor(id) {
+  const card = document.querySelector('#' + id + ' .quiz__card');
+  if (!card || card.querySelector('.card-decor')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'card-decor';
+  (QUIZ_DECOR[id] || []).forEach(([name, style]) => {
+    const img = document.createElement('img');
+    img.src = 'img/photo-anime/card-decor/' + name + '.webp';
+    img.alt = ''; img.setAttribute('aria-hidden', 'true');
+    img.style.cssText = style;
+    wrap.appendChild(img);
+  });
+  card.insertBefore(wrap, card.firstChild);   // за текстом (z-index держит вопрос сверху)
+}
+
+function revealQuestion(id) {
+  const q = document.querySelector('#' + id + ' .quiz__question');
+  if (!q) return;
+  if (!q.dataset.raw) q.dataset.raw = q.textContent;
+  let i = 0;
+  q.innerHTML = q.dataset.raw.split(/(\s+)/).map(t =>
+    /^\s+$/.test(t) ? ' ' : '<span class="qw" style="--i:' + (i++) + '">' + t + '</span>'
+  ).join('');
+  q.classList.remove('reveal');
+  void q.offsetWidth;
+  q.classList.add('reveal');
+}
+
+function initQuizSection(id) {
+  buildQuizDecor(id);
+  buildProgress(id);
+  revealQuestion(id);
+}
+
+// параллакс от наклона телефона (мобила, где живут фоны-картинки)
+window.addEventListener('deviceorientation', e => {
+  const sec = document.querySelector('.screen.active');
+  if (!sec || !/^quiz[2-5]?$/.test(sec.id)) return;
+  if (e.gamma == null || e.beta == null) return;
+  const nx = Math.max(-1, Math.min(1, e.gamma / 22));        // лево-право
+  const ny = Math.max(-1, Math.min(1, (e.beta - 45) / 22));  // наклон вперёд/назад
+  sec.style.setProperty('--px', nx.toFixed(3));
+  sec.style.setProperty('--py', ny.toFixed(3));
+}, { passive: true });
+
+// параллакс блока от курсора (десктоп) — сдвигает декор и вопрос «в глубину»
+document.addEventListener('pointermove', e => {
+  const sec = document.querySelector('.screen.active');
+  if (!sec || !/^quiz[2-5]?$/.test(sec.id)) return;
+  const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+  const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+  sec.style.setProperty('--px', nx.toFixed(3));
+  sec.style.setProperty('--py', ny.toFixed(3));
+}, { passive: true });
 
 // --- конфигурация шагов квеста ---
 const QUIZ = {
@@ -270,12 +402,54 @@ const QUIZ = {
   5: { section: 'quiz5', hint: 'hintOverlay5', polaroid: 'polaroidOverlay5', next: 'result' },
 };
 
-// --- проверка ответа ---
+// --- проверка ответа (с откликом) ---
 function checkQuiz(step) {
-  const selected = document.querySelector('#' + QUIZ[step].section + ' .quiz__option.selected');
+  const secId = QUIZ[step].section;
+  const selected = document.querySelector('#' + secId + ' .quiz__option.selected');
   if (!selected) return;
-  if (selected.hasAttribute('data-correct')) showPolaroid(step);
-  else showHint(step);
+  const section = document.getElementById(secId);
+  const card = section.querySelector('.quiz__card');
+  if (selected.hasAttribute('data-correct')) {
+    quizFeedbackCorrect(section, card);
+    setTimeout(() => showPolaroid(step), 900);
+  } else {
+    quizFeedbackWrong(section, card);
+    setTimeout(() => showHint(step), 650);
+  }
+}
+
+// правильно → искры + «охает» карточка + Кики подпрыгивает
+function quizFeedbackCorrect(section, card) {
+  sparkleBurst(section, card);
+  restartClass(card, 'correct', 700);
+  const kiki = section.querySelector('.card-decor img[src*="kiki"]');
+  if (kiki) restartClass(kiki, 'hop', 650);
+}
+// неверно → «дрожание» + сажевый дух мотает головой
+function quizFeedbackWrong(section, card) {
+  restartClass(card, 'wrong', 550);
+  const soot = section.querySelector('.card-decor img[src*="card-form-drams"]');
+  if (soot) restartClass(soot, 'wobble', 550);
+}
+function restartClass(el, cls, ms) {
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), ms);
+}
+function sparkleBurst(section, card) {
+  const sr = section.getBoundingClientRect(), cr = card.getBoundingClientRect();
+  const cx = cr.left - sr.left + cr.width / 2, cy = cr.top - sr.top + cr.height / 2;
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement('div'); s.className = 'spark';
+    const sz = 6 + Math.random() * 11; s.style.width = s.style.height = sz + 'px';
+    s.style.left = cx + 'px'; s.style.top = cy + 'px';
+    section.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 45 + Math.random() * 95;
+    s.animate([
+      { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(1)`, opacity: 1, offset: .3 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.4}px), calc(-50% + ${Math.sin(a) * d * 1.4}px)) scale(.3)`, opacity: 0 },
+    ], { duration: 800 + Math.random() * 450, easing: 'cubic-bezier(.22,1,.36,1)' }).onfinish = () => s.remove();
+  }
 }
 function checkQuiz1() { checkQuiz(1); }
 function checkQuiz2() { checkQuiz(2); }
@@ -318,6 +492,14 @@ function closePolaroid2(e) { closePolaroid(2, e); }
 function closePolaroid3(e) { closePolaroid(3, e); }
 function closePolaroid4(e) { closePolaroid(4, e); }
 function closePolaroid5(e) { closePolaroid(5, e); }
+
+// явное «далее →» (кнопка + Escape), без тапа по фону
+function advancePolaroid(step) {
+  const overlay = document.getElementById(QUIZ[step].polaroid);
+  if (!overlay) return;
+  overlay.classList.remove('visible');
+  setTimeout(() => go(QUIZ[step].next), 400);
+}
 
 // --- финал: загадай желание (текст остаётся только на устройстве) ---
 function sendWish() {
@@ -382,16 +564,28 @@ function animateFinalHandwriting() {
 // --- отвлекалочка: разложи фото по полочкам ---
 let pickedPhoto = null;
 
+function updateShelf() {
+  const filled = document.querySelectorAll('#shelf .shelf__slot .shelf__photo').length;
+  const c = document.getElementById('shelfCount');
+  if (c) c.textContent = filled + ' из 3';
+  const awaiting = !!pickedPhoto;   // фото выбрано → подсветить пустые ячейки
+  document.querySelectorAll('#shelf .shelf__slot').forEach(s => {
+    s.classList.toggle('pulse', awaiting && !s.querySelector('.shelf__photo'));
+  });
+}
+
 function pickPhoto(img) {
   if (img.classList.contains('placed')) return;
   if (pickedPhoto === img) {
     img.classList.remove('picked');
     pickedPhoto = null;
+    updateShelf();
     return;
   }
   document.querySelectorAll('.shelf__photo').forEach(p => p.classList.remove('picked'));
   img.classList.add('picked');
   pickedPhoto = img;
+  updateShelf();
 }
 
 function placePhoto(slot) {
@@ -407,6 +601,7 @@ function placePhoto(slot) {
   if (filled === 3) {
     document.querySelector('.shelf__next').classList.add('ready');
   }
+  updateShelf();
 }
 
 // --- HERO: 3 этапа — линии → ч/б проявление → цвет (акварельное растекание) ---
@@ -529,11 +724,13 @@ function initHeroLive() {
     setTimeout(finishColor, 4200); // страховка, если endEvent не придёт
   }
 
-  box.addEventListener('pointerdown', () => {
+  function trigger() {
     if (done || busy) return;
     if (ready) startColor();
     else { pendingTap = true; hint.classList.remove('show'); } // тапнул раньше — запустим после ч/б
-  });
+  }
+  box.addEventListener('pointerdown', trigger);
+  box._trigger = trigger;   // клавиатурный вызов (Enter/Space) из initA11y
 
   // надпись — почти сразу
   setTimeout(() => { if (!busy && !done) hint.classList.add('show'); }, 500);
@@ -549,3 +746,69 @@ function initHeroLive() {
 }
 
 window.addEventListener('load', () => initHeroLive());
+
+// ---- доступность и управление (harden) ----
+function polaroidStepById(id) { for (const k in QUIZ) if (QUIZ[k].polaroid === id) return +k; return 0; }
+function hintStepById(id) { for (const k in QUIZ) if (QUIZ[k].hint === id) return +k; return 0; }
+
+function initA11y() {
+  // «кнопки-не-кнопки» — фокусируемы и озвучиваются
+  document.querySelectorAll('.vibe__card, .shelf__slot, .shelf__photo, .hero-live').forEach(el => {
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+  });
+  document.querySelectorAll('.vibe__card').forEach(c => {
+    const t = c.querySelector('.vibe__card-label span');
+    if (t) c.setAttribute('aria-label', 'Выбрать: ' + t.textContent.trim());
+  });
+  const hero = document.querySelector('.hero-live');
+  if (hero) hero.setAttribute('aria-label', 'Нажми, чтобы оживить картинку');
+  document.querySelectorAll('#shelf .shelf__slot').forEach((s, i) => s.setAttribute('aria-label', 'Полочка ' + (i + 1)));
+  document.querySelectorAll('#shelf .shelf__photo').forEach((p, i) => p.setAttribute('aria-label', 'Фото ' + (i + 1)));
+
+  // модалки → диалоги + кнопка «далее» в полароиды + автофокус + Escape-фокус
+  document.querySelectorAll('.polaroid-overlay, .hint-overlay').forEach(o => {
+    o.setAttribute('role', 'dialog');
+    o.setAttribute('aria-modal', 'true');
+    new MutationObserver(() => {
+      if (o.classList.contains('visible')) {
+        const b = o.querySelector('button');
+        if (b) setTimeout(() => { try { b.focus(); } catch (e) {} }, 80);
+      }
+    }).observe(o, { attributes: true, attributeFilter: ['class'] });
+  });
+  [1, 2, 3, 4, 5].forEach(step => {
+    const o = document.getElementById(QUIZ[step].polaroid);
+    if (!o) return;
+    const card = o.querySelector('.polaroid');
+    if (!card || card.querySelector('.polaroid__next')) return;
+    const b = document.createElement('button');
+    b.className = 'polaroid__next'; b.type = 'button'; b.textContent = 'далее →';
+    b.addEventListener('click', e => { e.stopPropagation(); advancePolaroid(step); });
+    card.appendChild(b);
+  });
+
+  // клавиатура: Enter/Space активируют role=button, Escape закрывает открытую модалку
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const pol = document.querySelector('.polaroid-overlay.visible');
+      if (pol) { const s = polaroidStepById(pol.id); if (s) advancePolaroid(s); return; }
+      const hn = document.querySelector('.hint-overlay.visible');
+      if (hn) {
+        if (hn.id === 'wishDoneOverlay') goFinal();
+        else { const s = hintStepById(hn.id); if (s) closeHint(s); }
+      }
+      return;
+    }
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      const el = document.activeElement;
+      if (el && el.tagName !== 'BUTTON' && el.tagName !== 'TEXTAREA' && el.getAttribute && el.getAttribute('role') === 'button') {
+        e.preventDefault();
+        if (el.classList.contains('hero-live') && el._trigger) el._trigger();
+        else el.click();
+      }
+    }
+  });
+}
+
+window.addEventListener('load', initA11y);

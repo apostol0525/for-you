@@ -266,28 +266,6 @@ html, body {
   overflow: hidden;
 }
 
-/* фон-прорисовка (линии кадра из аниме) — вычерчивание stroke */
-.birthday__bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.birthday__bg-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* без вуали — вместо неё лёгкое свечение под текстом для читаемости */
-.birthday__title,
-.birthday__subtitle {
-  text-shadow: 0 1px 10px rgba(250, 246, 238, .85), 0 0 2px rgba(250, 246, 238, .9);
-}
-
 /* контент поверх фона */
 .birthday__title,
 .birthday__subtitle,
@@ -476,6 +454,58 @@ html, body {
   color: #3A342C;
   text-align: center;
   line-height: 1.4;
+}
+
+/* --- «оживление» блока вопроса: декор + плавание + параллакс + проявление по словам --- */
+.quiz__card {
+  position: relative;
+  overflow: hidden;
+  animation: qcard-float 6.5s ease-in-out infinite;
+}
+
+.quiz__question {
+  position: relative;
+  z-index: 2;
+  transform: translate(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 5px));
+  transition: transform .25s ease-out;
+}
+
+.quiz__question .qw { display: inline-block; opacity: 0; transform: translateY(10px); }
+.quiz__question.reveal .qw {
+  animation: qw-in .5s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 65ms);
+}
+@keyframes qw-in { to { opacity: 1; transform: translateY(0); } }
+
+.card-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transform: translate(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 10px));
+  transition: transform .25s ease-out;
+}
+.card-decor img {
+  position: absolute;
+  opacity: .5;
+  filter: drop-shadow(0 2px 5px rgba(90, 74, 56, .2));
+  animation: decor-float var(--d, 5s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+@keyframes decor-float {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translateY(-7px) rotate(calc(var(--rot, 0deg) + 3deg)); }
+}
+@keyframes qcard-float {
+  0%, 100% { transform: translateY(0) rotate(-.35deg); }
+  50%      { transform: translateY(-5px) rotate(.35deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz__card, .card-decor img { animation: none; }
+  .quiz__question .qw { opacity: 1; transform: none; }
 }
 
 .quiz__options {
@@ -1556,6 +1586,12 @@ html, body {
     background-position: center bottom;
     background-size: 100% auto;
   }
+  /* лёгкий параллакс фона (сдвиг от наклона/курсора) */
+  #quiz, #quiz2, #quiz3, #quiz4, #quiz5 {
+    background-size: 106% auto;
+    background-position: calc(50% + var(--px, 0) * -9px) bottom;
+    transition: background-position .25s ease-out;
+  }
   #vibe  {
     background-image: url("img/photo-anime/vibe-bg.png?v=2");
     justify-content: flex-start;   /* контент к верху → снизу видно больше фона */
@@ -1574,4 +1610,132 @@ html, body {
     background-position: center bottom;
     background-size: cover;
   }
+}
+
+/* ======== КВЕСТ: отклик, акварельные варианты, прогресс ======== */
+
+/* варианты — акварельная заливка слева направо */
+.quiz__options { position: relative; }
+.quiz__option {
+  background-image: linear-gradient(90deg, rgba(224,208,178,.95), rgba(236,224,199,.95));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition: background-size .4s ease, transform .2s, border .2s, box-shadow .2s;
+}
+.quiz__option:hover { background-size: 100% 100%; transform: translateY(-1px); }
+.quiz__option.selected { background-size: 100% 100%; background-color: #fff; }
+
+/* рисованный кружок вокруг выбранного варианта */
+.opt-circle { position: absolute; pointer-events: none; z-index: 3; opacity: 0; overflow: visible; }
+.opt-circle path {
+  fill: none; stroke: #A0713C; stroke-width: 2.6; stroke-linecap: round;
+}
+.opt-circle.draw { opacity: 1; }
+.opt-circle.draw path { animation: opt-draw .55s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes opt-draw { to { stroke-dashoffset: 0; } }
+
+/* карточка: верный / неверный ответ */
+.quiz__card.correct { animation: card-pop .6s ease; }
+@keyframes card-pop {
+  0% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  30% { transform: scale(1.045); box-shadow: 0 0 0 6px rgba(255,205,110,.4), 0 12px 28px rgba(160,113,60,.28); }
+  100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+}
+.quiz__card.wrong { animation: card-shake .5s ease; }
+@keyframes card-shake {
+  0%,100% { transform: translateX(0); }
+  15% { transform: translateX(-8px) rotate(-1deg); }
+  30% { transform: translateX(7px) rotate(1deg); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+}
+
+/* реакции вырезанного декора */
+.card-decor img.hop { animation: decor-hop .6s ease; }
+@keyframes decor-hop {
+  0%,100% { transform: translateY(0) rotate(var(--rot,0deg)); }
+  40% { transform: translateY(-15px) rotate(calc(var(--rot,0deg) - 8deg)); }
+}
+.card-decor img.wobble { animation: decor-wobble .5s ease; }
+@keyframes decor-wobble {
+  0%,100% { transform: rotate(var(--rot,0deg)); }
+  25% { transform: rotate(calc(var(--rot,0deg) - 13deg)); }
+  75% { transform: rotate(calc(var(--rot,0deg) + 13deg)); }
+}
+
+/* золотые искры */
+.spark {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, #fffbe9 0%, #ffd166 45%, rgba(255,159,52,0) 70%);
+  pointer-events: none; z-index: 6; will-change: transform, opacity;
+}
+
+/* индикатор прогресса */
+.quiz__progress {
+  position: absolute; top: 26px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 10px; z-index: 3; pointer-events: none;
+}
+.quiz__progress .pd {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #C9B79E; opacity: .5; transition: all .3s ease;
+}
+.quiz__progress .pd.done { background: #A0713C; opacity: 1; }
+.quiz__progress .pd.current { background: #C58A3D; opacity: 1; transform: scale(1.5); box-shadow: 0 0 0 3px rgba(197,138,61,.22); }
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz__card.correct, .quiz__card.wrong, .card-decor img.hop, .card-decor img.wobble { animation: none; }
+}
+
+/* ======== harden: доступность + управление модалками/полкой ======== */
+
+/* полароид — явная кнопка «далее →» (не только тап по фону) */
+.polaroid__next {
+  display: block;
+  margin: 16px auto 2px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 22px;
+  background: #A0713C;
+  color: #F7F0E6;
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(160, 113, 60, .3);
+  transition: transform .2s, box-shadow .2s;
+}
+.polaroid__next:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(160, 113, 60, .34); }
+
+/* полка — подсказка и пульс пустых ячеек после выбора фото */
+.shelf__hint {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  color: #8A7B6C;
+  text-align: center;
+  margin: 6px 0 16px;
+}
+.shelf__hint #shelfCount { font-weight: 700; color: #6E5B47; }
+.shelf__slot.pulse { animation: shelf-pulse 1.4s ease-in-out infinite; }
+@keyframes shelf-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(197, 138, 61, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(197, 138, 61, .28); }
+}
+
+/* тап не выделяет текст */
+.quiz__option, .vibe__card, .shelf__photo, .shelf__slot, .hero-live,
+.quiz__next, .shelf__next, .birthday__btn, .open-btn, .wish__send, .wish__skip,
+.hint-retry, .hint-giveup, .polaroid__next, .final__finish, .final__restart {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* видимый фокус с клавиатуры — в тон палитре */
+:focus-visible {
+  outline: 2px solid #A0713C;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.vibe__card:focus-visible, .quiz__option:focus-visible, .shelf__photo:focus-visible {
+  outline-offset: 4px;
 }
