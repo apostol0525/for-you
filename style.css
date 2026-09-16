@@ -164,7 +164,7 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(env(safe-area-inset-top, 0px) + 9%);
+  top: calc(env(safe-area-inset-top, 0px) + 30%);
   z-index: 3;
   text-align: center;
   pointer-events: none;
@@ -180,8 +180,9 @@ html, body {
   font-family: 'Dancing Script', 'Marck Script', cursive;
   color: #2F2A25;
   text-shadow:
-    0 1px 0 rgba(255, 250, 240, .7),
-    0 0 18px rgba(255, 250, 240, .9);
+    0 1px 0 rgba(255, 250, 240, .8),
+    0 0 10px rgba(255, 250, 240, .95),
+    0 0 26px rgba(255, 250, 240, .85);
   line-height: 1.1;
 }
 
@@ -308,41 +309,40 @@ html, body {
     0 0 1px rgba(255, 255, 255, 0.5);
 }
 
+/* тёплое «бумажное» стекло — читается на воде */
 .open-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  min-width: 200px;
+  height: 58px;
+  padding: 0 48px;
   font-family: 'Quicksand', sans-serif;
-  font-size: clamp(17px, 2vw, 21px);
-  font-weight: 500;
-  color: rgba(4, 30, 65, 0.92);
-  background: rgba(3, 69, 161, 0.4);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  backdrop-filter: blur(30px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, .3);
-  padding: 14px 42px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #3E332A;
+  background: rgba(247, 240, 230, .78);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+  border: 2px solid rgba(160, 113, 60, .85);
   border-radius: 50px;
   cursor: pointer;
   box-shadow:
-    0 10px 30px rgba(0, 40, 110, .22),
-    inset 0 1px 0 rgba(255, 255, 255, .65);
+    0 10px 28px rgba(30, 24, 18, .35),
+    0 0 0 6px rgba(247, 240, 230, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .9);
   transition: transform .2s, box-shadow .2s, background .2s;
-}
-
-.open-btn__arrow {
-  transition: transform .2s;
 }
 
 .open-btn:hover {
   transform: translateY(-3px);
-  background: rgba(0, 62, 148, .26);
+  background: rgba(247, 240, 230, .92);
   box-shadow:
-    0 14px 36px rgba(0, 40, 110, .3),
-    inset 0 1px 0 rgba(255, 255, 255, .75);
-}
-
-.open-btn:hover .open-btn__arrow {
-  transform: translateX(4px);
+    0 14px 34px rgba(30, 24, 18, .4),
+    0 0 0 8px rgba(247, 240, 230, .26),
+    inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 
 /* --- birthday --- */
@@ -350,6 +350,8 @@ html, body {
   background: #DDCEC7;
   gap: 0;
   overflow: hidden;
+  justify-content: flex-start;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 11dvh);
 }
 
 /* контент поверх фона */
@@ -363,13 +365,13 @@ html, body {
 .birthday__subtitle {
   font-family: 'Marck Script', cursive;
   font-weight: 400;
-  font-size: clamp(20px, 5.5vw, 40px);
+  font-size: clamp(26px, 7.4vw, 52px);
   color: #3A342C;
   text-align: center;
   max-width: 640px;
-  line-height: 1.45;
-  margin-bottom: 80px;
-  padding: 0 24px;
+  line-height: 1.4;
+  margin-bottom: 64px;
+  padding: 0 12px;
 }
 
 /* --- хореография появления секции (класс .play) --- */
