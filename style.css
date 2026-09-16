@@ -159,6 +159,66 @@ html, body {
   50% { transform: translateY(-4px); }
 }
 
+/* надпись пером после покраски */
+.hero-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(env(safe-area-inset-top, 0px) + 9%);
+  z-index: 3;
+  text-align: center;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.hero-title.show {
+  visibility: visible;
+}
+
+.hero-title__line {
+  margin: 0;
+  font-family: 'Dancing Script', 'Marck Script', cursive;
+  color: #2F2A25;
+  text-shadow:
+    0 1px 0 rgba(255, 250, 240, .7),
+    0 0 18px rgba(255, 250, 240, .9);
+  line-height: 1.1;
+}
+
+.hero-title__hb {
+  font-weight: 600;
+  font-size: clamp(26px, 7.5vw, 44px);
+  letter-spacing: .01em;
+}
+
+.hero-title__name {
+  font-weight: 700;
+  font-size: clamp(56px, 17vw, 108px);
+  margin-top: -.08em;
+}
+
+.hero-title .ch {
+  display: inline-block;
+  opacity: 0;
+  clip-path: inset(-20% 100% -20% -10%);
+}
+
+.hero-title .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hero-title.show .ch {
+  animation: hero-write .3s ease forwards;
+  animation-delay: calc(var(--i) * .075s);
+}
+
+@keyframes hero-write {
+  from { opacity: 0; clip-path: inset(-20% 100% -20% -10%); }
+  40%  { opacity: 1; }
+  to   { opacity: 1; clip-path: inset(-20% -10% -20% -10%); }
+}
+
 .hero-live__open {
   position: absolute;
   left: 50%;
@@ -293,29 +353,11 @@ html, body {
 }
 
 /* контент поверх фона */
-.birthday__title,
 .birthday__subtitle,
 .birthday__photos,
 .birthday__btn {
   position: relative;
   z-index: 1;
-}
-
-.birthday__title {
-  font-family: 'Cormorant Garamond', Garamond, serif;
-  font-weight: 600;
-  font-size: clamp(30px, 10vw, 90px);
-  color: #3A342C;
-  text-align: center;
-  line-height: 1.1;
-  margin-bottom: 16px;
-}
-
-.birthday__sparkle {
-  display: inline-block;
-  font-size: 0.5em;
-  vertical-align: middle;
-  margin-left: 8px;
 }
 
 .birthday__subtitle {
@@ -331,19 +373,13 @@ html, body {
 }
 
 /* --- хореография появления секции (класс .play) --- */
-#birthday .birthday__title,
 #birthday .birthday__btn {
   opacity: 0;
 }
 
-#birthday.play .birthday__title {
-  animation: bd-rise 1.1s cubic-bezier(.22, 1, .36, 1) forwards;
-  animation-delay: 1.2s;
-}
-
 #birthday.play .birthday__btn {
   animation: bd-rise .9s cubic-bezier(.22, 1, .36, 1) forwards;
-  animation-delay: 5.2s;
+  animation-delay: 4.4s;
 }
 
 @keyframes bd-rise {
@@ -365,7 +401,7 @@ html, body {
 
 #birthday.play .birthday__subtitle .ch {
   animation: bd-write .26s ease forwards;
-  animation-delay: calc(2.6s + var(--i) * .05s);
+  animation-delay: calc(.9s + var(--i) * .05s);
 }
 
 @keyframes bd-write {

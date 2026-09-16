@@ -199,12 +199,10 @@ function createBirthdayPaint(canvas) {
   };
 }
 
-// разбить подзаголовок на буквы (для побуквенной прорисовки)
-let subtitleSplit = false;
-function splitSubtitle() {
-  const el = document.querySelector('.birthday__subtitle');
-  if (!el || subtitleSplit) return;
-  let i = 0, html = '';
+// разбить текст на буквы (для побуквенной прорисовки); возвращает следующий индекс
+function splitLetters(el, start = 0) {
+  if (!el || el.dataset.split) return start;
+  let i = start, html = '';
   el.textContent.split(/(\s+)/).forEach(token => {
     if (token === '') return;
     if (/^\s+$/.test(token)) { html += ' '; return; }
@@ -213,7 +211,12 @@ function splitSubtitle() {
       '</span>';
   });
   el.innerHTML = html;
-  subtitleSplit = true;
+  el.dataset.split = '1';
+  return i;
+}
+
+function splitSubtitle() {
+  splitLetters(document.querySelector('.birthday__subtitle'));
 }
 
 // оркестратор появления секции «С днём рождения»
@@ -225,7 +228,7 @@ function playBirthday() {
   void sec.offsetWidth;
   sec.classList.add('play');        // заголовок → подзаголовок(буквы) → кнопка (через CSS-задержки)
   clearTimeout(playBirthday._t);
-  playBirthday._t = setTimeout(animateCards, 4300); // фото всплывают после текста
+  playBirthday._t = setTimeout(animateCards, 3600); // фото всплывают после текста
 }
 
 // --- GSAP: анимация карточек ---
@@ -697,6 +700,12 @@ function initHeroLive() {
   const lines = box.querySelector('.hero-live__lines');
   const hint = box.querySelector('.hero-live__hint');
   const openBtn = box.querySelector('.hero-live__open');
+  const title = box.querySelector('.hero-title');
+  let titleLetters = 0;
+  if (title) {
+    titleLetters = splitLetters(title.querySelector('.hero-title__hb'));
+    titleLetters = splitLetters(title.querySelector('.hero-title__name'), titleLetters + 3); // пауза между строками
+  }
   const aColor = document.getElementById('a-color');
   if (!aColor) return;
 
@@ -708,7 +717,9 @@ function initHeroLive() {
     if (done) return;
     done = true;
     lines.style.display = 'none';
-    if (openBtn) setTimeout(() => openBtn.classList.add('show'), 300);
+    if (title) title.classList.add('show');                    // перо прописывает Happy Birthday → Nozanin
+    const writeMs = titleLetters * 75 + 300;
+    if (openBtn) setTimeout(() => openBtn.classList.add('show'), writeMs + 200);
   }
 
   // этап 2: цвет снизу вверх + блёстки + вспышка, линии растворяются вместе с покраской
