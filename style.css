@@ -1801,7 +1801,7 @@ html, body {
   font-size: 13px;
   color: #8A7B6C;
   text-align: center;
-  margin: 6px 0 16px;
+  margin: 6px 0 30px;
 }
 .shelf__hint #shelfCount { font-weight: 700; color: #6E5B47; }
 .shelf__slot.pulse { animation: shelf-pulse 1.4s ease-in-out infinite; }
