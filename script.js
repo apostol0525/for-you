@@ -27,7 +27,7 @@ function go(id) {
   const prev = current;
   current = next;
 
-  if (prev.id === 'birthday' && bdPaint) bdPaint.stop(); // остановить фон-цикл при уходе
+  if (prev.id === 'birthday') bdPortrait.stop();
 
   prev.classList.remove('active');
   prev.classList.add('leaving');
@@ -219,35 +219,48 @@ function splitSubtitle() {
   splitLetters(document.querySelector('.birthday__subtitle'));
 }
 
-// оркестратор появления секции «С днём рождения»
+// оркестратор секции birthday: подзаголовок → контуры портрета → акварель → кнопка (CSS-задержка)
 function playBirthday() {
   const sec = document.getElementById('birthday');
   splitSubtitle();
-  gsap.set([cardLeft, cardRight], { yPercent: 60, opacity: 0, scale: 0.85 }); // фото скрыты
   sec.classList.remove('play');
   void sec.offsetWidth;
-  sec.classList.add('play');        // заголовок → подзаголовок(буквы) → кнопка (через CSS-задержки)
-  clearTimeout(playBirthday._t);
-  playBirthday._t = setTimeout(animateCards, 3600); // фото всплывают после текста
+  sec.classList.add('play');
+  bdPortrait.play();
 }
 
-// --- GSAP: анимация карточек ---
-const cardLeft = document.querySelector('.birthday__photo--left');
-const cardRight = document.querySelector('.birthday__photo--right');
+// портрет: линии вычерчиваются сверху вниз, затем акварельное пятно проявляет цветной рисунок
+const bdPortrait = (() => {
+  const box = document.querySelector('.bd-portrait');
+  const lines = box && box.querySelector('.bd-portrait__lines');
+  const aFace = document.getElementById('a-face');
+  const LINES_DELAY = 1.4, DRAW_DUR = 2.2, DRAW_STAGGER = 2.0, COLOR_DUR = 2.6;
+  let run = 0;
 
-gsap.set(cardLeft, { yPercent: 60, rotate: -20, opacity: 0, scale: 0.85 });
-gsap.set(cardRight, { yPercent: 60, rotate: 20, opacity: 0, scale: 0.85 });
+  function reset() {
+    box.classList.remove('color');
+    lines.classList.remove('draw', 'fade');
+    lines.innerHTML = '';
+  }
 
-function animateCards() {
-  gsap.to(cardLeft, {
-    yPercent: 0, rotate: -6, opacity: 1, scale: 1,
-    duration: 0.9, ease: 'back.out(1.4)', delay: 0.3,
-  });
-  gsap.to(cardRight, {
-    yPercent: 0, rotate: 5, opacity: 1, scale: 1,
-    duration: 0.9, ease: 'back.out(1.4)', delay: 0.45,
-  });
-}
+  async function play() {
+    if (!box || !lines) return;
+    const id = ++run;
+    reset();
+    await sleep(LINES_DELAY * 1000);
+    if (id !== run) return;
+    await drawLinesInto(lines, DRAW_DUR, DRAW_STAGGER, { fit: 'xMidYMid meet', byY: true });
+    if (id !== run) return;
+    lines.classList.add('fade');
+    try { aFace.beginElement(); } catch (e) {}
+    requestAnimationFrame(() => { if (id === run) box.classList.add('color'); });
+    await sleep(COLOR_DUR * 1000);
+  }
+
+  return { play, stop() { run++; } };
+})();
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // --- выбор vibe-карточки ---
 function pickVibe(card) {
@@ -610,19 +623,29 @@ function placePhoto(slot) {
 // --- HERO: линии → тап → цветная акварель снизу вверх (линии тают во время покраски) ---
 
 // вычерчивание SVG-линий (этап 1)
-async function drawLinesInto(box, dur, stagger) {
+// opts.fit — preserveAspectRatio (по умолчанию cover); opts.byY — порядок штрихов по вертикали, а не по DOM
+async function drawLinesInto(box, dur, stagger, opts = {}) {
   const txt = await fetch(box.dataset.svg).then(r => r.text());
   box.innerHTML = txt;
   const svg = box.querySelector('svg');
-  if (svg) svg.setAttribute('preserveAspectRatio', 'xMidYMid slice'); // как object-fit: cover
+  if (svg) svg.setAttribute('preserveAspectRatio', opts.fit || 'xMidYMid slice');
   const paths = box.querySelectorAll('path');
   const n = paths.length;
+  let order = (i) => i / n;
+  if (opts.byY && svg) {
+    const vb = (svg.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number);
+    const y0 = vb[1], h = vb[3] || 1;
+    order = (i, p) => {
+      const m = /M\s*[-\d.]+[\s,]+([-\d.]+)/.exec(p.getAttribute('d') || '');
+      return m ? Math.min(1, Math.max(0, (parseFloat(m[1]) - y0) / h)) : i / n;
+    };
+  }
   paths.forEach((p, i) => {
     const L = p.getTotalLength() || 1;
     p.style.strokeDasharray = L;
     p.style.strokeDashoffset = L;
     p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (i / n * stagger).toFixed(3) + 's';
+    p.style.animationDelay = (order(i, p) * stagger).toFixed(3) + 's';
   });
   void box.offsetWidth;
   box.classList.add('draw');

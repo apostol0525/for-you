@@ -357,7 +357,7 @@ html, body {
 
 /* контент поверх фона */
 .birthday__subtitle,
-.birthday__photos,
+.bd-portrait,
 .birthday__btn {
   position: relative;
   z-index: 1;
@@ -371,7 +371,7 @@ html, body {
   text-align: center;
   max-width: 640px;
   line-height: 1.4;
-  margin-bottom: 64px;
+  margin-bottom: 28px;
   padding: 0 12px;
 }
 
@@ -382,7 +382,7 @@ html, body {
 
 #birthday.play .birthday__btn {
   animation: bd-rise .9s cubic-bezier(.22, 1, .36, 1) forwards;
-  animation-delay: 4.4s;
+  animation-delay: 8s;
 }
 
 @keyframes bd-rise {
@@ -413,41 +413,64 @@ html, body {
   to   { opacity: 1; clip-path: inset(0 0 -15% 0); }
 }
 
-.birthday__photos {
-  position: relative;
-  width: clamp(280px, 75vw, 420px);
-  height: clamp(200px, 50vw, 300px);
-  margin-bottom: 48px;
+/* портрет: контуры → акварельное пятно → цветной рисунок */
+.bd-portrait {
+  width: min(94vw, 560px);
+  aspect-ratio: 935 / 751;
+  flex: 0 0 auto;
 }
 
-.birthday__photo {
+.bd-portrait__reveal,
+.bd-portrait__lines {
   position: absolute;
-  width: clamp(160px, 42vw, 240px);
-  border-radius: 6px;
-  /* полароид-рамка: кремовое паспарту + тонкий контур */
-  border: 7px solid #F7F0E6;
-  border-bottom-width: 20px;
-  object-fit: cover;
-  aspect-ratio: 3 / 4;
-  box-shadow:
-    0 0 0 1px rgba(92, 74, 56, .55),
-    0 12px 26px rgba(60, 40, 20, .28);
-  /* тёплый винтажный тон — подружить с линиями */
-  filter: sepia(.2) saturate(.9) brightness(1.03) contrast(.98);
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.birthday__photo--left {
-  left: 0;
-  bottom: 0;
-  transform: rotate(-6deg);
+.bd-portrait__reveal {
+  display: block;
+  overflow: visible;
+}
+
+.bd-portrait__img {
+  opacity: 0;
+}
+
+.bd-portrait.color .bd-portrait__img {
+  opacity: 1;
+}
+
+.bd-portrait__lines {
   z-index: 1;
+  pointer-events: none;
 }
 
-.birthday__photo--right {
-  right: 0;
-  top: 0;
-  transform: rotate(5deg);
-  z-index: 2;
+.bd-portrait__lines svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bd-portrait__lines .f path {
+  fill-opacity: 0;
+}
+
+.bd-portrait__lines.draw svg path {
+  animation: hero-draw 2s cubic-bezier(.45, 0, .25, 1) forwards;
+}
+
+.bd-portrait__lines.draw svg .f path {
+  animation-name: bd-draw-fill;
+}
+
+@keyframes bd-draw-fill {
+  to { stroke-dashoffset: 0; fill-opacity: 1; }
+}
+
+.bd-portrait__lines.fade {
+  opacity: 0;
+  transition: opacity 2s ease-in .4s;
 }
 
 .birthday__btn {
@@ -464,7 +487,7 @@ html, body {
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(160, 113, 60, .50);
   transition: transform .2s, box-shadow .2s;
-  margin-top: 50px;
+  margin-top: 36px;
 }
 
 .birthday__btn:hover {
