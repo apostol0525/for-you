@@ -10,6 +10,47 @@ html, body {
   font-family: 'Quicksand', sans-serif;
 }
 
+/* --- тема по вайбу (body[data-vibe]); кофейная — базовая, «Дом у моря» --- */
+:root {
+  --bg-l: #EDE3DB;
+  --bg-d: #DDCEC7;
+  --paper: #F3E9D7;
+  --paper-2: #F7F0E6;
+  --paper-3: #FBF6EE;
+  --accent: #A0713C;
+  --accent-rgb: 160, 113, 60;
+}
+
+body[data-vibe="sky"] {
+  --bg-l: #E3E8EF;
+  --bg-d: #D3DBE6;
+  --paper: #F1F4F8;
+  --paper-2: #F5F7FA;
+  --paper-3: #FAFBFD;
+  --accent: #6B86A8;
+  --accent-rgb: 107, 134, 168;
+}
+
+body[data-vibe="grass"] {
+  --bg-l: #E4E9DF;
+  --bg-d: #D3DBCD;
+  --paper: #F1F4EA;
+  --paper-2: #F5F7F0;
+  --paper-3: #FAFBF6;
+  --accent: #6F8F78;
+  --accent-rgb: 111, 143, 120;
+}
+
+body[data-vibe="city"] {
+  --bg-l: #E6E0E8;
+  --bg-d: #D6CFDA;
+  --paper: #F2EEF4;
+  --paper-2: #F5F2F7;
+  --paper-3: #FAF8FB;
+  --accent: #7A6E95;
+  --accent-rgb: 122, 110, 149;
+}
+
 /* --- мини-роутер: сцена с перспективой --- */
 .stage {
   position: relative;
@@ -533,7 +574,8 @@ html, body {
 
 /* --- vibe квест --- */
 #vibe {
-  background: #EDE3DB;
+  background: var(--bg-l);
+  transition: background-color .8s ease;
   gap: 0;
   overflow-y: auto;
   padding-top: 24px;
@@ -551,14 +593,14 @@ html, body {
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
 
-#quiz { background: #DDCEC7; }
-#quiz2 { background: #EDE3DB; }
-#quiz3 { background: #DDCEC7; }
-#quiz4 { background: #DDCEC7; }
-#quiz5 { background: #EDE3DB; }
+#quiz { background: var(--bg-d); }
+#quiz2 { background: var(--bg-l); }
+#quiz3 { background: var(--bg-d); }
+#quiz4 { background: var(--bg-d); }
+#quiz5 { background: var(--bg-l); }
 
 .quiz__card {
-  background: #F3E9D7;
+  background: var(--paper);
   border-radius: 29px;
   padding: 29px;
   border: 2px solid #5C4A38;
@@ -646,7 +688,7 @@ html, body {
   height: 62px;
   width: 100%;
   border-radius: 31px;
-  background: #F7F0E6;
+  background: var(--paper-2);
    border: 1.5px solid #5C4A38;
   font-family: 'Rubik', 'Inter', sans-serif;
   font-weight: 400;
@@ -657,7 +699,7 @@ html, body {
 }
 
 .quiz__option.selected {
-  border: 2.5px solid #A0713C;
+  border: 2.5px solid var(--accent);
   background: #fff;
   transform: scale(1.02);
 }
@@ -668,14 +710,14 @@ html, body {
   max-width: 326px;
   height: 56px;
   border-radius: 28px;
-  background: #A0713C;
-  color: #F7F0E6;
+  background: var(--accent);
+  color: var(--paper-2);
   font-family: 'Inter', 'Manrope', sans-serif;
   font-weight: 600;
   font-size: 16px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(160, 113, 60, .3);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), .3);
   transition: transform .2s, opacity .2s;
 }
 
@@ -715,7 +757,7 @@ html, body {
 /* --- result --- */
 /* --- финал: загадай желание --- */
 #result {
-  background: #DDCEC7;
+  background: var(--bg-d);
   justify-content: flex-start;
   gap: 0;
   padding: 56px 24px 0;
@@ -780,14 +822,14 @@ html, body {
   max-width: 300px;
   height: 45px;
   border-radius: 28px;
-  background: #A0713C;
-  color: #F7F0E6;
+  background: var(--accent);
+  color: var(--paper-2);
   font-family: 'Inter', 'Manrope', sans-serif;
   font-weight: 600;
   font-size: 16px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(160, 113, 60, .3);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), .3);
   transition: transform .2s;
 }
 
@@ -814,7 +856,7 @@ html, body {
 
 .wish__skip:hover {
   transform: translateY(-2px);
-  background: rgba(160, 113, 60, .06);
+  background: rgba(var(--accent-rgb), .06);
 }
 
 .wish__done {
@@ -1157,7 +1199,7 @@ html, body {
   position: relative;
   width: 400px;
   height: 366px;
-  background: #F3E9D7;
+  background: var(--paper);
   border-radius: 24px;
   border: 2px solid #5C4A38;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
@@ -1187,7 +1229,7 @@ html, body {
 .polaroid__photo-wrap {
   flex: 1;
   min-height: 0;
-  background: #FBF6EE;
+  background: var(--paper-3);
   padding: 6px;
   border-radius: 4px;
   position: relative;
@@ -1200,7 +1242,7 @@ html, body {
   z-index: 1;
   pointer-events: none;
   filter: url(#torn);
-  border: 8px solid #FBF6EE;
+  border: 8px solid var(--paper-3);
   border-radius: 6px;
 }
 
@@ -1263,7 +1305,7 @@ html, body {
   position: relative;
   width: 360px;
   height: 340px;
-  background: #F3E9D7;
+  background: var(--paper);
   border-radius: 20px;
   border: 2px solid #5C4A38;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
@@ -1446,14 +1488,14 @@ html, body {
   width: 150px;
   height: 30px;
   border-radius: 15px;
-  background: #A0713C;
-  color: #F7F0E6;
+  background: var(--accent);
+  color: var(--paper-2);
   font-family: 'Quicksand', sans-serif;
   font-size: 13px;
   font-weight: 500;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(160, 113, 60, .35);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), .35);
   transition: transform .2s;
 }
 
@@ -1474,7 +1516,7 @@ html, body {
 
 /* --- отвлекалочка: разложи по полочкам --- */
 #shelf {
-  background: #EDE3DB;
+  background: var(--bg-l);
   gap: 0;
   padding: 60px 24px 40px;
 }
@@ -1510,7 +1552,7 @@ html, body {
   width: 192px;
   height: 237px;
   border-radius: 20px;
-  background: #F3E9D7;
+  background: var(--paper);
   border: 1.5px solid rgba(92, 74, 56, .28);
   box-shadow: 0 6px 16px rgba(92, 74, 56, .12);
   cursor: pointer;
@@ -1526,8 +1568,8 @@ html, body {
 }
 
 .shelf__slot:empty:hover {
-  border-color: #A0713C;
-  box-shadow: 0 8px 20px rgba(160, 113, 60, .22);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), .22);
 }
 
 .shelf__tray {
@@ -1550,8 +1592,8 @@ html, body {
 
 .shelf__photo.picked {
   transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 12px 24px rgba(160, 113, 60, .35);
-  border-color: #A0713C;
+  box-shadow: 0 12px 24px rgba(var(--accent-rgb), .35);
+  border-color: var(--accent);
 }
 
 /* фото, вложенное в полочку — заполняет её */
@@ -1580,14 +1622,14 @@ html, body {
   max-width: 85vw;
   height: 56px;
   border-radius: 28px;
-  background: #A0713C;
-  color: #F7F0E6;
+  background: var(--accent);
+  color: var(--paper-2);
   font-family: 'Inter', 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(160, 113, 60, .3);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), .3);
   opacity: 0;
   visibility: hidden;
   transform: translateY(12px);
@@ -1752,7 +1794,7 @@ html, body {
 /* рисованный кружок вокруг выбранного варианта */
 .opt-circle { position: absolute; pointer-events: none; z-index: 3; opacity: 0; overflow: visible; }
 .opt-circle path {
-  fill: none; stroke: #A0713C; stroke-width: 2.6; stroke-linecap: round;
+  fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round;
 }
 .opt-circle.draw { opacity: 1; }
 .opt-circle.draw path { animation: opt-draw .55s cubic-bezier(.4,0,.2,1) forwards; }
@@ -1804,7 +1846,7 @@ html, body {
   width: 9px; height: 9px; border-radius: 50%;
   background: #C9B79E; opacity: .5; transition: all .3s ease;
 }
-.quiz__progress .pd.done { background: #A0713C; opacity: 1; }
+.quiz__progress .pd.done { background: var(--accent); opacity: 1; }
 .quiz__progress .pd.current { background: #C58A3D; opacity: 1; transform: scale(1.5); box-shadow: 0 0 0 3px rgba(197,138,61,.22); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1820,16 +1862,16 @@ html, body {
   padding: 10px 28px;
   border: none;
   border-radius: 22px;
-  background: #A0713C;
-  color: #F7F0E6;
+  background: var(--accent);
+  color: var(--paper-2);
   font-family: 'Inter', 'Manrope', sans-serif;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(160, 113, 60, .3);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), .3);
   transition: transform .2s, box-shadow .2s;
 }
-.polaroid__next:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(160, 113, 60, .34); }
+.polaroid__next:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(var(--accent-rgb), .34); }
 
 /* полка — подсказка и пульс пустых ячеек после выбора фото */
 .shelf__hint {
@@ -1856,7 +1898,7 @@ html, body {
 
 /* видимый фокус с клавиатуры — в тон палитре */
 :focus-visible {
-  outline: 2px solid #A0713C;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 6px;
 }

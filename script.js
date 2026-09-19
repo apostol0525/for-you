@@ -320,7 +320,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function pickVibe(card) {
   document.querySelectorAll('.vibe__card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  setTimeout(() => go('quiz'), 600);
+  document.body.dataset.vibe = card.dataset.vibe || 'sea';
+  setTimeout(() => go('quiz'), 900);
 }
 
 // --- выбор quiz-варианта (в рамках своей секции) ---
@@ -600,6 +601,7 @@ function restartQuest() {
   document.querySelectorAll('.quiz__option.selected, .vibe__card.selected')
     .forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.quiz__next').forEach(b => b.disabled = true);
+  delete document.body.dataset.vibe;
   go('vibe');
 }
 

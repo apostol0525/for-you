@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=83">
+  <link rel="stylesheet" href="style.css?v=84">
 </head>
 
 <body>
@@ -124,7 +124,7 @@
       <h2 class="vibe__title">Твой Vibe</h2>
       <p class="vibe__subtitle">Если бы сегодняшний день был кадром из Гибли, то какой?</p>
       <div class="vibe__grid">
-        <div class="vibe__card" onclick="pickVibe(this)">
+        <div class="vibe__card" data-vibe="sky" onclick="pickVibe(this)">
           <div class="vibe__card-frame">
             <div class="vibe__card-inner">
               <img decoding="async" data-src="img/photo-anime/sky-vibe.webp" class="vibe__card-img" alt="">
@@ -135,7 +135,7 @@
             </div>
           </div>
         </div>
-        <div class="vibe__card" onclick="pickVibe(this)">
+        <div class="vibe__card" data-vibe="sea" onclick="pickVibe(this)">
           <div class="vibe__card-frame">
             <div class="vibe__card-inner">
               <img decoding="async" data-src="img/photo-anime/house-sea-vibe.webp" class="vibe__card-img" alt="">
@@ -146,7 +146,7 @@
             </div>
           </div>
         </div>
-        <div class="vibe__card" onclick="pickVibe(this)">
+        <div class="vibe__card" data-vibe="grass" onclick="pickVibe(this)">
           <div class="vibe__card-frame">
             <div class="vibe__card-inner">
               <img decoding="async" data-src="img/photo-anime/grass-vibe.webp" class="vibe__card-img" alt="">
@@ -157,7 +157,7 @@
             </div>
           </div>
         </div>
-        <div class="vibe__card" onclick="pickVibe(this)">
+        <div class="vibe__card" data-vibe="city" onclick="pickVibe(this)">
           <div class="vibe__card-frame">
             <div class="vibe__card-inner">
               <img decoding="async" data-src="img/photo-anime/dark-city-vibe.webp" class="vibe__card-img" alt="">
@@ -438,7 +438,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="script.js?v=80"></script>
+  <script src="script.js?v=81"></script>
 
 </body>
 
