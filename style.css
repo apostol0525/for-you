@@ -380,9 +380,8 @@ html, body {
   opacity: 0;
 }
 
-#birthday.play .birthday__btn {
+#birthday.ready .birthday__btn {
   animation: bd-rise .9s cubic-bezier(.22, 1, .36, 1) forwards;
-  animation-delay: 8s;
 }
 
 @keyframes bd-rise {
@@ -473,6 +472,41 @@ html, body {
 .bd-portrait__lines.fade {
   opacity: 0;
   transition: opacity 2s ease-in .4s;
+}
+
+/* подпись художника — прописывается пером после покраски */
+.bd-portrait__sign {
+  position: absolute;
+  right: 6%;
+  bottom: -4%;
+  margin: 0;
+  font-family: 'Marck Script', cursive;
+  font-size: clamp(22px, 6vw, 40px);
+  color: #5C4A38;
+  white-space: nowrap;
+  transform: rotate(-4deg);
+  z-index: 2;
+  visibility: hidden;
+}
+
+.bd-portrait.signed .bd-portrait__sign {
+  visibility: visible;
+}
+
+.bd-portrait__sign .ch {
+  display: inline-block;
+  opacity: 0;
+  clip-path: inset(-20% 100% -20% -10%);
+}
+
+.bd-portrait__sign .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.bd-portrait.signed .bd-portrait__sign .ch {
+  animation: hero-write .3s ease forwards;
+  animation-delay: calc(var(--i) * .08s);
 }
 
 .birthday__btn {

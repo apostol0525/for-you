@@ -223,10 +223,10 @@ function splitSubtitle() {
 function playBirthday() {
   const sec = document.getElementById('birthday');
   splitSubtitle();
-  sec.classList.remove('play');
+  sec.classList.remove('play', 'ready');
   void sec.offsetWidth;
   sec.classList.add('play');
-  bdPortrait.play();
+  bdPortrait.play().then(ok => { if (ok) sec.classList.add('ready'); });
 }
 
 // портрет: линии вычерчиваются сверху вниз, затем акварельное пятно проявляет цветной рисунок
@@ -234,31 +234,85 @@ const bdPortrait = (() => {
   const box = document.querySelector('.bd-portrait');
   const lines = box && box.querySelector('.bd-portrait__lines');
   const aFace = document.getElementById('a-face');
+  const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
   const LINES_DELAY = 1.4, DRAW_DUR = 2.2, DRAW_STAGGER = 2.0, COLOR_DUR = 2.6;
   let run = 0;
 
   function reset() {
-    box.classList.remove('color');
+    box.classList.remove('color', 'signed');
     lines.classList.remove('draw', 'fade');
     lines.innerHTML = '';
   }
 
+  // возвращает true, если дошли до конца (не было stop / повторного play)
   async function play() {
-    if (!box || !lines) return;
+    if (!box || !lines) return false;
     const id = ++run;
     reset();
+    buildPortraitFX();
     await sleep(LINES_DELAY * 1000);
-    if (id !== run) return;
+    if (id !== run) return false;
     await drawLinesInto(lines, DRAW_DUR, DRAW_STAGGER, { fit: 'xMidYMid meet', byY: true });
-    if (id !== run) return;
+    if (id !== run) return false;
     lines.classList.add('fade');
     try { aFace.beginElement(); } catch (e) {}
     requestAnimationFrame(() => { if (id === run) box.classList.add('color'); });
     await sleep(COLOR_DUR * 1000);
+    if (id !== run) return false;
+    box.classList.add('signed');
+    await sleep(signLetters * 80 + 500);
+    return id === run;
   }
 
   return { play, stop() { run++; } };
 })();
+
+// золотые искры разлетаются от лица вместе с фронтом акварели (SMIL, привязаны к a-face)
+function buildPortraitFX() {
+  const fx = document.getElementById('bd-fx');
+  if (!fx) return;
+  fx.textContent = '';
+  const CX = 470, CY = 340, N = 70;
+  for (let i = 0; i < N; i++) {
+    const big = i % 5 === 0;
+    const ang = Math.random() * Math.PI * 2;
+    const delay = Math.random() * 1.7;
+    const r0 = 60 + delay / 1.7 * 420;                  // старт на фронте пятна
+    const fly = 120 + Math.random() * 220;
+    const sx = CX + Math.cos(ang) * r0, sy = CY + Math.sin(ang) * r0;
+    const ex = Math.cos(ang) * fly, ey = Math.sin(ang) * fly - 60 - Math.random() * 80;
+    const dur = (1.0 + Math.random() * 1.1).toFixed(2);
+    const rad = (big ? 9 + Math.random() * 6 : 4 + Math.random() * 4).toFixed(1);
+    const begin = 'a-face.begin+' + delay.toFixed(2) + 's';
+
+    const c = document.createElementNS(SVGNS, 'circle');
+    c.setAttribute('r', rad);
+    c.setAttribute('cx', '0'); c.setAttribute('cy', '0');
+    c.setAttribute('fill', 'url(#wc-spark)');
+    c.setAttribute('opacity', '0');
+
+    const m = document.createElementNS(SVGNS, 'animateMotion');
+    m.setAttribute('dur', dur + 's');
+    m.setAttribute('begin', begin);
+    m.setAttribute('fill', 'remove');
+    m.setAttribute('calcMode', 'spline');
+    m.setAttribute('keyPoints', '0;1');
+    m.setAttribute('keyTimes', '0;1');
+    m.setAttribute('keySplines', '0.2 0.6 0.3 1');
+    m.setAttribute('path', `M ${sx.toFixed(0)} ${sy.toFixed(0)} q ${(ex * 0.5).toFixed(0)} ${(ey * 0.3).toFixed(0)} ${ex.toFixed(0)} ${ey.toFixed(0)}`);
+
+    const o = document.createElementNS(SVGNS, 'animate');
+    o.setAttribute('attributeName', 'opacity');
+    o.setAttribute('begin', begin);
+    o.setAttribute('dur', dur + 's');
+    o.setAttribute('fill', 'remove');
+    o.setAttribute('values', '0;1;1;0');
+    o.setAttribute('keyTimes', '0;0.15;0.5;1');
+
+    c.appendChild(m); c.appendChild(o);
+    fx.appendChild(c);
+  }
+}
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
