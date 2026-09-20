@@ -958,5 +958,21 @@ function initA11y() {
   });
 }
 
+// --- живой огонёк в карточках-подсказках: статичную картинку → на CSS-пламя ---
+function buildHintFlames() {
+  document.querySelectorAll('.hint-frame > .hint-flame').forEach(img => {
+    if (img.classList.contains('fire-anim')) return;
+    const fire = document.createElement('div');
+    fire.className = 'hint-flame fire-anim';
+    fire.setAttribute('aria-hidden', 'true');
+    let html = '';
+    for (let i = 0; i < 4; i++) html += '<div class="flame"></div>';
+    for (let i = 0; i < 8; i++) html += '<i class="spark"></i>';
+    fire.innerHTML = html;
+    img.replaceWith(fire);
+  });
+}
+
 window.addEventListener('load', initA11y);
 window.addEventListener('load', initWishVideo);
+window.addEventListener('load', buildHintFlames);
