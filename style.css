@@ -896,7 +896,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 /* подложка 350×540, уменьшена на 30% через zoom */
 .final__card {
   position: relative;
-  width: 350px;
+  width: 370px;
   min-height: 540px;
   background: #F3E9D7;
   border-radius: 25px;
@@ -1127,7 +1127,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 .final__restart {
   margin-top: 16px;
   width: 100%;
-  max-width: 260px;
+  max-width: 320px;
   height: 50px;
   border-radius: 26px;
   background: transparent;
