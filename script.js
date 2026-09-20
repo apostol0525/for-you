@@ -655,6 +655,7 @@ function animateFinalHandwriting() {
 
 // ── финал-кино: торт рисуется крупно → акварель → садится в шапку → текст → конфетти ──
 let finalRun = 0;
+const ENTER_MS = 1250;               // ждём завершения анимации входа секции перед замером
 
 function startFinalCinema() {
   const sec = document.getElementById('final');
@@ -673,23 +674,18 @@ function startFinalCinema() {
   lines.classList.remove('draw', 'fade');
   lines.innerHTML = '';
 
-  let seen = false;
-  try { seen = !!localStorage.getItem('nozanin_final_seen'); } catch (e) {}
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   try { new Image().src = 'img/photo-anime/cake-img.jpg'; } catch (e) {}   // прогрев
+  bindFinalResize();                           // держим торт на слоте при ресайзе/повороте
 
-  if (seen || reduce) {                        // без кино — собранная карточка сразу
-    requestAnimationFrame(() => {
-      if (rid !== finalRun) return;
-      assembleFinalInstant();
-    });
-    return;
-  }
-
-  // кино: прячем карточку на время входа секции, ждём завершения входа (~1.2с)
+  // прячем карточку на время входа секции; замер слота — ТОЛЬКО после входа (иначе торт съедет)
   sec.classList.add('final--intro');
-  setTimeout(() => { if (rid === finalRun) playFinal(rid); }, 1250);
+  setTimeout(() => {
+    if (rid !== finalRun) return;
+    if (reduce) assembleFinalInstant();        // без движения — сразу собранная карточка
+    else playFinal(rid);                       // полное кино
+  }, ENTER_MS);
 }
 
 async function playFinal(rid) {
@@ -726,7 +722,6 @@ async function playFinal(rid) {
   cake.classList.add('is-docked');
   cake.style.transform = '';                    // → назад в слот (CSS transition)
   sec.classList.remove('final--intro', 'final--paint');
-  try { localStorage.setItem('nozanin_final_seen', '1'); } catch (e) {}
   await sleep(820);
   if (rid !== finalRun) return;
 
@@ -789,7 +784,6 @@ function bindFinalSkip(rid) {
     finalRun++;                                 // отменяем текущую цепочку await'ов
     unbindFinalSkip();
     assembleFinalInstant();
-    try { localStorage.setItem('nozanin_final_seen', '1'); } catch (err) {}
     setTimeout(fireFinalConfetti, 200);
   };
   sec._finalSkip = h;
@@ -798,6 +792,29 @@ function bindFinalSkip(rid) {
 function unbindFinalSkip() {
   const sec = document.getElementById('final');
   if (sec && sec._finalSkip) { sec.removeEventListener('click', sec._finalSkip); sec._finalSkip = null; }
+}
+
+// торт остаётся на слоте при ресайзе/повороте экрана (когда уже сел в шапку)
+function bindFinalResize() {
+  unbindFinalResize();
+  const sec = document.getElementById('final');
+  const h = () => {
+    const cake = sec.querySelector('.final__cake');
+    const slot = sec.querySelector('.final__cake-slot');
+    if (cake && slot && cake.classList.contains('is-docked')) {
+      const t = cake.style.transition;
+      cake.style.transition = 'none';
+      positionCakeToSlot(sec, cake, slot);
+      void cake.offsetWidth;
+      cake.style.transition = t;
+    }
+  };
+  sec._finalResize = h;
+  window.addEventListener('resize', h);
+}
+function unbindFinalResize() {
+  const sec = document.getElementById('final');
+  if (sec && sec._finalResize) { window.removeEventListener('resize', sec._finalResize); sec._finalResize = null; }
 }
 
 // --- финальный «хлопок»: конфетти вокруг открытки (canvas-confetti) ---
