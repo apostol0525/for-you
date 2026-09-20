@@ -673,7 +673,7 @@ function startFinalCinema() {
   const rid = ++finalRun;
 
   // сброс состояния (важно для «Пройти снова»)
-  sec.classList.remove('final--intro', 'final--paint', 'final--assembled');
+  sec.classList.remove('final--intro', 'final--paint', 'final--assembled', 'final--writing');
   cake.classList.remove('is-live', 'final__cake--lift', 'instant', 'is-docked');
   cake.style.transition = 'none';
   cake.style.transform = '';
@@ -728,12 +728,13 @@ async function playFinal(rid) {
   cake.classList.remove('final__cake--lift');
   cake.classList.add('is-docked');
   cake.style.transform = '';                    // → назад в слот (CSS transition)
-  sec.classList.remove('final--intro', 'final--paint');
-  await sleep(820);
+  const letters = animateFinalHandwriting() || 0;   // заранее разбиваем текст на скрытые буквы
+  sec.classList.remove('final--intro', 'final--paint');   // карточка проявляется (буквы ещё скрыты)
+  await sleep(700);
   if (rid !== finalRun) return;
 
-  // 4) текст пишется пером
-  const letters = animateFinalHandwriting() || 0;
+  // 4) текст начинает прописываться пером
+  sec.classList.add('final--writing');
   const textMs = letters * 25 + 600;
 
   // 5) финальный «хлопок» конфетти (в середине прописывания)
@@ -755,7 +756,7 @@ function assembleFinalInstant() {
   cake.classList.remove('final__cake--lift');
   cake.classList.add('is-live', 'instant', 'is-docked');
   lines.classList.add('fade');
-  sec.classList.remove('final--intro', 'final--paint');
+  sec.classList.remove('final--intro', 'final--paint', 'final--writing');
   sec.classList.add('final--assembled');
   animateFinalHandwriting();
 }

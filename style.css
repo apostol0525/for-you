@@ -995,6 +995,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   display: inline-block;
   opacity: 0;
   clip-path: inset(0 100% -15% 0);
+}
+/* прописывание запускается отдельным классом — чтобы буквы были скрыты, пока проявляется карточка */
+#final.final--writing .final__text .ch,
+#final.final--writing .final__hbd .ch,
+#final.final--writing .final__sign .ch {
   animation: handwrite .2s ease forwards;
   animation-delay: calc(var(--i) * 25ms);
 }
