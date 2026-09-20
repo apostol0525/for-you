@@ -844,20 +844,22 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   max-width: 300px;
   height: 45px;
   border-radius: 26px;
-  background: transparent;
+  background: rgba(247, 240, 230, .5);        /* матовая подложка — не теряется на траве */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1.5px solid #5C4A38;
   color: #3A342C;
   font-family: 'Inter', 'Manrope', sans-serif;
   font-weight: 500;
   font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(92, 74, 56, .15);
+  box-shadow: 0 3px 8px rgba(92, 74, 56, .18);
   transition: transform .2s, background .2s;
 }
 
 .wish__skip:hover {
   transform: translateY(-2px);
-  background: rgba(var(--accent-rgb), .06);
+  background: rgba(247, 240, 230, .68);
 }
 
 .wish__done {

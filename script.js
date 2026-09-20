@@ -606,7 +606,7 @@ function sendWish() {
   } else finishWish();
 }
 
-function skipWish() { finishWish(); }
+function skipWish() { go('final'); }   // пропуск — сразу к финалу, без карточки «Загадано»
 
 function finishWish() {
   const el = document.getElementById('wishDoneOverlay');
@@ -1158,8 +1158,8 @@ window.addEventListener('load', buildHintFlames);
 // --- звёздочки-искры, плавно отлетающие от кнопки при нажатии ---
 const clickFx = (() => {
   let canvas, ctx, dpr = 1, W = 0, H = 0, particles = [], raf = 0;
-  // зелёный / лайм / жёлтый / оранжевый — как в референсе
-  const STAR = ['#8CC63F', '#B2D732', '#FFD100', '#FFC61A', '#FF9E1B', '#F7941E', '#FDE047'];
+  // золотые оттенки (без разноцветья)
+  const STAR = ['#FFC61A', '#FFD84D', '#F5A623', '#FFCE3A', '#F7B733'];
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1206,19 +1206,19 @@ const clickFx = (() => {
   function burst(rect) {
     if (!ctx) return;
     const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-    const N = 22;
+    const N = 40;                                           // больше звёзд
     for (let i = 0; i < N; i++) {
       const p = edgePoint(rect, Math.random());
       let dx = p.x - cx, dy = p.y - cy;
       const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
-      const sp = (0.4 + Math.random() * 1.1) * dpr;         // медленно — «плавно отлетают»
+      const sp = (0.25 + Math.random() * 0.85) * dpr;       // мягче — «плавно отлетают»
       particles.push({
         x: p.x * dpr, y: p.y * dpr,
-        vx: dx * sp + (Math.random() - 0.5) * 0.4 * dpr,
-        vy: dy * sp - (0.25 + Math.random() * 0.5) * dpr,   // лёгкий подъём
+        vx: dx * sp + (Math.random() - 0.5) * 0.3 * dpr,
+        vy: dy * sp - (0.2 + Math.random() * 0.4) * dpr,    // лёгкий подъём
         r: (4.5 + Math.random() * 5) * dpr,
-        rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.12,
-        life: 0, ttl: 80 + Math.random() * 55,              // дольше живут
+        rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.1,
+        life: 0, ttl: 95 + Math.random() * 60,              // дольше живут
         color: STAR[(Math.random() * STAR.length) | 0],
       });
     }
@@ -1226,14 +1226,14 @@ const clickFx = (() => {
   }
   function frame() {
     ctx.clearRect(0, 0, W, H);
-    const g = 0.03 * dpr;                                   // почти невесомо
+    const g = 0.022 * dpr;                                  // почти невесомо
     particles = particles.filter(p => {
       p.life++;
-      p.vx *= 0.975; p.vy = p.vy * 0.975 + g;
+      p.vx *= 0.968; p.vy = p.vy * 0.968 + g;               // мягкое торможение
       p.x += p.vx; p.y += p.vy; p.rot += p.vr;
       const t = p.life / p.ttl;                             // 0 → 1
       if (t >= 1) return false;
-      const alpha = t < 0.15 ? t / 0.15 : (1 - (t - 0.15) / 0.85);  // мягкое появление+затухание
+      const alpha = t < 0.2 ? t / 0.2 : (1 - (t - 0.2) / 0.8);  // мягче появление+затухание
       star(p.x, p.y, p.r * (0.7 + 0.3 * (1 - t)), p.rot, p.color, alpha);
       return true;
     });
@@ -1248,7 +1248,8 @@ function initClickFx() {
   if (!clickFx.init()) return;
   document.addEventListener('pointerdown', (e) => {
     const btn = e.target.closest('button');
-    if (!btn || btn.closest('#hero')) return;              // основные кнопки, кроме hero-секции
+    // основные кнопки; кроме hero-секции и вариантов ответа квиза
+    if (!btn || btn.closest('#hero') || btn.classList.contains('quiz__option')) return;
     clickFx.burst(btn.getBoundingClientRect());
   }, { passive: true });
 }
