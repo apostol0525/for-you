@@ -623,15 +623,45 @@ function goFinal() {
   setTimeout(() => go('final'), 300);
 }
 
+// полный сброс состояния квеста (выборы, обводки, полочки, желание)
+function resetQuest() {
+  // vibe
+  document.querySelectorAll('.vibe__card.selected').forEach(el => el.classList.remove('selected'));
+  delete document.body.dataset.vibe;
+
+  // quiz: снять выборы, убрать обводки, «далее» — неактивна, сбросить фидбек карточки
+  document.querySelectorAll('.quiz__option.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.opt-circle').forEach(el => el.remove());
+  document.querySelectorAll('.quiz__next').forEach(b => b.disabled = true);
+  document.querySelectorAll('.quiz__card').forEach(c => c.classList.remove('correct', 'wrong'));
+
+  // отвлекалочка: вернуть все фото в трей, очистить полочки
+  const tray = document.querySelector('.shelf__tray');
+  if (tray) {
+    document.querySelectorAll('#shelf .shelf__slot .shelf__photo').forEach(p => {
+      p.classList.remove('placed', 'picked', 'dropping', 'dragging');
+      p.style.cssText = p.style.cssText
+        .replace(/(position|left|top|width|height|z-index|pointer-events|margin)\s*:[^;]*;?/g, '');
+      tray.appendChild(p);
+    });
+    tray.querySelectorAll('.shelf__photo.picked').forEach(p => p.classList.remove('picked'));
+  }
+  pickedPhoto = null;
+  const sNext = document.querySelector('.shelf__next'); if (sNext) sNext.classList.remove('ready');
+  document.querySelectorAll('#shelf .shelf__slot').forEach(s => s.classList.remove('pulse', 'over'));
+  const cnt = document.getElementById('shelfCount'); if (cnt) cnt.textContent = '0 из 3';
+
+  // желание
+  const wish = document.querySelector('#result .wish__input'); if (wish) wish.value = '';
+}
+
 function finishQuest() {
+  resetQuest();
   go('hero');
 }
 
 function restartQuest() {
-  document.querySelectorAll('.quiz__option.selected, .vibe__card.selected')
-    .forEach(el => el.classList.remove('selected'));
-  document.querySelectorAll('.quiz__next').forEach(b => b.disabled = true);
-  delete document.body.dataset.vibe;
+  resetQuest();
   go('vibe');
 }
 
