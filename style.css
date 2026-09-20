@@ -60,10 +60,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   transform: translateZ(-260px) translateY(-6%) rotateX(10deg) scale(.92);
   opacity: 0;
   filter: blur(6px) brightness(.85);
+  /* !important — чтобы слайд не перебивался transition'ами отдельных секций (#vibe, #quiz5) */
   transition:
     transform 1s cubic-bezier(.4, 0, .2, 1),
     opacity 1s ease,
-    filter 1s ease;
+    filter 1s ease !important;
   pointer-events: none;
 }
 
@@ -77,7 +78,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   opacity: 1;
   transition:
     transform .9s cubic-bezier(.22, 1, .36, 1) .2s,
-    opacity .7s ease .2s;
+    opacity .7s ease .2s !important;
 }
 
 /* --- hero (прототип: линии → раскраска пальцем) --- */

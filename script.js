@@ -237,7 +237,7 @@ const bdPortrait = (() => {
   const aFace = document.getElementById('a-face');
   const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
   const LINES_DELAY = 0.6, DRAW_DUR = 1.3, DRAW_STAGGER = 0.7;
-  const PAUSE_MS = 1500;      // пауза между прорисовкой лица и началом покраски
+  const PAUSE_MS = 1000;      // пауза между прорисовкой лица и началом покраски
   const BTN_AFTER_MS = 550;   // кнопка появляется вскоре после старта покраски
   let run = 0;
 
