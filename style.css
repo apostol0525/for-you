@@ -142,8 +142,9 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   bottom: 8%;
   z-index: 3;
   text-align: center;
-  font-family: 'Marck Script', cursive;
-  font-size: clamp(18px, 5vw, 30px);
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-size: clamp(17px, 4.6vw, 26px);
   color: #3E332A;
   opacity: 0;
   pointer-events: none;
@@ -380,7 +381,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .birthday__subtitle {
-  font-family: 'Marck Script', cursive;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
   font-weight: 400;
   font-size: clamp(26px, 7.4vw, 52px);
   color: #3A342C;
@@ -965,8 +967,9 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .final__sign {
-  font-family: 'Marck Script', cursive;
-  font-size: 16.5px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
   color: #3A342C;
   line-height: 1.25;
   text-align: center;
@@ -1012,8 +1015,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .final__text p {
-  font-family: 'Marck Script', cursive;
-  font-size: 18px;
+  font-family: 'Rubik', sans-serif;
+  font-size: 15.5px;
   color: #3A342C;
   line-height: 1.4;
   text-align: left;
@@ -1345,8 +1348,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .polaroid__caption {
-  font-family: 'Marck Script', cursive;
-  font-size: 18px;
+  font-family: 'Rubik', sans-serif;
+  font-size: 15.5px;
   color: #3A342C;
   text-align: center;
   line-height: 1.4;
@@ -1615,8 +1618,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .hint-text {
-  font-family: 'Marck Script', cursive;
-  font-size: 20px;
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
   color: #3A342C;
   text-align: center;
   line-height: 1.4;
