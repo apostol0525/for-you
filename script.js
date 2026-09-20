@@ -368,8 +368,12 @@ function drawOptCircle(section, btn) {
   const path = svg.querySelector('path');
   const L = path.getTotalLength();
   path.style.strokeDasharray = L;
-  path.style.strokeDashoffset = L;
-  svg.classList.remove('draw'); void svg.offsetWidth; svg.classList.add('draw');
+  svg.classList.add('draw');                       // видимость
+  path.getAnimations().forEach(a => a.cancel());   // сбросить прошлую обводку
+  path.animate(                                     // и обмотать заново
+    [{ strokeDashoffset: L }, { strokeDashoffset: 0 }],
+    { duration: 550, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
+  );
 }
 
 // индикатор прогресса (5 точек)
@@ -897,21 +901,96 @@ function pickPhoto(img) {
   updateShelf();
 }
 
-function placePhoto(slot) {
-  if (!pickedPhoto || slot.querySelector('.shelf__photo')) return;
-  const photo = pickedPhoto;
+// поместить конкретное фото в полочку (общая логика для клика и drag'а)
+function placeInSlot(photo, slot) {
+  if (!photo || !slot || slot.querySelector('.shelf__photo')) return false;
   photo.classList.remove('picked');
   photo.classList.add('placed', 'dropping');
   slot.appendChild(photo);
   photo.addEventListener('animationend', () => photo.classList.remove('dropping'), { once: true });
-  pickedPhoto = null;
-
   const filled = document.querySelectorAll('#shelf .shelf__slot .shelf__photo').length;
-  if (filled === 3) {
-    document.querySelector('.shelf__next').classList.add('ready');
-  }
-  updateShelf();
+  if (filled === 3) document.querySelector('.shelf__next').classList.add('ready');
+  return true;
 }
+
+// клик-фолбэк (тап по фото → тап по полочке)
+function placePhoto(slot) {
+  if (placeInSlot(pickedPhoto, slot)) { pickedPhoto = null; updateShelf(); }
+}
+
+// --- перетаскивание фото на полочку (drag-and-drop) ---
+function initShelfDrag() {
+  const shelf = document.getElementById('shelf');
+  if (!shelf) return;
+  let drag = null;
+
+  const slots = () => [...shelf.querySelectorAll('.shelf__slot')];
+  const slotUnder = (x, y) => slots().find(s => {
+    const r = s.getBoundingClientRect();
+    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+  });
+  const highlight = (x, y) => {
+    const over = drag && drag.moved ? slotUnder(x, y) : null;
+    slots().forEach(s => s.classList.toggle('over', s === over && !s.querySelector('.shelf__photo')));
+  };
+  const clearHi = () => slots().forEach(s => s.classList.remove('over'));
+  const resetStyle = (p) => {
+    p.classList.remove('dragging');
+    p.style.cssText = p.style.cssText
+      .replace(/(position|left|top|width|height|z-index|pointer-events|margin)\s*:[^;]*;?/g, '');
+  };
+
+  shelf.addEventListener('pointerdown', (e) => {
+    const photo = e.target.closest('.shelf__photo');
+    if (!photo || photo.classList.contains('placed') || photo.closest('.shelf__slot')) return;
+    const r = photo.getBoundingClientRect();
+    drag = {
+      photo, moved: false,
+      startX: e.clientX, startY: e.clientY,
+      offX: e.clientX - r.left, offY: e.clientY - r.top, w: r.width, h: r.height,
+      pid: e.pointerId,
+    };
+    try { photo.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  shelf.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const p = drag.photo;
+    if (!drag.moved) {
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 6) return;  // порог
+      drag.moved = true;
+      pickedPhoto = null;
+      shelf.querySelectorAll('.shelf__photo.picked').forEach(x => x.classList.remove('picked'));
+      p.classList.add('dragging');
+      p.style.position = 'fixed';
+      p.style.width = drag.w + 'px';
+      p.style.height = drag.h + 'px';
+      p.style.margin = '0';
+      p.style.zIndex = '1000';
+      updateShelf();                                   // подсветить пустые полочки
+    }
+    p.style.left = (e.clientX - drag.offX) + 'px';
+    p.style.top = (e.clientY - drag.offY) + 'px';
+    highlight(e.clientX, e.clientY);
+  });
+
+  const finish = (e) => {
+    if (!drag) return;
+    const p = drag.photo;
+    try { p.releasePointerCapture(drag.pid); } catch (_) {}
+    if (drag.moved) {
+      const slot = slotUnder(e.clientX, e.clientY);
+      clearHi();
+      resetStyle(p);
+      if (!placeInSlot(p, slot)) shelf.querySelector('.shelf__tray').appendChild(p);  // мимо → назад в трей
+      updateShelf();
+    }
+    drag = null;
+  };
+  shelf.addEventListener('pointerup', finish);
+  shelf.addEventListener('pointercancel', finish);
+}
+window.addEventListener('load', initShelfDrag);
 
 // --- HERO: линии → тап → цветная акварель снизу вверх (линии тают во время покраски) ---
 

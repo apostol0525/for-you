@@ -1736,7 +1736,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   border-radius: 14px;
   border: 2px solid #5C4A38;
   box-shadow: 0 6px 16px rgba(60, 40, 20, .2);
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;                 /* чтобы тач-драг не прокручивал страницу */
   transition: transform .2s, box-shadow .2s;
 }
 
@@ -1744,6 +1745,22 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   transform: translateY(-10px) scale(1.05);
   box-shadow: 0 12px 24px rgba(var(--accent-rgb), .35);
   border-color: var(--accent);
+}
+
+/* фото во время перетаскивания */
+.shelf__photo.dragging {
+  cursor: grabbing;
+  transition: none;
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 16px 32px rgba(60, 40, 20, .35);
+  border-color: var(--accent);
+}
+
+/* полочка под курсором при перетаскивании */
+.shelf__slot.over {
+  border-color: var(--accent);
+  box-shadow: 0 8px 22px rgba(var(--accent-rgb), .3);
+  transform: translateY(-2px);
 }
 
 /* фото, вложенное в полочку — заполняет её */
@@ -1948,8 +1965,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round;
 }
 .opt-circle.draw { opacity: 1; }
-.opt-circle.draw path { animation: opt-draw .55s cubic-bezier(.4,0,.2,1) forwards; }
-@keyframes opt-draw { to { stroke-dashoffset: 0; } }
+/* обводка запускается через Web Animations API в drawOptCircle (перезапуск на каждом выборе) */
 
 /* карточка: верный / неверный ответ */
 .quiz__card.correct { animation: card-pop .6s ease; }
