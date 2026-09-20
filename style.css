@@ -895,43 +895,41 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   object-fit: contain;
 }
 
-/* подложка 350×540, уменьшена на 30% через zoom */
+/* карточка-поздравление: художественная рамка (Тоторо, шары, гирлянда) как фон */
 .final__card {
   position: relative;
-  width: 370px;
-  min-height: 540px;
-  background: #F3E9D7;
-  border-radius: 25px;
-  padding: 16px;
-  box-shadow: 0 12px 32px rgba(60, 40, 20, .2);
+  width: min(92vw, 360px);
+  aspect-ratio: 816 / 1281;
+  background: transparent;
+  border-radius: 24px;              /* под дизайн-систему */
+  overflow: hidden;                 /* углы рамки скругляются (немного обрежется — ок) */
   flex-shrink: 0;
-  zoom: 0.8;
+  box-shadow: 0 10px 26px rgba(60, 40, 20, .2);
 }
 
+/* сама рамка-картинка (отдельным слоем — чтобы плавно проявлять после кино) */
 .final__card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border: 2.5px solid #5C4A38;
-  border-radius: 25px;
+  background: url("img/photo-anime/frame-final.webp?v=2") center / 100% 100% no-repeat;
   pointer-events: none;
+  z-index: 0;
 }
 
 .final__card-frame {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
-  padding: 18px 16px;
+  /* безопасная зона внутри декора: сверху гирлянда, снизу Тоторо/подарки */
+  padding: 13% 15% 28%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.final__card-frame::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1.5px solid #5C4A38;
-  border-radius: 16px;
-  pointer-events: none;
-}
+.final__card-frame::before { display: none; }   /* старая внутренняя рамка не нужна */
 
 .final__head {
   display: flex;
@@ -969,11 +967,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 .final__sign {
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 12.5px;
   color: #3A342C;
-  line-height: 1.25;
+  line-height: 1.2;
   text-align: center;
-  margin: 6px 0 10px;
+  margin: 10% 0 6px;        /* зазор после фото — текст ниже */
 }
 
 .final__text {
@@ -1016,21 +1014,21 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 
 .final__text p {
   font-family: 'Rubik', sans-serif;
-  font-size: 15.5px;
+  font-size: 12.5px;
   color: #3A342C;
-  line-height: 1.4;
-  text-align: left;
-  margin-bottom: 11px;
+  line-height: 1.32;
+  text-align: center;
+  margin-bottom: 6px;
 }
 
 /* ─────────── финал: торт-шапка (прорисовка → акварель → посадка в слот) ─────────── */
 
 /* пустое место в шапке карточки, куда сядет торт */
-/* большой торт в полароид-рамке (шапка карточки) */
+/* торт в полароид-рамке (шапка карточки) */
 .final__cake-slot {
-  width: 92%;
+  width: 82%;
   aspect-ratio: 1.5;        /* пропорция полароида (фото + широкий низ рамки) */
-  margin: 4px auto 16px;
+  margin: 0 auto 12px;
 }
 
 /* сам торт — абсолютный сиблинг карточки (вне zoom карточки) */
@@ -1080,19 +1078,16 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   transition: opacity 1.2s ease-in .3s;
 }
 
-/* карточка «собирается» вокруг торта: пока идёт рисование — фон, рамки, подпись и текст спрятаны */
-.final__card { transition: background .6s ease, box-shadow .6s ease; }
-.final__card::before,
-.final__card-frame::before { transition: opacity .6s ease; }
+/* карточка «собирается» вокруг торта: пока идёт рисование — рамка, подпись и текст спрятаны */
+.final__card { transition: box-shadow .6s ease; }
+.final__card::before { transition: opacity .6s ease; }
 .final__sign,
 .final__text { transition: opacity .7s ease; }
 
 #final.final--intro .final__card,
-#final.final--paint .final__card { background: transparent; box-shadow: none; }
+#final.final--paint .final__card { box-shadow: none; }
 #final.final--intro .final__card::before,
-#final.final--paint .final__card::before,
-#final.final--intro .final__card-frame::before,
-#final.final--paint .final__card-frame::before { opacity: 0; }
+#final.final--paint .final__card::before { opacity: 0; }
 #final.final--intro .final__sign,
 #final.final--paint .final__sign,
 #final.final--intro .final__text,
