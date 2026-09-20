@@ -236,8 +236,8 @@ const bdPortrait = (() => {
   const lines = box && box.querySelector('.bd-portrait__lines');
   const aFace = document.getElementById('a-face');
   const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
-  const LINES_DELAY = 0.6, DRAW_DUR = 2.0, DRAW_STAGGER = 1.4;
-  const PAUSE_MS = 1000;      // пауза между прорисовкой лица и началом покраски
+  const LINES_DELAY = 0.6, DRAW_DUR = 2.4, DRAW_STAGGER = 1.0;
+  const PAUSE_MS = 500;       // пауза между прорисовкой лица и началом покраски (короче)
   const BTN_AFTER_MS = 550;   // кнопка появляется вскоре после старта покраски
   let run = 0;
 
@@ -747,8 +747,8 @@ async function playFinal(rid) {
   sec.classList.add('final--paint');
   bindFinalSkip(rid);
 
-  // 1) вычерчивание контуров торта
-  try { await drawLinesInto(lines, 1.4, 0.9, { fit: 'xMidYMid slice' }); }
+  // 1) вычерчивание контуров торта (плавнее)
+  try { await drawLinesInto(lines, 2.0, 1.1, { fit: 'xMidYMid slice' }); }
   catch (e) {}                                  // svg не загрузился — просто покажем акварель
   if (rid !== finalRun) return;
 
