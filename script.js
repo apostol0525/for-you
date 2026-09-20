@@ -236,7 +236,9 @@ const bdPortrait = (() => {
   const lines = box && box.querySelector('.bd-portrait__lines');
   const aFace = document.getElementById('a-face');
   const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
-  const LINES_DELAY = 1.4, DRAW_DUR = 2.2, DRAW_STAGGER = 2.0, COLOR_DUR = 2.6;
+  const LINES_DELAY = 0.6, DRAW_DUR = 1.3, DRAW_STAGGER = 0.7;
+  const PAUSE_MS = 1500;      // пауза между прорисовкой лица и началом покраски
+  const BTN_AFTER_MS = 550;   // кнопка появляется вскоре после старта покраски
   let run = 0;
 
   function reset() {
@@ -255,13 +257,18 @@ const bdPortrait = (() => {
     if (id !== run) return false;
     await drawLinesInto(lines, DRAW_DUR, DRAW_STAGGER, { fit: 'xMidYMid meet', byY: true });
     if (id !== run) return false;
+
+    await sleep(PAUSE_MS);                 // 1.5с пауза перед покраской
+    if (id !== run) return false;
+
     lines.classList.add('fade');
     try { aFace.beginElement(); } catch (e) {}
     requestAnimationFrame(() => { if (id === run) box.classList.add('color'); });
-    await sleep(COLOR_DUR * 1000);
-    if (id !== run) return false;
-    box.classList.add('signed');
-    await sleep(signLetters * 80 + 500);
+
+    // подпись — параллельно, чтобы не задерживать появление кнопки
+    setTimeout(() => { if (id === run) box.classList.add('signed'); }, 1600);
+
+    await sleep(BTN_AFTER_MS);             // кнопка «Начать квест» появляется быстрее
     return id === run;
   }
 
@@ -1049,12 +1056,15 @@ function initHeroLive() {
   box.addEventListener('pointerdown', trigger);
   box._trigger = trigger;   // клавиатурный вызов (Enter/Space) из initA11y
 
+  // подсказка появляется через ~1с после загрузки — не дожидаясь конца прорисовки
+  setTimeout(() => { if (!done && !busy && !pendingTap) hint.classList.add('show'); }, 1000);
+
   // этап 1 (линии) → надпись → готово к тапу
   (async () => {
     await drawLinesInto(lines, 2.0, 1.0);
     ready = true;
     if (pendingTap) { startColor(); return; }
-    hint.classList.add('show');
+    if (!done && !busy) hint.classList.add('show');
   })();
 }
 
