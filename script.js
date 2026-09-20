@@ -707,7 +707,7 @@ async function playFinal(rid) {
   bindFinalSkip(rid);
 
   // 1) вычерчивание контуров торта
-  try { await drawLinesInto(lines, 1.4, 0.9, { fit: 'xMidYMid meet' }); }
+  try { await drawLinesInto(lines, 1.4, 0.9, { fit: 'xMidYMid slice' }); }
   catch (e) {}                                  // svg не загрузился — просто покажем акварель
   if (rid !== finalRun) return;
 
@@ -772,7 +772,8 @@ function cakeBigTransform(sec, cake) {
   const cx0 = cR.left + cR.width / 2, cy0 = cR.top + cR.height / 2;
   const tx = (secR.left + secR.width / 2) - cx0;
   const ty = (secR.top + secR.height * 0.42) - cy0;
-  return `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+  // наклон полароида сохраняем и в «большом кадре» — чтобы посадка была плавной
+  return `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)}) rotate(-2deg)`;
 }
 
 // тап по секции = промотать кино к собранной карточке
