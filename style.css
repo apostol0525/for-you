@@ -1835,6 +1835,13 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   pointer-events: none; z-index: 6; will-change: transform, opacity;
 }
 
+/* конфетти-фанфики финального «хлопка» */
+.confetti {
+  position: absolute; border-radius: 2px;
+  pointer-events: none; z-index: 5; will-change: transform, opacity;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+}
+
 /* индикатор прогресса */
 .quiz__progress {
   position: absolute; top: 26px; left: 0; right: 0;
