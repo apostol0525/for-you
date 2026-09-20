@@ -652,66 +652,48 @@ function animateFinalHandwriting() {
   document.getElementById('final').style.setProperty('--hw-total', total + 'ms');
 }
 
-// --- финальный «хлопок»: конфетти-фанфики разлетаются вокруг открытки ---
-function perimeterPoint(box, r) {                 // точка на периметре прямоугольника
-  const per = 2 * (box.w + box.h);
-  let d = r * per;
-  if (d < box.w) return { x: box.l + d, y: box.t };                 d -= box.w;
-  if (d < box.h) return { x: box.l + box.w, y: box.t + d };         d -= box.h;
-  if (d < box.w) return { x: box.l + box.w - d, y: box.t + box.h }; d -= box.w;
-  return { x: box.l, y: box.t + box.h - d };
+// --- финальный «хлопок»: конфетти вокруг открытки (canvas-confetti) ---
+let _confetti = null;
+function getConfetti() {
+  if (_confetti) return _confetti;
+  if (typeof confetti === 'undefined') return null;
+  const canvas = document.getElementById('confetti-canvas');
+  _confetti = canvas
+    ? confetti.create(canvas, { resize: true, useWorker: true })
+    : confetti;                                    // запасной вариант — на весь экран
+  return _confetti;
 }
 
 function fireFinalConfetti() {
   const section = document.getElementById('final');
   if (!section || !section.classList.contains('active')) return;   // секция должна быть на экране
-  const card = section.querySelector('.final__card');
-  if (!card) return;
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const fire = getConfetti();
+  if (!fire) return;
 
-  const sr = section.getBoundingClientRect(), cr = card.getBoundingClientRect();
-  const box = { l: cr.left - sr.left, t: cr.top - sr.top, w: cr.width, h: cr.height };
-  const cx = box.l + box.w / 2, cy = box.t + box.h / 2;
-
+  const card = section.querySelector('.final__card');
+  const r = (card || section).getBoundingClientRect();
+  // центр открытки в долях окна — точка, откуда расходится залп
+  const ox = (r.left + r.width / 2) / window.innerWidth;
+  const oy = (r.top + r.height / 2) / window.innerHeight;
   const COLORS = ['#FFD166', '#EF6F6C', '#06D6A0', '#118AB2', '#F78DA7', '#FF9F52', '#8367C7', '#FCE9C8'];
-  const N = 84, g = 2200;                          // px/с² — гравитация
 
-  for (let i = 0; i < N; i++) {
-    const p = perimeterPoint(box, Math.random());  // старт — на кромке открытки
-    let dx = p.x - cx, dy = p.y - cy;              // направление наружу от центра
-    const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
-    const speed = 380 + Math.random() * 560;
-    const vx = dx * speed + (Math.random() - .5) * 220;
-    const vy = dy * speed - (220 + Math.random() * 340);           // подкидываем вверх
+  const base = { origin: { x: ox, y: oy }, colors: COLORS, disableForReducedMotion: true };
 
-    const piece = document.createElement('div');
-    piece.className = 'confetti';
-    const ribbon = Math.random() < .6;
-    const w = ribbon ? 5 + Math.random() * 5 : 7 + Math.random() * 6;
-    const h = ribbon ? 12 + Math.random() * 12 : w;
-    piece.style.width = w + 'px';
-    piece.style.height = h + 'px';
-    piece.style.background = COLORS[(Math.random() * COLORS.length) | 0];
-    piece.style.left = p.x + 'px';
-    piece.style.top = p.y + 'px';
-    if (Math.random() < .3) piece.style.borderRadius = '50%';
-    section.appendChild(piece);
-
-    const T = 1.1 + Math.random() * 0.9, STEPS = 14;               // баллистика → в кадры
-    const spin = (Math.random() - .5) * 1080, tilt = Math.random() * 360;
-    const frames = [];
-    for (let s = 0; s <= STEPS; s++) {
-      const k = s / STEPS, t = k * T;
-      const x = vx * t, y = vy * t + 0.5 * g * t * t;
-      frames.push({
-        transform: `translate(-50%,-50%) translate(${x}px, ${y}px) rotate(${tilt + spin * k}deg)`,
-        opacity: k < .82 ? 1 : (1 - (k - .82) / .18),
-        offset: k,
-      });
-    }
-    piece.animate(frames, { duration: T * 1000, easing: 'linear', fill: 'forwards' })
-      .onfinish = () => piece.remove();
-  }
+  // 1) плотный круговой «бабах» вокруг открытки
+  fire({ ...base, particleCount: 130, spread: 360, startVelocity: 42, scalar: 1.05, ticks: 220 });
+  // 2) две встречные струи-хлопушки из нижних углов открытки
+  const lx = r.left / window.innerWidth, rx = r.right / window.innerWidth, by = r.bottom / window.innerHeight;
+  setTimeout(() => {
+    if (!section.classList.contains('active')) return;
+    fire({ ...base, particleCount: 70, angle: 60,  spread: 55, startVelocity: 55, origin: { x: lx, y: by } });
+    fire({ ...base, particleCount: 70, angle: 120, spread: 55, startVelocity: 55, origin: { x: rx, y: by } });
+  }, 160);
+  // 3) лёгкий «дождик» сверху для послевкусия
+  setTimeout(() => {
+    if (!section.classList.contains('active')) return;
+    fire({ ...base, particleCount: 60, spread: 120, startVelocity: 30, gravity: 0.9, scalar: 0.9, origin: { x: ox, y: Math.max(0, oy - 0.25) } });
+  }, 420);
 }
 
 // --- отвлекалочка: разложи фото по полочкам ---

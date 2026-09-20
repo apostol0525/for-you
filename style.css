@@ -1835,11 +1835,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   pointer-events: none; z-index: 6; will-change: transform, opacity;
 }
 
-/* конфетти-фанфики финального «хлопка» */
-.confetti {
-  position: absolute; border-radius: 2px;
-  pointer-events: none; z-index: 5; will-change: transform, opacity;
-  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+/* холст конфетти финального «хлопка» (canvas-confetti) */
+#confetti-canvas {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 999;
 }
 
 /* индикатор прогресса */
