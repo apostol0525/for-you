@@ -38,6 +38,7 @@ function go(id) {
   }));
 
   if (id === 'birthday') playBirthday();
+  if (id === 'result') setTimeout(playWishIdle, 300);
   if (id === 'final') setTimeout(animateFinalHandwriting, 700);
   if (/^quiz[2-5]?$/.test(id)) initQuizSection(id);
 
@@ -572,12 +573,41 @@ function advancePolaroid(step) {
   setTimeout(() => go(QUIZ[step].next), 400);
 }
 
+// --- фон-видео финала: idle крутит спокойные 0–3.7с; на «загадать» — разлёт одуванчиков ---
+let wishVideo = null, wishReleasing = false;
+function initWishVideo() {
+  wishVideo = document.querySelector('.wish__video');
+  if (!wishVideo) return;
+  wishVideo.addEventListener('timeupdate', () => {
+    if (!wishReleasing && wishVideo.currentTime >= 3.7) {
+      try { wishVideo.currentTime = 0; } catch (e) {}   // держим ветер/одуванчики целыми
+    }
+  });
+}
+function playWishIdle() {
+  if (!wishVideo) return;
+  wishReleasing = false;
+  try { wishVideo.currentTime = 0; wishVideo.play(); } catch (e) {}
+}
+function releaseWish() {
+  if (!wishVideo) return;
+  wishReleasing = true;
+  if (wishVideo.currentTime < 3.6) { try { wishVideo.currentTime = 3.6; } catch (e) {} }
+  try { wishVideo.play(); } catch (e) {}
+}
+
 // --- финал: загадай желание (текст остаётся только на устройстве) ---
 function sendWish() {
   const input = document.querySelector('#result .wish__input');
   const text = input ? input.value.trim() : '';
   try { if (text) localStorage.setItem('nozanin_wish', text); } catch (e) {}
-  finishWish();
+  releaseWish();                  // одуванчики разлетаются — желание улетает
+  if (wishVideo) {                // «Загадано» — когда разлёт отыграл (+ страховка)
+    let shown = false;
+    const done = () => { if (shown) return; shown = true; finishWish(); };
+    wishVideo.addEventListener('ended', done, { once: true });
+    setTimeout(done, 6000);
+  } else finishWish();
 }
 
 function skipWish() { finishWish(); }
@@ -896,3 +926,4 @@ function initA11y() {
 }
 
 window.addEventListener('load', initA11y);
+window.addEventListener('load', initWishVideo);

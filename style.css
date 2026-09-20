@@ -738,16 +738,29 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   padding: 56px 24px 0;
   padding-bottom: calc(36px + env(safe-area-inset-bottom));
 }
-/* мягкое свечение в цвете вайба за полем ввода (поверх кофе) */
+/* фон-видео финала: луг с одуванчиками (тёплый золотой час) */
+.wish__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+/* лёгкая тёплая вуаль сверху — заголовок читается на любом кадре */
 #result::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(62% 40% at 50% 40%, rgba(var(--accent-rgb), .16), rgba(var(--accent-rgb), 0) 72%);
-  z-index: 0;
+  background: linear-gradient(180deg, rgba(237, 227, 219, .34), rgba(237, 227, 219, .08) 28%, rgba(237, 227, 219, 0) 52%);
+  z-index: 1;
 }
-#result > * { position: relative; z-index: 1; }
+#result > .wish__title,
+#result > .wish__subtitle,
+#result > .wish__input,
+#result > .wish__send,
+#result > .wish__skip { position: relative; z-index: 2; }
 
 .wish__title {
   font-family: 'Cormorant Garamond', Garamond, serif;
