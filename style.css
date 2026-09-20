@@ -1878,10 +1878,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   }
   .shelf__tray {
     gap: 8px;
+    flex-wrap: nowrap;
   }
   .shelf__photo {
-    width: 130px;
-    height: 166px;
+    width: 104px;
+    height: 150px;
   }
   .shelf__next {
     margin-top: 32px;
