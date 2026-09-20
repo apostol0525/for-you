@@ -38,7 +38,7 @@ function go(id) {
   }));
 
   if (id === 'birthday') playBirthday();
-  if (id === 'result') setTimeout(playWishIdle, 300);
+  if (id === 'result') setTimeout(resetWishVideo, 200);
   if (id === 'final') setTimeout(animateFinalHandwriting, 700);
   if (/^quiz[2-5]?$/.test(id)) initQuizSection(id);
 
@@ -573,27 +573,16 @@ function advancePolaroid(step) {
   setTimeout(() => go(QUIZ[step].next), 400);
 }
 
-// --- фон-видео финала: idle крутит спокойные 0–3.7с; на «загадать» — разлёт одуванчиков ---
-let wishVideo = null, wishReleasing = false;
-function initWishVideo() {
-  wishVideo = document.querySelector('.wish__video');
+// --- фон-видео финала: статичный кадр (как фото), по нажатию играет ветер → разлёт ---
+let wishVideo = null;
+function initWishVideo() { wishVideo = document.querySelector('.wish__video'); }
+function resetWishVideo() {            // статичный кадр до нажатия
   if (!wishVideo) return;
-  wishVideo.addEventListener('timeupdate', () => {
-    if (!wishReleasing && wishVideo.currentTime >= 3.7) {
-      try { wishVideo.currentTime = 0; } catch (e) {}   // держим ветер/одуванчики целыми
-    }
-  });
+  try { wishVideo.pause(); wishVideo.currentTime = 0; } catch (e) {}
 }
-function playWishIdle() {
+function releaseWish() {               // по нажатию — с начала: 2с ветра, затем разлёт
   if (!wishVideo) return;
-  wishReleasing = false;
   try { wishVideo.currentTime = 0; wishVideo.play(); } catch (e) {}
-}
-function releaseWish() {
-  if (!wishVideo) return;
-  wishReleasing = true;
-  if (wishVideo.currentTime < 3.6) { try { wishVideo.currentTime = 3.6; } catch (e) {} }
-  try { wishVideo.play(); } catch (e) {}
 }
 
 // --- финал: загадай желание (текст остаётся только на устройстве) ---
