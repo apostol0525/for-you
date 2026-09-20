@@ -1154,3 +1154,81 @@ function buildHintFlames() {
 window.addEventListener('load', initA11y);
 window.addEventListener('load', initWishVideo);
 window.addEventListener('load', buildHintFlames);
+
+// --- взрыв светящихся частиц при нажатии на кнопки ---
+const clickFx = (() => {
+  let canvas, ctx, dpr = 1, W = 0, H = 0, particles = [], raf = 0;
+  const COLORS = ['#FFD166', '#FF9F52', '#FFE9A8', '#F6B45A', '#FFF3D6', '#EF9E5B'];
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.width = Math.floor(innerWidth * dpr);
+    H = canvas.height = Math.floor(innerHeight * dpr);
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+  }
+  function init() {
+    canvas = document.getElementById('fx-canvas');
+    if (!canvas) return false;
+    ctx = canvas.getContext('2d');
+    resize();
+    window.addEventListener('resize', resize);
+    return true;
+  }
+  function rgba(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a.toFixed(3)})`;
+  }
+  function burst(x, y) {
+    if (!ctx) return;
+    const N = 26;
+    for (let i = 0; i < N; i++) {
+      const ang = (Math.PI * 2) * (i / N) + Math.random() * 0.5;
+      const sp = (2.2 + Math.random() * 4.4) * dpr;
+      particles.push({
+        x: x * dpr, y: y * dpr,
+        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 1.2 * dpr,
+        r: (2.5 + Math.random() * 3.5) * dpr,
+        life: 0, ttl: 52 + Math.random() * 34,
+        color: COLORS[(Math.random() * COLORS.length) | 0],
+      });
+    }
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';            // свечение (аддитивно)
+    const g = 0.14 * dpr;
+    particles = particles.filter(p => {
+      p.life++;
+      p.vx *= 0.955; p.vy = p.vy * 0.955 + g;            // трение + гравитация
+      p.x += p.vx; p.y += p.vy;
+      const k = 1 - p.life / p.ttl;                       // 1 → 0 (затухание)
+      if (k <= 0) return false;
+      const rad = p.r * (0.4 + 0.6 * (k * k)) * 2.2;
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad);
+      grd.addColorStop(0, rgba(p.color, 0.9 * k));
+      grd.addColorStop(0.4, rgba(p.color, 0.5 * k));
+      grd.addColorStop(1, rgba(p.color, 0));
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, Math.PI * 2); ctx.fill();
+      return true;
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    if (particles.length) raf = requestAnimationFrame(frame);
+    else { raf = 0; ctx.clearRect(0, 0, W, H); }
+  }
+  return { init, burst };
+})();
+
+function initClickFx() {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!clickFx.init()) return;
+  document.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest('button, .quiz__option, .vibe__card, .hero-live__open');
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    clickFx.burst(r.left + r.width / 2, r.top + r.height / 2);
+  }, { passive: true });
+}
+window.addEventListener('load', initClickFx);

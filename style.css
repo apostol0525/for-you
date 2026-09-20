@@ -1988,6 +1988,13 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   pointer-events: none; z-index: 999;
 }
 
+/* холст искр-взрыва при нажатии на кнопки */
+#fx-canvas {
+  position: fixed; inset: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 998;
+}
+
 /* индикатор прогресса */
 .quiz__progress {
   position: absolute; top: 26px; left: 0; right: 0;
