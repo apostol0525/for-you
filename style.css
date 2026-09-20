@@ -897,7 +897,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 .final__card {
   position: relative;
   width: 350px;
-  height: 540px;
+  min-height: 540px;
   background: #F3E9D7;
   border-radius: 25px;
   padding: 16px;
@@ -969,6 +969,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   font-size: 16.5px;
   color: #3A342C;
   line-height: 1.25;
+  text-align: center;
+  margin: 6px 0 10px;
 }
 
 .final__text {
@@ -1016,6 +1018,89 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   line-height: 1.4;
   text-align: left;
   margin-bottom: 11px;
+}
+
+/* ─────────── финал: торт-шапка (прорисовка → акварель → посадка в слот) ─────────── */
+
+/* пустое место в шапке карточки, куда сядет торт */
+.final__cake-slot {
+  width: 100%;
+  aspect-ratio: 1127.33 / 696.5;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+
+/* сам торт — абсолютный сиблинг карточки (вне zoom карточки) */
+.final__cake {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;                 /* геометрия проставляется из JS по слоту */
+  height: 0;
+  opacity: 0;               /* до старта кино скрыт */
+  z-index: 5;
+  border-radius: 10px;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  box-shadow: 0 8px 24px rgba(60, 40, 20, .28);
+  transition: transform .85s cubic-bezier(.4, 0, .2, 1), opacity .5s ease;
+  will-change: transform, opacity;
+}
+.final__cake.is-live { opacity: 1; }
+.final__cake--lift { z-index: 20; }
+.final__cake.is-docked { box-shadow: 0 4px 14px rgba(60, 40, 20, .22); }
+
+.final__cake-reveal,
+.final__cake-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.final__cake-reveal { display: block; }
+.final__cake-img { opacity: 1; }                        /* видимость через маску-акварель */
+.final__cake.instant .final__cake-img { -webkit-mask: none; mask: none; }
+.final__cake.instant .final__cake-lines { opacity: 0; }
+
+.final__cake-lines { pointer-events: none; }
+.final__cake-lines svg { width: 100%; height: 100%; display: block; }
+.final__cake-lines svg path { stroke: #5C4A38; fill: none; }
+.final__cake-lines.draw svg path {
+  animation: hero-draw 1.5s cubic-bezier(.45, 0, .25, 1) forwards;
+}
+.final__cake-lines.fade {
+  opacity: 0;
+  transition: opacity 1.2s ease-in .3s;
+}
+
+/* карточка «собирается» вокруг торта: пока идёт рисование — фон, рамки, подпись и текст спрятаны */
+.final__card { transition: background .6s ease, box-shadow .6s ease; }
+.final__card::before,
+.final__card-frame::before { transition: opacity .6s ease; }
+.final__sign,
+.final__text { transition: opacity .7s ease; }
+
+#final.final--intro .final__card,
+#final.final--paint .final__card { background: transparent; box-shadow: none; }
+#final.final--intro .final__card::before,
+#final.final--paint .final__card::before,
+#final.final--intro .final__card-frame::before,
+#final.final--paint .final__card-frame::before { opacity: 0; }
+#final.final--intro .final__sign,
+#final.final--paint .final__sign,
+#final.final--intro .final__text,
+#final.final--paint .final__text { opacity: 0; }
+
+/* мгновенная сборка (повтор / reduced-motion): текст без побуквенной анимации */
+#final.final--assembled .final__text .ch,
+#final.final--assembled .final__sign .ch {
+  animation: none;
+  opacity: 1;
+  clip-path: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .final__cake { transition: opacity .4s ease; }
 }
 
 .final__finish {
@@ -1348,71 +1433,43 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   z-index: 2;
 }
 
-/* живой огонёк в карточках-подсказках (чистый CSS, по мотивам firepit) */
-.hint-frame .hint-flame.fire-anim {
+/* живой огонёк в карточках-подсказках — оживляем ту же картинку (lighthub.webp) */
+.fireimg {
   position: relative;
-  width: 26px;
-  height: 30px;
-  margin-bottom: 14px;
+  display: inline-flex;
+  justify-content: center;
+  margin-bottom: 12px;
   flex-shrink: 0;
   z-index: 2;
-  filter: drop-shadow(0 0 7px rgba(255, 140, 20, .55));
 }
-.fire-anim .flame {
+.fireimg .flame-img {
+  width: 22px;
+  height: auto;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 4px rgba(220, 150, 95, .45));
+  will-change: transform, filter, opacity;
+  animation: fa-flicker 1.15s ease-in-out infinite alternate;
+}
+.fireimg .spark {
   position: absolute;
-  bottom: 0; left: 0;
-  width: 100%; height: 100%;
-  opacity: .9;
-  border-bottom-right-radius: 70%;
-  border-bottom-left-radius: 70%;
-  border-top-left-radius: 70%;
-  transform: rotate(-45deg) skew(-10deg, -10deg);
-  background: rgb(255, 34, 0);
-  background-image: linear-gradient(to top right, rgba(255, 34, 0, .9), rgba(255, 106, 0, .7));
-  z-index: 1;
-  animation: fa-burn-left .3s infinite forwards;
-}
-.fire-anim .flame:nth-of-type(2n) { animation: fa-burn-right .4s infinite forwards; }
-.fire-anim .flame:nth-of-type(2) {
-  width: 80%; height: 80%; left: 10%;
-  background: rgb(255, 106, 0);
-  background-image: linear-gradient(to top right, rgba(255, 106, 0, .1), rgba(255, 200, 0, .1));
-  z-index: 2;
-}
-.fire-anim .flame:nth-of-type(3) {
-  width: 50%; height: 50%; left: 25%;
-  background-image: linear-gradient(to top right, rgb(255, 200, 0), #fff);
-  z-index: 3;
-}
-.fire-anim .flame:nth-of-type(4) {
-  width: 30%; height: 30%; left: 35%;
-  background: #fff;
-  background-image: linear-gradient(to top right, rgba(255, 255, 255, .3), rgba(0, 55, 255, .9));
-  opacity: 1; z-index: 4;
-}
-.fire-anim .spark {
-  position: absolute;
-  bottom: 54%; left: 15%;
+  bottom: 58%; left: 50%;
   width: 2px; height: 2px; border-radius: 50%;
-  background: rgba(255, 106, 0, .55);
-  z-index: 5;
+  background: rgba(190, 130, 85, .6);   /* тёплый уголёк — в тон заливке огонька */
+  z-index: 3;
   animation: fa-fly1 6s linear infinite .4s;
 }
-.fire-anim .spark:nth-of-type(2n) { animation-name: fa-fly2; animation-duration: 8.4s; animation-delay: 1s; }
-.fire-anim .spark:nth-of-type(3n) { left: 55%; animation-delay: 1.9s; animation-duration: 8s; }
-.fire-anim .spark:nth-of-type(4n) { left: 82%; animation-delay: 2.6s; animation-duration: 7s; }
-.fire-anim .spark:nth-of-type(5n) { left: 24%; animation-delay: 1.4s; animation-duration: 7s; }
-.fire-anim .spark:nth-of-type(6n) { left: 61%; animation-delay: 3.2s; }
-.fire-anim .spark:nth-of-type(7n) { left: 64%; animation-delay: .8s; animation-duration: 5s; }
-.fire-anim .spark:nth-of-type(8n) { left: 34%; animation-delay: 4.4s; animation-duration: 6.8s; }
+.fireimg .spark:nth-of-type(2n) { animation-name: fa-fly2; animation-duration: 8.4s; animation-delay: 1s; left: 44%; }
+.fireimg .spark:nth-of-type(3n) { left: 58%; animation-delay: 1.9s; animation-duration: 8s; }
+.fireimg .spark:nth-of-type(4n) { left: 38%; animation-delay: 2.6s; animation-duration: 7s; }
+.fireimg .spark:nth-of-type(5n) { left: 64%; animation-delay: 1.4s; animation-duration: 7s; }
+.fireimg .spark:nth-of-type(6n) { left: 46%; animation-delay: 3.2s; }
 
-@keyframes fa-burn-left {
-  0%, 100% { transform: rotate(-45deg) skew(-10deg, -10deg) scale(1); }
-  30%, 60% { transform: rotate(-44deg) skew(-12deg, -12deg) scale(1.06); }
-}
-@keyframes fa-burn-right {
-  0%, 100% { transform: rotate(-45deg) skew(-10deg, -10deg) scale(1); }
-  30%, 60% { transform: rotate(-46deg) skew(-6deg, -6deg) scale(1.06); }
+@keyframes fa-flicker {
+  0%   { transform: scale(1, 1)      skewX(0deg);    opacity: .93; filter: drop-shadow(0 0 3px rgba(220, 150, 95, .35)); }
+  25%  { transform: scale(1.03, 1.06) skewX(1.5deg); }
+  50%  { transform: scale(.99, 1.02) skewX(-1deg);   opacity: 1;   filter: drop-shadow(0 0 6px rgba(220, 150, 95, .55)); }
+  75%  { transform: scale(1.02, 1.04) skewX(1deg); }
+  100% { transform: scale(1, .98)    skewX(-1.5deg); opacity: .96; filter: drop-shadow(0 0 4px rgba(220, 150, 95, .4)); }
 }
 @keyframes fa-fly1 {
   0%   { transform: translate(0, 0); opacity: 1; }
@@ -1427,8 +1484,8 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   100% { transform: translate(-2px, -40px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fire-anim .flame, .fire-anim .spark { animation: none; }
-  .fire-anim .spark { opacity: 0; }
+  .fireimg .flame-img { animation: none; }
+  .fireimg .spark { animation: none; opacity: 0; }
 }
 
 .hint-soot {

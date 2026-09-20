@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=84">
+  <link rel="stylesheet" href="style.css?v=87">
 </head>
 
 <body>
@@ -263,13 +263,10 @@
       <p class="final__caption">Посылка доставлена <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="final__caption-icon" alt=""></p>
       <div class="final__card">
         <div class="final__card-frame">
-          <div class="final__head">
-            <img decoding="async" data-src="img/photo-anime/beauti-sunset-sm.webp" class="final__photo" alt="">
-            <div class="final__head-text">
-              <p class="final__hbd">С днём<br>рождения</p>
-              <p class="final__sign">— от друга, который очень рад, что ты есть.</p>
-            </div>
-          </div>
+          <div class="final__cake-slot" aria-hidden="true"></div>
+
+          <p class="final__sign">— от друга, который очень рад, что ты есть.</p>
+
           <div class="final__text">
             <p>Это не тест — здесь не было неправильных ответов, только ты.</p>
             <p>Ты из тех, с кем спокойно: рядом с тобой вещи встают на места, а разговоры длятся дольше, чем собирались. С тобой не скучно молчать и не страшно быть настоящим.</p>
@@ -277,6 +274,40 @@
           </div>
         </div>
       </div>
+
+      <!-- торт живёт над карточкой (сиблинг, вне zoom): рисуется крупно по центру → садится в слот -->
+      <div class="final__cake" aria-hidden="true">
+        <svg class="final__cake-reveal" viewBox="0 0 1127.33 696.5" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="cake-wc" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+              <feTurbulence type="fractalNoise" baseFrequency="0.011 0.014" numOctaves="4" seed="5" result="n"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="120" xChannelSelector="R" yChannelSelector="G" result="d"/>
+              <feGaussianBlur in="d" stdDeviation="6"/>
+            </filter>
+            <radialGradient id="cake-blot" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0" stop-color="#fff"/>
+              <stop offset="0.7" stop-color="#fff"/>
+              <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </radialGradient>
+            <mask id="cake-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1127.33" height="696.5">
+              <g filter="url(#cake-wc)">
+                <circle cx="563" cy="360" r="1" fill="url(#cake-blot)">
+                  <animate id="a-cake" attributeName="r" begin="indefinite" dur="2.4s" from="1" to="1050" fill="freeze" calcMode="spline" keySplines="0.3 0 0.2 1"/>
+                </circle>
+                <circle cx="300" cy="430" r="1" fill="url(#cake-blot)">
+                  <animate attributeName="r" begin="a-cake.begin+0.30s" dur="2.0s" from="1" to="720" fill="freeze" calcMode="spline" keySplines="0.3 0 0.2 1"/>
+                </circle>
+                <circle cx="840" cy="330" r="1" fill="url(#cake-blot)">
+                  <animate attributeName="r" begin="a-cake.begin+0.45s" dur="2.0s" from="1" to="720" fill="freeze" calcMode="spline" keySplines="0.3 0 0.2 1"/>
+                </circle>
+              </g>
+            </mask>
+          </defs>
+          <image class="final__cake-img" href="img/photo-anime/cake-img.jpg" x="0" y="0" width="1127.33" height="696.5" preserveAspectRatio="xMidYMid meet" mask="url(#cake-mask)"/>
+        </svg>
+        <div class="final__cake-lines" data-svg="img/photo-anime/cake-svg.svg"></div>
+      </div>
+
       <button class="final__finish" onclick="finishQuest()">Завершить Квест</button>
       <button class="final__restart" onclick="restartQuest()">Пройти снова</button>
     </section>
@@ -444,7 +475,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js?v=83"></script>
+  <script src="script.js?v=85"></script>
 
 </body>
 

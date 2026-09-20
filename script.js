@@ -39,7 +39,7 @@ function go(id) {
 
   if (id === 'birthday') playBirthday();
   if (id === 'result') setTimeout(resetWishVideo, 200);
-  if (id === 'final') { setTimeout(animateFinalHandwriting, 700); setTimeout(fireFinalConfetti, 2500); }
+  if (id === 'final') startFinalCinema();
   if (/^quiz[2-5]?$/.test(id)) initQuizSection(id);
 
   setTimeout(() => {
@@ -650,6 +650,154 @@ function animateFinalHandwriting() {
   // общая длительность как CSS-переменную (не обязательно, но пригодится)
   const total = gi * PER;
   document.getElementById('final').style.setProperty('--hw-total', total + 'ms');
+  return gi;                       // число букв → длительность прописывания
+}
+
+// ── финал-кино: торт рисуется крупно → акварель → садится в шапку → текст → конфетти ──
+let finalRun = 0;
+
+function startFinalCinema() {
+  const sec = document.getElementById('final');
+  const cake = sec.querySelector('.final__cake');
+  const slot = sec.querySelector('.final__cake-slot');
+  const lines = cake && cake.querySelector('.final__cake-lines');
+  if (!cake || !slot || !lines) return;
+  const rid = ++finalRun;
+
+  // сброс состояния (важно для «Пройти снова»)
+  sec.classList.remove('final--intro', 'final--paint', 'final--assembled');
+  cake.classList.remove('is-live', 'final__cake--lift', 'instant', 'is-docked');
+  cake.style.transition = 'none';
+  cake.style.transform = '';
+  cake.style.opacity = '';
+  lines.classList.remove('draw', 'fade');
+  lines.innerHTML = '';
+
+  let seen = false;
+  try { seen = !!localStorage.getItem('nozanin_final_seen'); } catch (e) {}
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  try { new Image().src = 'img/photo-anime/cake-img.jpg'; } catch (e) {}   // прогрев
+
+  if (seen || reduce) {                        // без кино — собранная карточка сразу
+    requestAnimationFrame(() => {
+      if (rid !== finalRun) return;
+      assembleFinalInstant();
+    });
+    return;
+  }
+
+  // кино: прячем карточку на время входа секции, ждём завершения входа (~1.2с)
+  sec.classList.add('final--intro');
+  setTimeout(() => { if (rid === finalRun) playFinal(rid); }, 1250);
+}
+
+async function playFinal(rid) {
+  const sec = document.getElementById('final');
+  const cake = sec.querySelector('.final__cake');
+  const slot = sec.querySelector('.final__cake-slot');
+  const lines = cake.querySelector('.final__cake-lines');
+  const aCake = document.getElementById('a-cake');
+
+  // 0) геометрия слота + «большой кадр» по центру экрана
+  positionCakeToSlot(sec, cake, slot);
+  const big = cakeBigTransform(sec, cake);
+  cake.style.transition = 'none';
+  cake.classList.add('is-live', 'final__cake--lift');
+  cake.style.transform = big;
+  void cake.offsetWidth;
+  cake.style.transition = '';
+  sec.classList.add('final--paint');
+  bindFinalSkip(rid);
+
+  // 1) вычерчивание контуров торта
+  try { await drawLinesInto(lines, 1.4, 0.9, { fit: 'xMidYMid meet' }); }
+  catch (e) {}                                  // svg не загрузился — просто покажем акварель
+  if (rid !== finalRun) return;
+
+  // 2) линии гаснут + проступает акварель
+  lines.classList.add('fade');
+  try { aCake.beginElement(); } catch (e) {}
+  await sleep(1300);
+  if (rid !== finalRun) return;
+
+  // 3) торт уезжает в шапку карточки, карточка проявляется вокруг
+  cake.classList.remove('final__cake--lift');
+  cake.classList.add('is-docked');
+  cake.style.transform = '';                    // → назад в слот (CSS transition)
+  sec.classList.remove('final--intro', 'final--paint');
+  try { localStorage.setItem('nozanin_final_seen', '1'); } catch (e) {}
+  await sleep(820);
+  if (rid !== finalRun) return;
+
+  // 4) текст пишется пером
+  const letters = animateFinalHandwriting() || 0;
+  const textMs = letters * 25 + 600;
+
+  // 5) финальный «хлопок» конфетти (в середине прописывания)
+  setTimeout(() => { if (rid === finalRun) fireFinalConfetti(); }, Math.min(textMs - 200, 3800));
+
+  await sleep(textMs);
+  if (rid === finalRun) unbindFinalSkip();
+}
+
+// торт мгновенно в шапке (повтор / reduced-motion / тап-скип)
+function assembleFinalInstant() {
+  const sec = document.getElementById('final');
+  const cake = sec.querySelector('.final__cake');
+  const slot = sec.querySelector('.final__cake-slot');
+  const lines = cake.querySelector('.final__cake-lines');
+  positionCakeToSlot(sec, cake, slot);
+  cake.style.transition = 'none';
+  cake.style.transform = '';
+  cake.classList.remove('final__cake--lift');
+  cake.classList.add('is-live', 'instant', 'is-docked');
+  lines.classList.add('fade');
+  sec.classList.remove('final--intro', 'final--paint');
+  sec.classList.add('final--assembled');
+  animateFinalHandwriting();
+}
+
+// торт садится ровно на слот в шапке (docked-геометрия)
+function positionCakeToSlot(sec, cake, slot) {
+  const secR = sec.getBoundingClientRect();
+  const sR = slot.getBoundingClientRect();
+  cake.style.left = (sR.left - secR.left) + 'px';
+  cake.style.top = (sR.top - secR.top) + 'px';
+  cake.style.width = sR.width + 'px';
+  cake.style.height = sR.height + 'px';
+}
+
+// transform из docked-состояния в «большой кадр» по центру секции
+function cakeBigTransform(sec, cake) {
+  const secR = sec.getBoundingClientRect();
+  const cR = cake.getBoundingClientRect();
+  const bigW = Math.min(secR.width * 0.9, 460);
+  const scale = Math.max(1.15, bigW / (cR.width || 1));
+  const cx0 = cR.left + cR.width / 2, cy0 = cR.top + cR.height / 2;
+  const tx = (secR.left + secR.width / 2) - cx0;
+  const ty = (secR.top + secR.height * 0.42) - cy0;
+  return `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+}
+
+// тап по секции = промотать кино к собранной карточке
+function bindFinalSkip(rid) {
+  const sec = document.getElementById('final');
+  unbindFinalSkip();
+  const h = (e) => {
+    if (e.target.closest && e.target.closest('.final__finish, .final__restart, button, a')) return;
+    finalRun++;                                 // отменяем текущую цепочку await'ов
+    unbindFinalSkip();
+    assembleFinalInstant();
+    try { localStorage.setItem('nozanin_final_seen', '1'); } catch (err) {}
+    setTimeout(fireFinalConfetti, 200);
+  };
+  sec._finalSkip = h;
+  sec.addEventListener('click', h);
+}
+function unbindFinalSkip() {
+  const sec = document.getElementById('final');
+  if (sec && sec._finalSkip) { sec.removeEventListener('click', sec._finalSkip); sec._finalSkip = null; }
 }
 
 // --- финальный «хлопок»: конфетти вокруг открытки (canvas-confetti) ---
@@ -958,18 +1106,20 @@ function initA11y() {
   });
 }
 
-// --- живой огонёк в карточках-подсказках: статичную картинку → на CSS-пламя ---
+// --- живой огонёк в карточках-подсказках: оживляем ту же картинку (мерцание + искры) ---
 function buildHintFlames() {
-  document.querySelectorAll('.hint-frame > .hint-flame').forEach(img => {
-    if (img.classList.contains('fire-anim')) return;
-    const fire = document.createElement('div');
-    fire.className = 'hint-flame fire-anim';
-    fire.setAttribute('aria-hidden', 'true');
-    let html = '';
-    for (let i = 0; i < 4; i++) html += '<div class="flame"></div>';
-    for (let i = 0; i < 8; i++) html += '<i class="spark"></i>';
-    fire.innerHTML = html;
-    img.replaceWith(fire);
+  document.querySelectorAll('.hint-frame > img.hint-flame').forEach(img => {
+    if (img.closest('.fireimg')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'fireimg';
+    img.classList.add('flame-img');
+    img.replaceWith(wrap);          // ставим обёртку на место картинки
+    wrap.appendChild(img);          // и возвращаем саму картинку внутрь
+    for (let i = 0; i < 6; i++) {
+      const s = document.createElement('i');
+      s.className = 'spark'; s.setAttribute('aria-hidden', 'true');
+      wrap.appendChild(s);
+    }
   });
 }
 
