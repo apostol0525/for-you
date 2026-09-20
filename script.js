@@ -1155,10 +1155,11 @@ window.addEventListener('load', initA11y);
 window.addEventListener('load', initWishVideo);
 window.addEventListener('load', buildHintFlames);
 
-// --- взрыв светящихся частиц при нажатии на кнопки ---
+// --- звёздочки-искры, плавно отлетающие от кнопки при нажатии ---
 const clickFx = (() => {
   let canvas, ctx, dpr = 1, W = 0, H = 0, particles = [], raf = 0;
-  const COLORS = ['#FFD166', '#FF9F52', '#FFE9A8', '#F6B45A', '#FFF3D6', '#EF9E5B'];
+  // зелёный / лайм / жёлтый / оранжевый — как в референсе
+  const STAR = ['#8CC63F', '#B2D732', '#FFD100', '#FFC61A', '#FF9E1B', '#F7941E', '#FDE047'];
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1175,46 +1176,67 @@ const clickFx = (() => {
     window.addEventListener('resize', resize);
     return true;
   }
-  function rgba(hex, a) {
-    const n = parseInt(hex.slice(1), 16);
-    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a.toFixed(3)})`;
+  // точка на периметре кнопки (0..1 по обходу)
+  function edgePoint(r, t) {
+    const per = 2 * (r.width + r.height);
+    let d = t * per;
+    if (d < r.width) return { x: r.left + d, y: r.top };                       d -= r.width;
+    if (d < r.height) return { x: r.left + r.width, y: r.top + d };            d -= r.height;
+    if (d < r.width) return { x: r.left + r.width - d, y: r.top + r.height };  d -= r.width;
+    return { x: r.left, y: r.top + r.height - d };
   }
-  function burst(x, y) {
+  // 4-лучевая звезда-искра
+  function star(x, y, rad, rot, color, alpha) {
+    ctx.save();
+    ctx.translate(x, y); ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 6 * dpr;
+    const inner = rad * 0.36;
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const rr = i % 2 === 0 ? rad : inner;
+      const a = (Math.PI / 4) * i - Math.PI / 2;
+      ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  function burst(rect) {
     if (!ctx) return;
-    const N = 26;
+    const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+    const N = 22;
     for (let i = 0; i < N; i++) {
-      const ang = (Math.PI * 2) * (i / N) + Math.random() * 0.5;
-      const sp = (2.2 + Math.random() * 4.4) * dpr;
+      const p = edgePoint(rect, Math.random());
+      let dx = p.x - cx, dy = p.y - cy;
+      const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+      const sp = (0.4 + Math.random() * 1.1) * dpr;         // медленно — «плавно отлетают»
       particles.push({
-        x: x * dpr, y: y * dpr,
-        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 1.2 * dpr,
-        r: (2.5 + Math.random() * 3.5) * dpr,
-        life: 0, ttl: 52 + Math.random() * 34,
-        color: COLORS[(Math.random() * COLORS.length) | 0],
+        x: p.x * dpr, y: p.y * dpr,
+        vx: dx * sp + (Math.random() - 0.5) * 0.4 * dpr,
+        vy: dy * sp - (0.25 + Math.random() * 0.5) * dpr,   // лёгкий подъём
+        r: (4.5 + Math.random() * 5) * dpr,
+        rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.12,
+        life: 0, ttl: 80 + Math.random() * 55,              // дольше живут
+        color: STAR[(Math.random() * STAR.length) | 0],
       });
     }
     if (!raf) raf = requestAnimationFrame(frame);
   }
   function frame() {
     ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'lighter';            // свечение (аддитивно)
-    const g = 0.14 * dpr;
+    const g = 0.03 * dpr;                                   // почти невесомо
     particles = particles.filter(p => {
       p.life++;
-      p.vx *= 0.955; p.vy = p.vy * 0.955 + g;            // трение + гравитация
-      p.x += p.vx; p.y += p.vy;
-      const k = 1 - p.life / p.ttl;                       // 1 → 0 (затухание)
-      if (k <= 0) return false;
-      const rad = p.r * (0.4 + 0.6 * (k * k)) * 2.2;
-      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad);
-      grd.addColorStop(0, rgba(p.color, 0.9 * k));
-      grd.addColorStop(0.4, rgba(p.color, 0.5 * k));
-      grd.addColorStop(1, rgba(p.color, 0));
-      ctx.fillStyle = grd;
-      ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, Math.PI * 2); ctx.fill();
+      p.vx *= 0.975; p.vy = p.vy * 0.975 + g;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      const t = p.life / p.ttl;                             // 0 → 1
+      if (t >= 1) return false;
+      const alpha = t < 0.15 ? t / 0.15 : (1 - (t - 0.15) / 0.85);  // мягкое появление+затухание
+      star(p.x, p.y, p.r * (0.7 + 0.3 * (1 - t)), p.rot, p.color, alpha);
       return true;
     });
-    ctx.globalCompositeOperation = 'source-over';
     if (particles.length) raf = requestAnimationFrame(frame);
     else { raf = 0; ctx.clearRect(0, 0, W, H); }
   }
@@ -1225,10 +1247,9 @@ function initClickFx() {
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!clickFx.init()) return;
   document.addEventListener('pointerdown', (e) => {
-    const el = e.target.closest('button, .quiz__option, .vibe__card, .hero-live__open');
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    clickFx.burst(r.left + r.width / 2, r.top + r.height / 2);
+    const btn = e.target.closest('button');
+    if (!btn || btn.closest('#hero')) return;              // основные кнопки, кроме hero-секции
+    clickFx.burst(btn.getBoundingClientRect());
   }, { passive: true });
 }
 window.addEventListener('load', initClickFx);
