@@ -10,7 +10,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=110">
+  <link rel="stylesheet" href="style.css?v=111">
 </head>
 
 <body>
@@ -474,9 +474,19 @@
   <canvas id="fx-canvas"></canvas>
   <canvas id="confetti-canvas"></canvas>
 
+  <!-- фоновая музыка: «A Town with an Ocean View» (Joe Hisaishi, Kiki) -->
+  <audio id="bgm" src="audio/town-ocean-view.mp3" loop preload="auto"></audio>
+  <button id="bgmToggle" class="bgm-toggle" type="button" aria-label="Фоновая музыка" aria-pressed="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path class="bgm-spk" d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>
+      <path class="bgm-wave" d="M16 8.5a4 4 0 0 1 0 7M18.6 6a7 7 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <line class="bgm-slash" x1="3.5" y1="20.5" x2="20.5" y2="3.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+    </svg>
+  </button>
+
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js?v=107"></script>
+  <script src="script.js?v=108"></script>
 
 </body>
 

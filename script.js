@@ -1367,9 +1367,47 @@ function initClickFx() {
   if (!clickFx.init()) return;
   document.addEventListener('pointerdown', (e) => {
     const btn = e.target.closest('button');
-    // основные кнопки; кроме hero-секции и вариантов ответа квиза
-    if (!btn || btn.closest('#hero') || btn.classList.contains('quiz__option')) return;
+    // основные кнопки; кроме hero-секции, вариантов ответа квиза и кнопки музыки
+    if (!btn || btn.closest('#hero') || btn.classList.contains('quiz__option') || btn.classList.contains('bgm-toggle')) return;
     clickFx.burst(btn.getBoundingClientRect());
   }, { passive: true });
 }
 window.addEventListener('load', initClickFx);
+
+// --- фоновая музыка: старт по первому жесту, тихая громкость, вкл/выкл с запоминанием ---
+function initBgm() {
+  const audio = document.getElementById('bgm');
+  const btn = document.getElementById('bgmToggle');
+  if (!audio || !btn) return;
+  audio.volume = 0.28;
+
+  let muted = false;
+  try { muted = localStorage.getItem('nozanin_bgm_muted') === '1'; } catch (e) {}
+
+  function apply() {
+    audio.muted = muted;
+    btn.classList.toggle('muted', muted);
+    btn.setAttribute('aria-pressed', String(!muted));
+  }
+  apply();
+
+  let started = false;
+  function tryStart() {
+    if (started) return;
+    audio.play().then(() => {
+      started = true;
+      ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.removeEventListener(ev, tryStart));
+    }).catch(() => {});   // до жеста браузер откажет — попробуем на следующем
+  }
+  ['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, tryStart, { passive: true }));
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    muted = !muted;
+    try { localStorage.setItem('nozanin_bgm_muted', muted ? '1' : '0'); } catch (err) {}
+    apply();
+    if (!muted) tryStart();
+  });
+}
+window.addEventListener('load', initBgm);
