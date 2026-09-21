@@ -479,6 +479,11 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   display: block;
 }
 
+/* штрихи в экранных пикселях (иначе при уменьшении портрета линии почти исчезают) */
+.bd-portrait__lines svg path { vector-effect: non-scaling-stroke; }
+.bd-portrait__lines svg .m { stroke-width: 1.9; }
+.bd-portrait__lines svg .s { stroke-width: 1.05; opacity: .82; }   /* тонкие — заметнее */
+
 .bd-portrait__lines .f path {
   fill-opacity: 0;
 }
