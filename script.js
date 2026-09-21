@@ -238,7 +238,7 @@ const bdPortrait = (() => {
   const lines = box && box.querySelector('.bd-portrait__lines');
   const aFace = document.getElementById('a-face');
   const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
-  const LINES_DELAY = 0.6, DRAW_DUR = 1.6, DRAW_STAGGER = 0.5;
+  const LINES_DELAY = 0.6, DRAW_DUR = 2.6, DRAW_STAGGER = 0.6;
   const PAUSE_MS = 1500;      // пауза «лицо нарисовано → покраска» ≈ 1.5с (потом акварель бодро)
   const BTN_AFTER_MS = 550;   // кнопка появляется вскоре после старта покраски
   let run = 0;
