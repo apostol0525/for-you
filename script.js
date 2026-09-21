@@ -217,17 +217,19 @@ function splitLetters(el, start = 0) {
 }
 
 function splitSubtitle() {
-  splitLetters(document.querySelector('.birthday__subtitle'));
+  return splitLetters(document.querySelector('.birthday__subtitle')) || 0;
 }
 
-// оркестратор секции birthday: подзаголовок → контуры портрета → акварель → кнопка (CSS-задержка)
+// оркестратор секции birthday: подзаголовок печатается → (уходит на второй план) → контуры → акварель → кнопка
 function playBirthday() {
   const sec = document.getElementById('birthday');
-  splitSubtitle();
-  sec.classList.remove('play', 'ready');
+  const n = splitSubtitle();
+  sec.classList.remove('play', 'ready', 'bd-drawing');
   void sec.offsetWidth;
   sec.classList.add('play');
-  bdPortrait.play().then(ok => { if (ok) sec.classList.add('ready'); });
+  // ждём, пока подзаголовок допечатается (зеркалит CSS: .3s + i*.03s + .26s), и только затем рисуем лицо
+  const subEnd = 0.3 + Math.max(0, n - 1) * 0.03 + 0.26;
+  bdPortrait.play(subEnd + 0.2).then(ok => { if (ok) sec.classList.add('ready'); });
 }
 
 // портрет: линии вычерчиваются сверху вниз, затем акварельное пятно проявляет цветной рисунок
@@ -248,13 +250,14 @@ const bdPortrait = (() => {
   }
 
   // возвращает true, если дошли до конца (не было stop / повторного play)
-  async function play() {
+  async function play(linesDelay = LINES_DELAY) {
     if (!box || !lines) return false;
     const id = ++run;
     reset();
     buildPortraitFX();
-    await sleep(LINES_DELAY * 1000);
+    await sleep(linesDelay * 1000);
     if (id !== run) return false;
+    document.getElementById('birthday').classList.add('bd-drawing');   // подзаголовок → на второй план
     await drawLinesInto(lines, DRAW_DUR, DRAW_STAGGER, { fit: 'xMidYMid meet', byY: true });
     if (id !== run) return false;
 

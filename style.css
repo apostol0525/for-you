@@ -422,7 +422,14 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 
 #birthday.play .birthday__subtitle .ch {
   animation: bd-write .26s ease forwards;
-  animation-delay: calc(.9s + var(--i) * .05s);
+  animation-delay: calc(.3s + var(--i) * .03s);   /* печатается быстрее, чтобы допечататься до прорисовки */
+}
+
+/* когда началась прорисовка лица — подзаголовок уходит на второй план, фокус на портрете */
+#birthday.bd-drawing .birthday__subtitle {
+  opacity: .5;
+  transform: scale(.95);
+  transition: opacity .7s ease, transform .7s ease;
 }
 
 @keyframes bd-write {
