@@ -266,6 +266,7 @@ const bdPortrait = (() => {
 
     lines.classList.add('fade');
     try { aFace.beginElement(); } catch (e) {}
+    sfx.paint();                              // звук акварели
     requestAnimationFrame(() => { if (id === run) box.classList.add('color'); });
 
     // подпись — параллельно, чтобы не задерживать появление кнопки
@@ -764,6 +765,7 @@ async function playFinal(rid) {
   // 2) линии гаснут + проступает акварель
   lines.classList.add('fade');
   try { aCake.beginElement(); } catch (e) {}
+  sfx.paint();                              // звук акварели
   await sleep(1300);
   if (rid !== finalRun) return;
 
@@ -1163,6 +1165,7 @@ function initHeroLive() {
     hint.classList.remove('show');
     lines.classList.add('fade');
     try { aColor.beginElement(); } catch (e) {}
+    sfx.paint();                              // звук акварели
     aColor.addEventListener('endEvent', finishColor, { once: true });
     setTimeout(finishColor, 4200); // страховка, если endEvent не придёт
   }
@@ -1366,6 +1369,7 @@ function initClickFx() {
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!clickFx.init()) return;
   document.addEventListener('pointerdown', (e) => {
+    if (!e.target || !e.target.closest) return;
     const btn = e.target.closest('button');
     // основные кнопки; кроме hero-секции, вариантов ответа квиза и кнопки музыки
     if (!btn || btn.closest('#hero') || btn.classList.contains('quiz__option') || btn.classList.contains('bgm-toggle')) return;
@@ -1379,7 +1383,7 @@ function initBgm() {
   const audio = document.getElementById('bgm');
   const btn = document.getElementById('bgmToggle');
   if (!audio || !btn) return;
-  audio.volume = 0.28;
+  audio.volume = 0.14;
 
   let muted = false;
   try { muted = localStorage.getItem('nozanin_bgm_muted') === '1'; } catch (e) {}
@@ -1411,3 +1415,66 @@ function initBgm() {
   });
 }
 window.addEventListener('load', initBgm);
+
+// --- лёгкие звуки (Web Audio): «тап» по кнопкам + «акварельный» звук покраски ---
+const sfx = (() => {
+  let ctx = null;
+  function ac() {
+    try {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch (e) { return null; }
+    return ctx;
+  }
+  function muted() {
+    try { return localStorage.getItem('nozanin_bgm_muted') === '1'; } catch (e) { return false; }
+  }
+
+  // короткий мягкий «тап»
+  function tap() {
+    if (muted()) return;
+    const c = ac(); if (!c) return;
+    const t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(540, t);
+    o.frequency.exponentialRampToValueAtTime(300, t + 0.07);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.09, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    o.connect(g).connect(c.destination);
+    o.start(t); o.stop(t + 0.13);
+  }
+
+  // мягкий «водяной» мазок кистью — фильтрованный шум с плавным нарастанием/спадом
+  function paint() {
+    if (muted()) return;
+    const c = ac(); if (!c) return;
+    const t = c.currentTime, dur = 1.4;
+    const n = Math.floor(c.sampleRate * dur);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;      // белый шум
+    const src = c.createBufferSource(); src.buffer = buf;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.7;
+    lp.frequency.setValueAtTime(360, t);
+    lp.frequency.linearRampToValueAtTime(1500, t + dur * 0.45);    // «раскрывается»
+    lp.frequency.linearRampToValueAtTime(480, t + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.075, t + 0.4);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    src.connect(lp).connect(g).connect(c.destination);
+    src.start(t); src.stop(t + dur);
+  }
+  return { tap, paint };
+})();
+
+function initSfx() {
+  // «тап» по основным кнопкам и вариантам ответа/vibe (без перегруза)
+  document.addEventListener('pointerdown', (e) => {
+    if (!e.target || !e.target.closest) return;
+    if (e.target.closest('button, .quiz__option, .vibe__card')) sfx.tap();
+  }, { passive: true });
+}
+window.addEventListener('load', initSfx);
