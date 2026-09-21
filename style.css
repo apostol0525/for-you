@@ -1327,9 +1327,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   display: flex;
   flex-direction: column;
   flex: 1;
-  border: 1px solid #5C4A38;
-  border-radius: 16px;
-  padding: 10px;
+  padding: 3px;                 /* внутренняя рамка убрана — обводит вся внешняя */
   min-height: 0;
 }
 
@@ -1362,16 +1360,16 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 .polaroid__bottom {
-  padding: 14px 14px 6px;
+  padding: 9px 14px 2px;
   flex-shrink: 0;
 }
 
 .polaroid__caption {
   font-family: 'Rubik', sans-serif;
-  font-size: 15.5px;
+  font-size: 14px;
   color: #3A342C;
   text-align: center;
-  line-height: 1.4;
+  line-height: 1.34;
   max-width: 300px;
   margin: 0 auto;
 }
@@ -1874,17 +1872,16 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
   }
 
   .polaroid__frame {
-    padding: 12px;
-    border-radius: 12px;
+    padding: 3px;
   }
 
   .polaroid__caption {
-    font-size: 16px;
+    font-size: 14px;
     max-width: 270px;
   }
 
   .polaroid__bottom {
-    padding: 12px 12px 4px;
+    padding: 8px 12px 2px;
   }
   .polaroid__kiki {
     width: 82px;
@@ -2051,7 +2048,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 /* полароид — явная кнопка «далее →» (не только тап по фону) */
 .polaroid__next {
   display: block;
-  margin: 16px auto 2px;
+  margin: 8px auto 2px;
   padding: 10px 28px;
   border: none;
   border-radius: 22px;
