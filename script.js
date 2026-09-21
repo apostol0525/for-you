@@ -238,8 +238,8 @@ const bdPortrait = (() => {
   const lines = box && box.querySelector('.bd-portrait__lines');
   const aFace = document.getElementById('a-face');
   const signLetters = splitLetters(box && box.querySelector('.bd-portrait__sign'));
-  const LINES_DELAY = 0.6, DRAW_DUR = 2.4, DRAW_STAGGER = 1.0;
-  const PAUSE_MS = 500;       // пауза между прорисовкой лица и началом покраски (короче)
+  const LINES_DELAY = 0.6, DRAW_DUR = 1.6, DRAW_STAGGER = 0.5;
+  const PAUSE_MS = 1500;      // пауза «лицо нарисовано → покраска» ≈ 1.5с (потом акварель бодро)
   const BTN_AFTER_MS = 550;   // кнопка появляется вскоре после старта покраски
   let run = 0;
 
@@ -261,7 +261,7 @@ const bdPortrait = (() => {
     await drawLinesInto(lines, DRAW_DUR, DRAW_STAGGER, { fit: 'xMidYMid meet', byY: true });
     if (id !== run) return false;
 
-    await sleep(PAUSE_MS);                 // 1.5с пауза перед покраской
+    await sleep(PAUSE_MS);                 // короткая пауза, затем сразу бодрая акварель
     if (id !== run) return false;
 
     lines.classList.add('fade');

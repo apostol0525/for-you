@@ -502,7 +502,7 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 
 .bd-portrait__lines.fade {
   opacity: 0;
-  transition: opacity 2s ease-in .4s;
+  transition: opacity 1.1s ease-in .1s;
 }
 
 /* подпись художника — прописывается пером после покраски */
