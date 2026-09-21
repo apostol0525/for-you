@@ -372,9 +372,15 @@ function drawOptCircle(section, btn) {
   const L = path.getTotalLength();
   path.style.strokeDasharray = L;
   svg.classList.add('draw');                       // видимость
+
+  // направление обводки чередуется по номеру варианта → зигзаг
+  const idx = [...section.querySelectorAll('.quiz__option')].indexOf(btn);
+  const reverse = idx % 2 === 1;                    // 2-й вариант — в обратную сторону
+  const from = reverse ? -L : L;
+
   path.getAnimations().forEach(a => a.cancel());   // сбросить прошлую обводку
-  path.animate(                                     // и обмотать заново
-    [{ strokeDashoffset: L }, { strokeDashoffset: 0 }],
+  path.animate(                                     // и обмотать заново (в нужную сторону)
+    [{ strokeDashoffset: from }, { strokeDashoffset: 0 }],
     { duration: 550, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }
   );
 }

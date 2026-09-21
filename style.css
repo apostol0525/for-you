@@ -480,9 +480,9 @@ body[data-vibe="city"]  { --accent: #9B8188; --accent-rgb: 155, 129, 136; }  /* 
 }
 
 /* штрихи в экранных пикселях (иначе при уменьшении портрета линии почти исчезают) */
-.bd-portrait__lines svg path { vector-effect: non-scaling-stroke; stroke: #33271B; }  /* темнее и контрастнее */
-.bd-portrait__lines svg .m { stroke-width: 2.1; }
-.bd-portrait__lines svg .s { stroke-width: 1.15; opacity: .9; }   /* тонкие — заметнее */
+.bd-portrait__lines svg path { vector-effect: non-scaling-stroke; stroke: #4A3A2A; }  /* мягче, не слишком тёмные */
+.bd-portrait__lines svg .m { stroke-width: 1.75; }
+.bd-portrait__lines svg .s { stroke-width: 1; opacity: .78; }   /* тонкие — заметнее, но легче */
 
 .bd-portrait__lines .f path {
   fill-opacity: 0;
