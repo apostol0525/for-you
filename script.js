@@ -284,7 +284,7 @@ function buildPortraitFX() {
   const fx = document.getElementById('bd-fx');
   if (!fx) return;
   fx.textContent = '';
-  const CX = 470, CY = 340, N = 70;
+  const CX = 505, CY = 460, N = 70;
   for (let i = 0; i < N; i++) {
     const big = i % 5 === 0;
     const ang = Math.random() * Math.PI * 2;
@@ -610,7 +610,7 @@ function releaseWish() {               // по нажатию — с начал�
 function sendWish() {
   const input = document.querySelector('#result .wish__input');
   const text = input ? input.value.trim() : '';
-  try { if (text) localStorage.setItem('nozanin_wish', text); } catch (e) {}
+  try { if (text) localStorage.setItem('bday_wish', text); } catch (e) {}
   releaseWish();                  // одуванчики разлетаются — желание улетает
   if (wishVideo) {                // «Загадано» — когда разлёт отыграл (+ страховка)
     let shown = false;
@@ -1153,7 +1153,7 @@ function initHeroLive() {
     if (done) return;
     done = true;
     lines.style.display = 'none';
-    if (title) title.classList.add('show');                    // перо прописывает Happy Birthday → Nozanin
+    if (title) title.classList.add('show');                    // перо прописывает Happy Birthday
     const writeMs = titleLetters * 75 + 300;
     if (openBtn) setTimeout(() => openBtn.classList.add('show'), writeMs + 200);
   }
@@ -1386,7 +1386,7 @@ function initBgm() {
   audio.volume = 0.14;
 
   let muted = false;
-  try { muted = localStorage.getItem('nozanin_bgm_muted') === '1'; } catch (e) {}
+  try { muted = localStorage.getItem('bday_bgm_muted') === '1'; } catch (e) {}
 
   function apply() {
     audio.muted = muted;
@@ -1409,7 +1409,7 @@ function initBgm() {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     muted = !muted;
-    try { localStorage.setItem('nozanin_bgm_muted', muted ? '1' : '0'); } catch (err) {}
+    try { localStorage.setItem('bday_bgm_muted', muted ? '1' : '0'); } catch (err) {}
     apply();
     if (!muted) tryStart();
   });
@@ -1427,7 +1427,7 @@ const sfx = (() => {
     return ctx;
   }
   function muted() {
-    try { return localStorage.getItem('nozanin_bgm_muted') === '1'; } catch (e) { return false; }
+    try { return localStorage.getItem('bday_bgm_muted') === '1'; } catch (e) { return false; }
   }
 
   // короткий мягкий «тап»

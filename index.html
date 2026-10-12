@@ -5,12 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
   <title>Happy Birthday</title>
+  <meta name="description" content="Interactive animated birthday experience — hand-drawn reveal, watercolor, mini-quest. Vanilla HTML/CSS/JS.">
+  <!--
+    Non-commercial fan / portfolio project.
+    Artwork inspired by Studio Ghibli's "Kiki's Delivery Service".
+    Music: Joe Hisaishi. All rights belong to their respective owners.
+  -->
+  <meta name="robots" content="noindex">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=111">
+  <link rel="stylesheet" href="style.css?v=113">
 </head>
 
 <body>
@@ -64,9 +72,9 @@
           <g id="hb-fx"></g>
         </svg>
         <div class="hero-live__lines" data-svg="img/photo-anime/svg-animation-draw.svg"></div>
-        <div class="hero-title" aria-label="Happy Birthday Nozanin">
+        <div class="hero-title" aria-label="Happy Birthday to You">
           <p class="hero-title__line hero-title__hb">Happy Birthday</p>
-          <p class="hero-title__line hero-title__name">Nozanin</p>
+          <p class="hero-title__line hero-title__name">to You</p>
         </div>
         <p class="hero-live__hint">нажми, чтобы начать</p>
         <button class="open-btn hero-live__open" onclick="go('birthday')">open</button>
@@ -74,10 +82,10 @@
     </section>
 
     <section class="screen" id="birthday">
-      <p class="birthday__subtitle">это особенный день для тебя и я сделал особенный подарок</p>
+      <p class="birthday__subtitle">это особенный день, и для него есть особенный подарок</p>
       <!-- портрет: контуры прорисовываются → акварельное пятно проявляет цветной рисунок -->
       <div class="bd-portrait" aria-hidden="true">
-        <svg class="bd-portrait__reveal" viewBox="0 0 935 751" preserveAspectRatio="xMidYMid meet">
+        <svg class="bd-portrait__reveal" viewBox="0 0 1025 1025" preserveAspectRatio="xMidYMid meet">
           <defs>
             <filter id="face-wc" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
               <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="4" seed="7" result="n"/>
@@ -89,32 +97,31 @@
               <stop offset="0.7" stop-color="#fff"/>
               <stop offset="1" stop-color="#fff" stop-opacity="0"/>
             </radialGradient>
-            <mask id="face-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="935" height="751">
+            <mask id="face-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1025" height="1025">
               <g filter="url(#face-wc)">
-                <circle cx="470" cy="340" r="1" fill="url(#face-blot)">
+                <circle cx="505" cy="460" r="1" fill="url(#face-blot)">
                   <animate id="a-face" attributeName="r" begin="indefinite" dur="1.8s"
-                           from="1" to="860" fill="freeze"
+                           from="1" to="1050" fill="freeze"
                            calcMode="spline" keySplines="0.16 0.6 0.2 1"/>
                 </circle>
-                <circle cx="250" cy="560" r="1" fill="url(#face-blot)">
+                <circle cx="280" cy="730" r="1" fill="url(#face-blot)">
                   <animate attributeName="r" begin="a-face.begin+0.25s" dur="1.5s"
-                           from="1" to="560" fill="freeze"
+                           from="1" to="720" fill="freeze"
                            calcMode="spline" keySplines="0.16 0.6 0.2 1"/>
                 </circle>
-                <circle cx="700" cy="560" r="1" fill="url(#face-blot)">
+                <circle cx="760" cy="760" r="1" fill="url(#face-blot)">
                   <animate attributeName="r" begin="a-face.begin+0.35s" dur="1.5s"
-                           from="1" to="560" fill="freeze"
+                           from="1" to="720" fill="freeze"
                            calcMode="spline" keySplines="0.16 0.6 0.2 1"/>
                 </circle>
               </g>
             </mask>
           </defs>
-          <image class="bd-portrait__img" href="img/photo-anime/face-color.webp?v=2" x="0" y="0" width="935" height="751"
+          <image class="bd-portrait__img" href="img/photo-anime/kiki-akvarel.webp?v=2" x="0" y="0" width="1025" height="1025"
                  preserveAspectRatio="xMidYMid meet" mask="url(#face-mask)"/>
           <g id="bd-fx"></g>
         </svg>
-        <div class="bd-portrait__lines" data-svg="img/photo-anime/face-draw.svg"></div>
-        <p class="bd-portrait__sign">Noziyk</p>
+        <div class="bd-portrait__lines" data-svg="img/photo-anime/kiki-svg.svg"></div>
       </div>
       <button class="birthday__btn" onclick="go('vibe')">Начать квест</button>
     </section>
@@ -310,6 +317,11 @@
 
       <button class="final__finish" onclick="finishQuest()">Завершить Квест</button>
       <button class="final__restart" onclick="restartQuest()">Пройти снова</button>
+
+      <p class="final__credits">
+        Некоммерческий фан-проект. Иллюстрации — по мотивам Studio Ghibli
+        «Kiki’s Delivery Service», музыка — Joe Hisaishi. Все права принадлежат их владельцам.
+      </p>
     </section>
 
   </div>
@@ -486,7 +498,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js?v=111"></script>
+  <script src="script.js?v=112"></script>
 
 </body>
 
