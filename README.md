@@ -6,8 +6,12 @@ An interactive, hand-drawn birthday micro-story. A line portrait is **drawn stro
 
 **🔗 Live demo:** [gifts-happy-birthday.vercel.app](https://gifts-happy-birthday.vercel.app/)  ·  **💻 Code:** _this repo_
 
-<!-- media/hero.gif -->
+<!-- TODO: record media/hero.gif, then uncomment
 ![Hero — line drawing → watercolor reveal](media/hero.gif)
+-->
+<p align="center">
+  <img src="media/dragdrop.gif" alt="Drag & drop — sorting photos onto the shelves" width="300">
+</p>
 
 ---
 
