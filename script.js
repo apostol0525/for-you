@@ -659,7 +659,7 @@ function resetQuest() {
   pickedPhoto = null;
   const sNext = document.querySelector('.shelf__next'); if (sNext) sNext.classList.remove('ready');
   document.querySelectorAll('#shelf .shelf__slot').forEach(s => s.classList.remove('pulse', 'over'));
-  const cnt = document.getElementById('shelfCount'); if (cnt) cnt.textContent = '0 из 3';
+  const cnt = document.getElementById('shelfCount'); if (cnt) cnt.textContent = '0' + (typeof t==='function'?t('shelf.of'):' из 3');
 
   // желание
   const wish = document.querySelector('#result .wish__input'); if (wish) wish.value = '';
@@ -921,7 +921,7 @@ let pickedPhoto = null;
 function updateShelf() {
   const filled = document.querySelectorAll('#shelf .shelf__slot .shelf__photo').length;
   const c = document.getElementById('shelfCount');
-  if (c) c.textContent = filled + ' из 3';
+  if (c) c.textContent = filled + (typeof t==='function'?t('shelf.of'):' из 3');
   const awaiting = !!pickedPhoto;   // фото выбрано → подсветить пустые ячейки
   document.querySelectorAll('#shelf .shelf__slot').forEach(s => {
     s.classList.toggle('pulse', awaiting && !s.querySelector('.shelf__photo'));
@@ -1228,7 +1228,7 @@ function initA11y() {
     const card = o.querySelector('.polaroid');
     if (!card || card.querySelector('.polaroid__next')) return;
     const b = document.createElement('button');
-    b.className = 'polaroid__next'; b.type = 'button'; b.textContent = 'далее →';
+    b.className = 'polaroid__next'; b.type = 'button'; b.textContent = (typeof t==='function'?t('ui.next'):'далее →');
     b.addEventListener('click', e => { e.stopPropagation(); advancePolaroid(step); });
     card.appendChild(b);
   });
@@ -1478,3 +1478,93 @@ function initSfx() {
   }, { passive: true });
 }
 window.addEventListener('load', initSfx);
+
+// --- двуязычность RU/EN ---
+const I18N = {
+  'hero.hint':      { ru: 'нажми, чтобы начать', en: 'tap to start' },
+  'bd.subtitle':    { ru: 'это особенный день, и для него есть особенный подарок', en: "it's a special day — and there's a special gift for it" },
+  'bd.btn':         { ru: 'Начать квест', en: 'Start the quest' },
+  'vibe.step':      { ru: 'Квест · разминка', en: 'Quest · warm-up' },
+  'vibe.title':     { ru: 'Твой Vibe', en: 'Your Vibe' },
+  'vibe.subtitle':  { ru: 'Если бы сегодняшний день был кадром из Гибли, то какой?', en: 'If today were a frame from Ghibli, which one?' },
+  'vibe.sky':       { ru: 'Полёт Кики', en: "Kiki's Flight" },
+  'vibe.sea':       { ru: 'Дом у моря', en: 'House by the Sea' },
+  'vibe.grass':     { ru: 'Тишина в траве', en: 'Stillness in the Grass' },
+  'vibe.city':      { ru: 'Вечерний Корико', en: 'Koriko at Dusk' },
+  'q1.q':  { ru: 'В каком городе Кики начинает свою службу доставки?', en: 'In which town does Kiki start her delivery service?' },
+  'q1.a1': { ru: 'Корико', en: 'Koriko' }, 'q1.a2': { ru: 'Токио', en: 'Tokyo' }, 'q1.a3': { ru: 'Йокогама', en: 'Yokohama' },
+  'q2.q':  { ru: 'Чем занимается Кики в новом городе?', en: 'What does Kiki do in the new town?' },
+  'q2.a1': { ru: 'Печёт хлеб', en: 'Bakes bread' }, 'q2.a2': { ru: 'Доставкой на метле', en: 'Deliveries by broom' }, 'q2.a3': { ru: 'Рисует картины', en: 'Paints pictures' },
+  'q3.q':  { ru: 'Что теряет Кики в середине истории и учится возвращать?', en: 'What does Kiki lose midway and learn to regain?' },
+  'q3.a1': { ru: 'Дом', en: 'Home' }, 'q3.a2': { ru: 'Свою метлу', en: 'Her broom' }, 'q3.a3': { ru: 'Способность летать', en: 'The ability to fly' },
+  'q4.q':  { ru: 'Как зовут мальчика, который мечтает летать и дружит с Кики?', en: "What's the name of the boy who dreams of flying and befriends Kiki?" },
+  'q4.a1': { ru: 'Томбо', en: 'Tombo' }, 'q4.a2': { ru: 'Коппори', en: 'Koppori' }, 'q4.a3': { ru: 'Борис', en: 'Boris' },
+  'q5.q':  { ru: 'Кто помогает Кики поверить в себя, когда у неё опускаются руки?', en: 'Who helps Kiki believe in herself when she loses heart?' },
+  'q5.a1': { ru: 'Мальчик Томбо', en: 'Tombo the boy' }, 'q5.a2': { ru: 'Художница Урсула', en: 'Ursula the painter' }, 'q5.a3': { ru: 'Пекарша Осоно', en: 'Osono the baker' },
+  'quiz.next':      { ru: 'Тык', en: 'Tap' },
+  'shelf.label':    { ru: 'отвлекалочка', en: 'a little break' },
+  'shelf.title':    { ru: 'Разложи моменты<br>по полочкам', en: 'Sort the moments<br>onto the shelves' },
+  'shelf.hint':     { ru: 'Перетащи фото на полочку · ', en: 'Drag a photo onto a shelf · ' },
+  'shelf.of':       { ru: ' из 3', en: ' of 3' },
+  'ui.next':        { ru: 'далее →', en: 'next →' },
+  'result.title':   { ru: 'Ты Молодчина! ты дошла до конца, делай так всегда за что бы не бралась', en: "You're amazing — you made it to the end. Keep doing that, whatever you take on." },
+  'result.subtitle':{ ru: 'Можешь загадать желание— <em>его никто не увидит. Текст остаётся только в твоём телефоне и никуда не отправляется. Честно.</em>', en: 'You can make a wish— <em>no one will see it. The text stays only on your device and is never sent anywhere. Promise.</em>' },
+  'wish.placeholder':{ ru: 'Здесь только ты и Кики..', en: 'Just you and Kiki here..' },
+  'wish.send':      { ru: 'Загадать желание', en: 'Make a wish' },
+  'wish.skip':      { ru: 'Пропустить', en: 'Skip' },
+  'final.caption':  { ru: 'Посылка доставлена ', en: 'Delivery complete ' },
+  'final.p1': { ru: 'Поздравляю от всей души с днём рождения! Пусть исполнятся все твои заветные мечты, а цели будут достигнуты.', en: 'Happy birthday with all my heart! May all your cherished dreams come true and your goals be reached.' },
+  'final.p2': { ru: 'Желаю крепкого здоровья, благополучия, любви, достатка, успехов в работе и во всех начинаниях.', en: 'I wish you strong health, well-being, love, abundance, and success in work and every new endeavor.' },
+  'final.p3': { ru: 'Много-много счастья, море позитива, верных и надёжных друзей, отрывных гулянок и, конечно же, побольше путешествий!', en: 'Lots and lots of happiness, an ocean of good vibes, true and loyal friends, wild celebrations and, of course, plenty of travels!' },
+  'final.finish':   { ru: 'Завершить Квест', en: 'Finish the Quest' },
+  'final.restart':  { ru: 'Пройти снова', en: 'Play again' },
+  'final.credits':  { ru: 'Некоммерческий фан-проект. Иллюстрации — по мотивам Studio Ghibli «Kiki’s Delivery Service», музыка — Joe Hisaishi. Все права принадлежат их владельцам.', en: "Non-commercial fan project. Artwork inspired by Studio Ghibli's «Kiki's Delivery Service», music by Joe Hisaishi. All rights belong to their respective owners." },
+  'comp1': { ru: 'Желаю, чтобы ты была как Кики, не боялась начинать новое в незнакомом месте', en: 'May you be like Kiki — unafraid to start something new in an unfamiliar place.' },
+  'comp2': { ru: 'Желаю, чтобы ты находила своё уютное место и своё дело.', en: 'May you always find your cozy place and your own calling.' },
+  'comp3': { ru: ' Желаю, чтобы даже когда будет трудно, ты находила силы подняться и верила в себя', en: "May you find the strength to rise even when it's hard — and keep believing in yourself." },
+  'comp4': { ru: ' Желаю чтобы люди Рядом с тобой вдохновлялись', en: 'May the people around you feel inspired.' },
+  'comp5': { ru: ' Желаю чтобы ты была тем человеком рядом с кем другие тоже становились сильнее и смелее', en: 'May you be the kind of person who makes others stronger and braver too.' },
+  'hint1': { ru: 'Это красивый город у самого моря, с башней с часами.', en: 'A beautiful town right by the sea, with a clock tower.' },
+  'hint2': { ru: 'Название аниме — это подсказка..', en: 'The name of the anime is the hint..' },
+  'hint3': { ru: 'Это про веру в себя, когда сомнения мешают взлететь...', en: "It's about believing in yourself when doubt keeps you grounded..." },
+  'hint4': { ru: 'Он мечтает о полётах и строит летающий велосипед..', en: 'He dreams of flying and builds a flying bicycle..' },
+  'hint5': { ru: 'Она живёт в лесу и рисует, они говорят по душам...', en: 'She lives in the woods and paints; they have a heart-to-heart...' },
+  'hint.retry':  { ru: 'попробовать ещё', en: 'try again' },
+  'hint.giveup': { ru: 'сдаюсь', en: 'give up' },
+  'wishdone.text': { ru: 'Желание загадано ✨', en: 'Your wish is made ✨' },
+  'wishdone.tyk':  { ru: 'тык', en: 'tap' },
+};
+let LANG = 'ru';
+function t(key) { const e = I18N[key]; return e ? (e[LANG] || e.ru) : key; }
+
+function applyLang(lang) {
+  LANG = (lang === 'en') ? 'en' : 'ru';
+  try { localStorage.setItem('bday_lang', LANG); } catch (e) {}
+  document.documentElement.lang = LANG;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    delete el.dataset.raw; delete el.dataset.split;        // сброс побуквенной анимации
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t(el.getAttribute('data-i18n-html'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph')));
+  });
+  document.querySelectorAll('.polaroid__next').forEach(b => { b.textContent = t('ui.next'); });
+  try { updateShelf(); } catch (e) {}                       // пересчитать «X из 3 / X of 3»
+
+  const b = document.getElementById('langToggle');
+  if (b) b.textContent = (LANG === 'ru') ? 'EN' : 'RU';     // кнопка показывает, КУДА переключит
+}
+
+function initLang() {
+  let saved = 'ru';
+  try { saved = localStorage.getItem('bday_lang') || 'ru'; } catch (e) {}
+  applyLang(saved);
+  const b = document.getElementById('langToggle');
+  if (b) b.addEventListener('click', (e) => { e.stopPropagation(); applyLang(LANG === 'ru' ? 'en' : 'ru'); });
+}
+// до анимаций (которые «нарезают» текст по буквам) — поэтому DOMContentLoaded, а не load
+document.addEventListener('DOMContentLoaded', initLang);

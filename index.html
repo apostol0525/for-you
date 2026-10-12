@@ -18,7 +18,7 @@
   <link rel="preload" as="image" href="img/mobile-img/one-fon-version.webp" media="(max-width: 600px)" fetchpriority="high">
   <link rel="preload" as="image" href="img/photoshop-img/one-fon.webp" media="(min-width: 601px)" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&family=Lobster&family=Manrope:wght@400;500;600&family=Marck+Script&family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=113">
+  <link rel="stylesheet" href="style.css?v=114">
 </head>
 
 <body>
@@ -76,13 +76,13 @@
           <p class="hero-title__line hero-title__hb">Happy Birthday</p>
           <p class="hero-title__line hero-title__name">to You</p>
         </div>
-        <p class="hero-live__hint">нажми, чтобы начать</p>
+        <p class="hero-live__hint" data-i18n="hero.hint">нажми, чтобы начать</p>
         <button class="open-btn hero-live__open" onclick="go('birthday')">open</button>
       </div>
     </section>
 
     <section class="screen" id="birthday">
-      <p class="birthday__subtitle">это особенный день, и для него есть особенный подарок</p>
+      <p class="birthday__subtitle" data-i18n="bd.subtitle">это особенный день, и для него есть особенный подарок</p>
       <!-- портрет: контуры прорисовываются → акварельное пятно проявляет цветной рисунок -->
       <div class="bd-portrait" aria-hidden="true">
         <svg class="bd-portrait__reveal" viewBox="0 0 1025 1025" preserveAspectRatio="xMidYMid meet">
@@ -123,13 +123,13 @@
         </svg>
         <div class="bd-portrait__lines" data-svg="img/photo-anime/kiki-svg.svg"></div>
       </div>
-      <button class="birthday__btn" onclick="go('vibe')">Начать квест</button>
+      <button class="birthday__btn" onclick="go('vibe')" data-i18n="bd.btn">Начать квест</button>
     </section>
 
     <section class="screen" id="vibe">
-      <p class="vibe__step">Квест · разминка</p>
-      <h2 class="vibe__title">Твой Vibe</h2>
-      <p class="vibe__subtitle">Если бы сегодняшний день был кадром из Гибли, то какой?</p>
+      <p class="vibe__step" data-i18n="vibe.step">Квест · разминка</p>
+      <h2 class="vibe__title" data-i18n="vibe.title">Твой Vibe</h2>
+      <p class="vibe__subtitle" data-i18n="vibe.subtitle">Если бы сегодняшний день был кадром из Гибли, то какой?</p>
       <div class="vibe__grid">
         <div class="vibe__card" data-vibe="sky" onclick="pickVibe(this)">
           <div class="vibe__card-frame">
@@ -138,7 +138,7 @@
             </div>
             <div class="vibe__card-label">
               <img decoding="async" data-src="img/photo-anime/icon-kiki.webp" class="vibe__card-icon" alt="">
-              <span>Полёт Кики</span>
+              <span data-i18n="vibe.sky">Полёт Кики</span>
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@
             </div>
             <div class="vibe__card-label">
               <img decoding="async" data-src="img/photo-anime/icon-kiki.webp" class="vibe__card-icon" alt="">
-              <span>Дом у моря</span>
+              <span data-i18n="vibe.sea">Дом у моря</span>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@
             </div>
             <div class="vibe__card-label">
               <img decoding="async" data-src="img/photo-anime/icon-kiki.webp" class="vibe__card-icon" alt="">
-              <span>Тишина в траве</span>
+              <span data-i18n="vibe.grass">Тишина в траве</span>
             </div>
           </div>
         </div>
@@ -171,7 +171,7 @@
             </div>
             <div class="vibe__card-label">
               <img decoding="async" data-src="img/photo-anime/icon-kiki.webp" class="vibe__card-icon" alt="">
-              <span>Вечерний Корико</span>
+              <span data-i18n="vibe.city">Вечерний Корико</span>
             </div>
           </div>
         </div>
@@ -180,68 +180,68 @@
 
     <section class="screen" id="quiz">
       <div class="quiz__card">
-        <p class="quiz__question">В каком городе Кики начинает свою службу доставки?</p>
+        <p class="quiz__question" data-i18n="q1.q">В каком городе Кики начинает свою службу доставки?</p>
       </div>
       <div class="quiz__options">
-        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Корико</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Токио</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Йокогама</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)" data-i18n="q1.a1">Корико</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q1.a2">Токио</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q1.a3">Йокогама</button>
       </div>
-      <button class="quiz__next" disabled onclick="checkQuiz1()">Тык</button>
+      <button class="quiz__next" disabled onclick="checkQuiz1()" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="quiz2">
       <div class="quiz__card">
-        <p class="quiz__question">Чем занимается Кики в новом городе?</p>
+        <p class="quiz__question" data-i18n="q2.q">Чем занимается Кики в новом городе?</p>
       </div>
       <div class="quiz__options">
-        <button class="quiz__option" onclick="pickQuiz(this)">Печёт хлеб</button>
-        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Доставкой на метле</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Рисует картины</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q2.a1">Печёт хлеб</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)" data-i18n="q2.a2">Доставкой на метле</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q2.a3">Рисует картины</button>
       </div>
-      <button class="quiz__next" disabled onclick="checkQuiz2()">Тык</button>
+      <button class="quiz__next" disabled onclick="checkQuiz2()" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="quiz3">
       <div class="quiz__card">
-        <p class="quiz__question">Что теряет Кики в середине истории и учится возвращать?</p>
+        <p class="quiz__question" data-i18n="q3.q">Что теряет Кики в середине истории и учится возвращать?</p>
       </div>
       <div class="quiz__options">
-        <button class="quiz__option" onclick="pickQuiz(this)">Дом</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Свою метлу</button>
-        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Способность летать</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q3.a1">Дом</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q3.a2">Свою метлу</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)" data-i18n="q3.a3">Способность летать</button>
       </div>
-      <button class="quiz__next" disabled onclick="checkQuiz3()">Тык</button>
+      <button class="quiz__next" disabled onclick="checkQuiz3()" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="quiz4">
       <div class="quiz__card">
-        <p class="quiz__question">Как зовут мальчика, который мечтает летать и дружит с Кики?</p>
+        <p class="quiz__question" data-i18n="q4.q">Как зовут мальчика, который мечтает летать и дружит с Кики?</p>
       </div>
       <div class="quiz__options">
-        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Томбо</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Коппори</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Борис</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)" data-i18n="q4.a1">Томбо</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q4.a2">Коппори</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q4.a3">Борис</button>
       </div>
-      <button class="quiz__next" disabled onclick="checkQuiz4()">Тык</button>
+      <button class="quiz__next" disabled onclick="checkQuiz4()" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="quiz5">
       <div class="quiz__card">
-        <p class="quiz__question">Кто помогает Кики поверить в себя, когда у неё опускаются руки?</p>
+        <p class="quiz__question" data-i18n="q5.q">Кто помогает Кики поверить в себя, когда у неё опускаются руки?</p>
       </div>
       <div class="quiz__options">
-        <button class="quiz__option" onclick="pickQuiz(this)">Мальчик Томбо</button>
-        <button class="quiz__option" data-correct onclick="pickQuiz(this)">Художница Урсула</button>
-        <button class="quiz__option" onclick="pickQuiz(this)">Пекарша Осоно</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q5.a1">Мальчик Томбо</button>
+        <button class="quiz__option" data-correct onclick="pickQuiz(this)" data-i18n="q5.a2">Художница Урсула</button>
+        <button class="quiz__option" onclick="pickQuiz(this)" data-i18n="q5.a3">Пекарша Осоно</button>
       </div>
-      <button class="quiz__next" disabled onclick="checkQuiz5()">Тык</button>
+      <button class="quiz__next" disabled onclick="checkQuiz5()" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="shelf">
-      <p class="shelf__label">отвлекалочка</p>
-      <h2 class="shelf__title">Разложи моменты<br>по полочкам</h2>
-      <p class="shelf__hint">Перетащи фото на полочку · <span id="shelfCount">0 из 3</span></p>
+      <p class="shelf__label" data-i18n="shelf.label">отвлекалочка</p>
+      <h2 class="shelf__title" data-i18n-html="shelf.title">Разложи моменты<br>по полочкам</h2>
+      <p class="shelf__hint"><span data-i18n="shelf.hint">Перетащи фото на полочку · </span><span id="shelfCount">0 из 3</span></p>
       <div class="shelf__slots">
         <div class="shelf__slot" onclick="placePhoto(this)"></div>
         <div class="shelf__slot shelf__slot--mid" onclick="placePhoto(this)"></div>
@@ -252,22 +252,22 @@
         <img decoding="async" data-src="img/photo-anime/retro-style-photo-1-sm.webp" class="shelf__photo" onclick="pickPhoto(this)" alt="">
         <img decoding="async" data-src="img/photo-anime/retro-style-photo-2-sm.webp" class="shelf__photo" onclick="pickPhoto(this)" alt="">
       </div>
-      <button class="shelf__next" onclick="go('quiz4')">Тык</button>
+      <button class="shelf__next" onclick="go('quiz4')" data-i18n="quiz.next">Тык</button>
     </section>
 
     <section class="screen" id="result">
       <video class="wish__video" muted playsinline preload="auto" poster="img/photo-anime/wish-meadow-poster.jpg" aria-hidden="true">
         <source src="img/photo-anime/wish-meadow.mp4" type="video/mp4">
       </video>
-      <h2 class="wish__title">Ты Молодчина! ты дошла до конца, делай так всегда за что бы не бралась</h2>
-      <p class="wish__subtitle">Можешь загадать желание— <em>его никто не увидит. Текст остаётся только в твоём телефоне и никуда не отправляется. Честно.</em></p>
-      <textarea class="wish__input" placeholder="Здесь только ты и Кики.."></textarea>
-      <button class="wish__send" onclick="sendWish()">Загадать желание</button>
-      <button class="wish__skip" onclick="skipWish()">Пропустить</button>
+      <h2 class="wish__title" data-i18n="result.title">Ты Молодчина! ты дошла до конца, делай так всегда за что бы не бралась</h2>
+      <p class="wish__subtitle" data-i18n-html="result.subtitle">Можешь загадать желание— <em>его никто не увидит. Текст остаётся только в твоём телефоне и никуда не отправляется. Честно.</em></p>
+      <textarea class="wish__input" data-i18n-ph="wish.placeholder" placeholder="Здесь только ты и Кики.."></textarea>
+      <button class="wish__send" onclick="sendWish()" data-i18n="wish.send">Загадать желание</button>
+      <button class="wish__skip" onclick="skipWish()" data-i18n="wish.skip">Пропустить</button>
     </section>
 
     <section class="screen" id="final">
-      <p class="final__caption">Посылка доставлена <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="final__caption-icon" alt=""></p>
+      <p class="final__caption"><span data-i18n="final.caption">Посылка доставлена </span><img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="final__caption-icon" alt=""></p>
       <div class="final__card">
         <div class="final__card-frame">
           <div class="final__cake-slot" aria-hidden="true"></div>
@@ -275,9 +275,9 @@
           
 
           <div class="final__text">
-            <p>Поздравляю от всей души с днём рождения! Пусть исполнятся все твои заветные мечты, а цели будут достигнуты.</p>
-            <p>Желаю крепкого здоровья, благополучия, любви, достатка, успехов в работе и во всех начинаниях.</p>
-            <p>Много-много счастья, море позитива, верных и надёжных друзей, отрывных гулянок и, конечно же, побольше путешествий!</p>
+            <p data-i18n="final.p1">Поздравляю от всей души с днём рождения! Пусть исполнятся все твои заветные мечты, а цели будут достигнуты.</p>
+            <p data-i18n="final.p2">Желаю крепкого здоровья, благополучия, любви, достатка, успехов в работе и во всех начинаниях.</p>
+            <p data-i18n="final.p3">Много-много счастья, море позитива, верных и надёжных друзей, отрывных гулянок и, конечно же, побольше путешествий!</p>
           </div>
         </div>
       </div>
@@ -315,10 +315,10 @@
         <div class="final__cake-lines" data-svg="img/photo-anime/cake-svg.svg"></div>
       </div>
 
-      <button class="final__finish" onclick="finishQuest()">Завершить Квест</button>
-      <button class="final__restart" onclick="restartQuest()">Пройти снова</button>
+      <button class="final__finish" onclick="finishQuest()" data-i18n="final.finish">Завершить Квест</button>
+      <button class="final__restart" onclick="restartQuest()" data-i18n="final.restart">Пройти снова</button>
 
-      <p class="final__credits">
+      <p class="final__credits" data-i18n-html="final.credits">
         Некоммерческий фан-проект. Иллюстрации — по мотивам Studio Ghibli
         «Kiki’s Delivery Service», музыка — Joe Hisaishi. Все права принадлежат их владельцам.
       </p>
@@ -344,7 +344,7 @@
           <img decoding="async" data-src="img/photo-anime/kiki-1.webp" class="polaroid__photo" alt="">
         </div>
         <div class="polaroid__bottom">
-          <p class="polaroid__caption">Желаю, чтобы ты была как Кики, не боялась начинать новое в незнакомом месте</p>
+          <p class="polaroid__caption" data-i18n="comp1">Желаю, чтобы ты была как Кики, не боялась начинать новое в незнакомом месте</p>
           <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="polaroid__kiki" alt="">
         </div>
       </div>
@@ -358,7 +358,7 @@
           <img decoding="async" data-src="img/photo-anime/kiki-2.webp" class="polaroid__photo" alt="">
         </div>
         <div class="polaroid__bottom">
-          <p class="polaroid__caption">Желаю, чтобы ты находила своё уютное место и своё дело.</p>
+          <p class="polaroid__caption" data-i18n="comp2">Желаю, чтобы ты находила своё уютное место и своё дело.</p>
           <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="polaroid__kiki" alt="">
         </div>
       </div>
@@ -372,7 +372,7 @@
           <img decoding="async" data-src="img/photo-anime/kiki-3.webp" class="polaroid__photo" alt="">
         </div>
         <div class="polaroid__bottom">
-          <p class="polaroid__caption"> Желаю, чтобы даже когда будет трудно, ты находила силы подняться и верила в себя</p>
+          <p class="polaroid__caption" data-i18n="comp3"> Желаю, чтобы даже когда будет трудно, ты находила силы подняться и верила в себя</p>
           <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="polaroid__kiki" alt="">
         </div>
       </div>
@@ -386,7 +386,7 @@
           <img decoding="async" data-src="img/photo-anime/kiki-4.webp" class="polaroid__photo" alt="">
         </div>
         <div class="polaroid__bottom">
-          <p class="polaroid__caption"> Желаю чтобы люди Рядом с тобой вдохновлялись</p>
+          <p class="polaroid__caption" data-i18n="comp4"> Желаю чтобы люди Рядом с тобой вдохновлялись</p>
           <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="polaroid__kiki" alt="">
         </div>
       </div>
@@ -400,7 +400,7 @@
           <img decoding="async" data-src="img/photo-anime/kiki-5.webp" class="polaroid__photo" alt="">
         </div>
         <div class="polaroid__bottom">
-          <p class="polaroid__caption"> Желаю чтобы ты была тем человеком рядом с кем другие тоже становились сильнее и смелее</p>
+          <p class="polaroid__caption" data-i18n="comp5"> Желаю чтобы ты была тем человеком рядом с кем другие тоже становились сильнее и смелее</p>
           <img decoding="async" data-src="img/photo-anime/icon-kiki-dark.webp" class="polaroid__kiki" alt="">
         </div>
       </div>
@@ -413,10 +413,10 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/card-form-drams.webp" class="hint-soot" alt="">
       <div class="hint-frame">
         <img decoding="async" data-src="img/photo-anime/card-decor/lighthub.webp" class="hint-flame" alt="">
-        <p class="hint-text">Это красивый город у самого моря, с башней с часами.</p>
+        <p class="hint-text" data-i18n="hint1">Это красивый город у самого моря, с башней с часами.</p>
       </div>
-      <button class="hint-retry" onclick="closeHint(1)">попробовать ещё</button>
-      <button class="hint-giveup" onclick="giveUp(1)">сдаюсь</button>
+      <button class="hint-retry" onclick="closeHint(1)" data-i18n="hint.retry">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(1)" data-i18n="hint.giveup">сдаюсь</button>
     </div>
   </div>
 
@@ -426,10 +426,10 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/fair-smile.webp" class="hint-fire" alt="">
       <div class="hint-frame">
         <img decoding="async" data-src="img/photo-anime/card-decor/lighthub.webp" class="hint-flame" alt="">
-        <p class="hint-text">Название аниме — это подсказка..</p>
+        <p class="hint-text" data-i18n="hint2">Название аниме — это подсказка..</p>
       </div>
-      <button class="hint-retry" onclick="closeHint(2)">попробовать ещё</button>
-      <button class="hint-giveup" onclick="giveUp(2)">сдаюсь</button>
+      <button class="hint-retry" onclick="closeHint(2)" data-i18n="hint.retry">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(2)" data-i18n="hint.giveup">сдаюсь</button>
     </div>
   </div>
 
@@ -439,10 +439,10 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/osono-bakery.webp" class="hint-bakery" alt="">
       <div class="hint-frame">
         <img decoding="async" data-src="img/photo-anime/card-decor/lighthub.webp" class="hint-flame" alt="">
-        <p class="hint-text">Это про веру в себя, когда сомнения мешают взлететь...</p>
+        <p class="hint-text" data-i18n="hint3">Это про веру в себя, когда сомнения мешают взлететь...</p>
       </div>
-      <button class="hint-retry" onclick="closeHint(3)">попробовать ещё</button>
-      <button class="hint-giveup" onclick="giveUp(3)">сдаюсь</button>
+      <button class="hint-retry" onclick="closeHint(3)" data-i18n="hint.retry">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(3)" data-i18n="hint.giveup">сдаюсь</button>
     </div>
   </div>
 
@@ -452,10 +452,10 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/book-card.webp" class="hint-books-br" alt="">
       <div class="hint-frame">
         <img decoding="async" data-src="img/photo-anime/card-decor/lighthub.webp" class="hint-flame" alt="">
-        <p class="hint-text">Он мечтает о полётах и строит летающий велосипед..</p>
+        <p class="hint-text" data-i18n="hint4">Он мечтает о полётах и строит летающий велосипед..</p>
       </div>
-      <button class="hint-retry" onclick="closeHint(4)">попробовать ещё</button>
-      <button class="hint-giveup" onclick="giveUp(4)">сдаюсь</button>
+      <button class="hint-retry" onclick="closeHint(4)" data-i18n="hint.retry">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(4)" data-i18n="hint.giveup">сдаюсь</button>
     </div>
   </div>
 
@@ -465,10 +465,10 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/osono-bakery.webp" class="hint-bakery-br" alt="">
       <div class="hint-frame">
         <img decoding="async" data-src="img/photo-anime/card-decor/lighthub.webp" class="hint-flame" alt="">
-        <p class="hint-text">Она живёт в лесу и рисует, они говорят по душам...</p>
+        <p class="hint-text" data-i18n="hint5">Она живёт в лесу и рисует, они говорят по душам...</p>
       </div>
-      <button class="hint-retry" onclick="closeHint(5)">попробовать ещё</button>
-      <button class="hint-giveup" onclick="giveUp(5)">сдаюсь</button>
+      <button class="hint-retry" onclick="closeHint(5)" data-i18n="hint.retry">попробовать ещё</button>
+      <button class="hint-giveup" onclick="giveUp(5)" data-i18n="hint.giveup">сдаюсь</button>
     </div>
   </div>
 
@@ -477,9 +477,9 @@
       <img decoding="async" data-src="img/photo-anime/card-decor/kiki.webp" class="wish-witch" alt="">
       <img decoding="async" data-src="img/photo-anime/card-decor/doror.webp" class="wish-totoro" alt="">
       <div class="hint-frame">
-        <p class="hint-text">Желание загадано ✨</p>
+        <p class="hint-text" data-i18n="wishdone.text">Желание загадано ✨</p>
       </div>
-      <button class="hint-retry wish-tyk" onclick="goFinal()">тык</button>
+      <button class="hint-retry wish-tyk" onclick="goFinal()" data-i18n="wishdone.tyk">тык</button>
     </div>
   </div>
 
@@ -496,9 +496,12 @@
     </svg>
   </button>
 
+  <!-- переключатель языка RU/EN -->
+  <button id="langToggle" class="lang-toggle" type="button" aria-label="Switch language">EN</button>
+
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js?v=112"></script>
+  <script src="script.js?v=113"></script>
 
 </body>
 
