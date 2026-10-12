@@ -4,7 +4,7 @@ An interactive, hand-drawn birthday micro-story. A line portrait is **drawn stro
 
 > ✨ Focus: motion design, SVG/Canvas animation and micro-interactions on a zero-dependency front end.
 
-**🔗 Live demo:** _add your Vercel link_  ·  **💻 Code:** _this repo_
+**🔗 Live demo:** [gifts-happy-birthday.vercel.app](https://gifts-happy-birthday.vercel.app/)  ·  **💻 Code:** _this repo_
 
 <!-- media/hero.gif -->
 ![Hero — line drawing → watercolor reveal](media/hero.gif)
