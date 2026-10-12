@@ -16,6 +16,11 @@ An interactive, hand-drawn birthday micro-story. A line portrait is **drawn stro
   &nbsp;
   <img src="media/dragdrop.gif" alt="Drag & drop — sorting photos onto the shelves" width="300">
 </p>
+<p align="center">
+  <img src="media/wish.gif" alt="Make a wish — dandelions carry it away" width="300">
+  &nbsp;
+  <img src="media/cake.gif" alt="Finale — cake draws itself, docks into the card, handwritten text and confetti" width="300">
+</p>
 
 ---
 
